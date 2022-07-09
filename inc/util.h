@@ -20,5 +20,5 @@
 #include "./common.h"
 unsigned long long int file_reader(std::string input_file, vector<set<unsigned int>> &ns);
 
-void write_kcore_to_disk(unsgined int*, unsigned long long int);
+void write_kcore_to_disk(unsigned int*, unsigned long long int);
 #endif //CUTS_UTIL_H
