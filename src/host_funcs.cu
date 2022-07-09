@@ -24,7 +24,7 @@ inline void chkerr(cudaError_t code)
         exit(-1);
     }
 }
-void copy_graph_to_gpu(Graph data_graph, G_pointers data_pointers){
+void copy_graph_to_gpu(Graph data_graph, G_pointers &data_pointers){
     malloc_graph_gpu_memory(data_graph,data_pointers);
 }
 void find_kcore(string data_file,bool write_to_disk){
@@ -44,15 +44,16 @@ void find_kcore(string data_file,bool write_to_disk){
     copy_graph_to_gpu(data_graph, data_pointers);
     cout<<"end copying graph to gpu..."<<endl;
 
-    unsigned int level = 0;
+    unsigned int level = 2;
     unsigned int *global_count;
-    cudaMalloc(&global_count,sizeof(unsigned int));
+    cudaMallocManaged(&global_count,sizeof(unsigned int));
 
     cudaMemset(global_count,0,sizeof(unsigned int));
 
     cudaEventRecord(event_start);
-
-    while((*global_count) < data_graph.V){
+	cout<<"Entering in while"<<endl;
+    for(int i=0;i<1;i++){
+	cout<<"level: "<<level<<", global_count: "<<global_count[0]<<endl;
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level);
         level += 1;
         chkerr(cudaDeviceSynchronize());
@@ -75,4 +76,5 @@ void find_kcore(string data_file,bool write_to_disk){
         write_kcore_to_disk(data_graph.degrees, data_graph.V);
         cout<<"Writing kcore to disk completed... "<<endl;
     }
+
 }

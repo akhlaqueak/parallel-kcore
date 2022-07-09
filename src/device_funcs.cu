@@ -15,6 +15,7 @@
  * directory.
  */
 #include "../inc/device_funcs.h"
+#include "stdio.h"
 
 
 __device__ void scan(G_pointers d_p, unsigned int* buffer, unsigned int* e, unsigned int level){
@@ -23,7 +24,9 @@ __device__ void scan(G_pointers d_p, unsigned int* buffer, unsigned int* e, unsi
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
 
     for(int i=global_threadIdx; i<d_p.V; i+=N_THREADS){
+	printf("%d, %d, %d", global_threadIdx, level, d_p.degrees[i]);
         if(d_p.degrees[i] == level){
+		printf("degree matched \n");
             //store this node to shared buffer, at the corresponding warp location
             unsigned int loc = warp_id*MAX_NE + e[warp_id]; 
             buffer[loc] = i;
@@ -61,6 +64,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
                 a = atomicSub(&d_p.degrees[u], 1);
+		printf("subtracted\n");
             }
 
             if(a == (level+1)){
@@ -77,7 +81,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
         __syncwarp();
     }
 
-    if(lane_id == 0)
+    if(lane_id == 0){
         atomicAdd(global_count, e[warp_id]);    
-
+        printf("global count: %d, was added with %d\n", global_count[0], e[warp_id]); 
+	}
 }
