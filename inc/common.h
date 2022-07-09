@@ -46,7 +46,7 @@ using namespace std;
 typedef struct G_pointers {
     unsigned int* neighbors;
     unsigned int* neighbors_offset;
-    unsigned int* signatures;
+    unsigned int* degrees;
     unsigned int V;
 } G_pointers;//graph related
 

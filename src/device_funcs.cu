@@ -22,7 +22,7 @@ __device__ void scan(G_pointers d_p, unsigned int* buffer, unsigned int* e, unsi
     unsigned int lane_id = threadIdx.x%32;
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
 
-    for(int i=global_threadIdx; i<dp.V; i+=N_THREADS){
+    for(int i=global_threadIdx; i<d_p.V; i+=N_THREADS){
         if(d_p.degrees[i] == level){
             //store this node to shared buffer, at the corresponding warp location
             unsigned int loc = warp_id*MAX_NE + e[warp_id]; 
@@ -36,13 +36,19 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
 
     __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NE];
-    __shared__ unsigned int e[WARPS_EACH_BLK] = {0};
+    __shared__ unsigned int e[WARPS_EACH_BLK];
+
+
 
     unsigned int warp_id = threadIdx.x/32;
     unsigned int lane_id = threadIdx.x%32;
     unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
     unsigned int mask = 0xFFFFFFFF;
 
+    if(lane_id==0)
+        e[warp_id] = 0;
+
+    __syncwarp();
     scan(d_p, buffer, e, level);
     __syncthreads();
 
@@ -54,7 +60,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
             int a = 0;
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
-                a = atomicSub(&d_p.degrees[node], 1);
+                a = atomicSub(&d_p.degrees[u], 1);
             }
 
             if(a == (level+1)){
