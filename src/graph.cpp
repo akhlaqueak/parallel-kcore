@@ -34,7 +34,7 @@ Graph::Graph(std::string input_file){
 
     E = neighbors_offset[V];
     neighbors = new unsigned int[neighbors_offset[V]];
-    AVG_degrees = E/V + 2;
+    // AVG_degrees = E/V + 2;
 
     unsigned int j = 0;
     for(unsigned int i=0;i<V;++i){
