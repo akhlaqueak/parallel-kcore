@@ -15,7 +15,6 @@
  * directory.
  */
 #include "../inc/host_funcs.h"
-#include "../inc/free_memories.h"
 #include "../inc/gpu_memory_allocation.h"
 inline void chkerr(cudaError_t code)
 {

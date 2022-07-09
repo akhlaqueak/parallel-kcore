@@ -17,7 +17,6 @@
 
 #ifndef CUTS_GRAPH_H
 #define CUTS_GRAPH_H
-#include "./score.h"
 #include "./util.h"
 class Graph{
 public:
@@ -28,6 +27,6 @@ public:
     unsigned int * neighbors_offset;
     unsigned int * degrees;
     Graph(std::string input_file);
-    unsigned long long int file_reader(std::string input_file, vector<set<unsigned int>> &ns);
+    ~Graph();
 };
 #endif //CUTS_GRAPH_H

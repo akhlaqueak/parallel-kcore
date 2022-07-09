@@ -46,3 +46,8 @@ Graph::Graph(std::string input_file){
     }
 }
 
+Graph::~Graph(){
+    delete [] neighbors;
+    delete [] neighbors_offset;
+    delete [] degrees;
+}
