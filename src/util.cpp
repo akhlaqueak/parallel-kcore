@@ -50,10 +50,10 @@ unsigned long long int file_reader(std::string input_file, vector<set<unsigned i
     return V;
 }
 
-void write_kcore_to_disk(unsgined int *degrees, unsigned long long int V){
+void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V){
     std::ofstream out("ans.txt");
     out<<V<<endl;
-    
+
     for(unsigned long long int i=0;i<V;++i){
         out<<i<<" "<<degrees[i]<<endl;
     }
