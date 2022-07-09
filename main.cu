@@ -22,25 +22,14 @@
  */
 #include "./inc/host_funcs.h"
 int main(int argc, char *argv[]){
-    if (argc < 3) {
-        cout<<"args data_graph path,query_graph_path,first depth trunks(optional)"<<endl;
+    if (argc < 2) {
+        cout<<"Please provide data file"<<endl;
         exit(-1);
     }
-    std::string query_graph_file = argv[2];
     std::string data_graph_file = argv[1];
     bool write_to_disk = false;
-    if(argc == 3){
-        unsigned long long int result_len = search(query_graph_file,data_graph_file,write_to_disk);
-    }else{
-        unsigned int trunks;
-        try {
-            trunks = atoi(argv[3]);
-        }catch(int e){
-            cout<<"invalid trunks, set trunks = 4"<<endl;
-            trunks = 4;
-        }
-        unsigned long long int result_len = search_dfs_bfs_strategy(query_graph_file,data_graph_file,
-                                                                    write_to_disk,trunks);
-    }
+   
+    find_kcore(data_graph_file,write_to_disk);
+    
     return 0;
 }

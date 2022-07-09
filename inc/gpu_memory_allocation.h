@@ -19,6 +19,5 @@
 #define CUTS_GPU_MEMORY_ALLOCATION_H
 #include "./graph.h"
 void malloc_graph_gpu_memory(Graph &g,G_pointers &p);
-void malloc_query_constraints_gpu_memory(Graph &g,C_pointers &p);
-void malloc_other_searching_gpu_memory(S_pointers &p,unsigned int workers,unsigned int max_nodes);
+
 #endif //CUTS_GPU_MEMORY_ALLOCATION_H

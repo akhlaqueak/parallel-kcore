@@ -18,7 +18,7 @@
 #ifndef CUTS_UTIL_H
 #define CUTS_UTIL_H
 #include "./common.h"
-unsigned int file_reader(string input_file,vector<set<unsigned int> > &neighbors,vector<set<unsigned int> > &r_neighbors);
-void write_match_to_disk(unsigned long long int count,unsigned long long int *row_ptrs,unsigned int V,
-                         unsigned int *order_sequence,unsigned int *results);
+unsigned long long int file_reader(std::string input_file, vector<set<unsigned int>> &ns);
+
+void write_kcore_to_disk(unsgined int*, unsigned long long int);
 #endif //CUTS_UTIL_H

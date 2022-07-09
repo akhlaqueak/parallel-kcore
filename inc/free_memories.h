@@ -18,6 +18,5 @@
 #define CUTS_FREE_MEMORIES_H
 #include "./common.h"
 void free_graph_gpu_memory(G_pointers &p);
-void free_query_constraints_gpu_memory(C_pointers &p);
-void free_other_searching_gpu_memory(S_pointers &p);
+
 #endif //CUTS_FREE_MEMORIES_H
