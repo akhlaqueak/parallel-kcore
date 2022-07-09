@@ -52,7 +52,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaEventRecord(event_start);
 
-    while(global_count < data_graph.V){
+    while((*global_count) < data_graph.V){
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level);
         level += 1;
         chkerr(cudaDeviceSynchronize());
@@ -72,7 +72,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees);
+        write_kcore_to_disk(data_graph.degrees, data_graph.V);
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 }
