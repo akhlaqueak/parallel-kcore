@@ -44,7 +44,7 @@ void find_kcore(string data_file,bool write_to_disk){
     copy_graph_to_gpu(data_graph, data_pointers);
     cout<<"end copying graph to gpu..."<<endl;
 
-    unsigned int level = 2;
+    unsigned int level = 0;
     unsigned int *global_count;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
 
@@ -52,7 +52,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaEventRecord(event_start);
 	cout<<"Entering in while"<<endl;
-    for(int i=0;i<1;i++){
+	while(global_count[0] < data_graph.V){
 	cout<<"level: "<<level<<", global_count: "<<global_count[0]<<endl;
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level);
         level += 1;
@@ -62,8 +62,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaEventRecord(event_stop);
     cudaEventSynchronize(event_stop);
-
-    get_results_from_gpu(data_graph, data_pointers);
+	get_results_from_gpu(data_graph, data_pointers);
 
 
     float time_milli_sec = 0;

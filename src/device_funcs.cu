@@ -20,17 +20,18 @@
 
 __device__ void scan(G_pointers d_p, unsigned int* buffer, unsigned int* e, unsigned int level){
     unsigned int warp_id = threadIdx.x/32;
-    unsigned int lane_id = threadIdx.x%32;
+//    unsigned int lane_id = threadIdx.x%32;
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
 
     for(int i=global_threadIdx; i<d_p.V; i+=N_THREADS){
-	printf("%d, %d, %d", global_threadIdx, level, d_p.degrees[i]);
         if(d_p.degrees[i] == level){
-		printf("degree matched \n");
             //store this node to shared buffer, at the corresponding warp location
+		if(e[warp_id] >= MAX_NE)printf("x");
+
             unsigned int loc = warp_id*MAX_NE + e[warp_id]; 
             buffer[loc] = i;
             atomicAdd(&e[warp_id], 1); 
+		
         }
     }
 }
@@ -45,26 +46,29 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
     unsigned int warp_id = threadIdx.x/32;
     unsigned int lane_id = threadIdx.x%32;
-    unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
-    unsigned int mask = 0xFFFFFFFF;
+  //  unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
+//    unsigned int mask = 0xFFFFFFFF;
 
     if(lane_id==0)
         e[warp_id] = 0;
 
     __syncwarp();
     scan(d_p, buffer, e, level);
-    __syncthreads();
+    __syncwarp();
+
+	if(lane_id==0){
+	printf("*%d", e[warp_id]);
+	}
 
     for(int i=0; i<e[warp_id]; i++){
         unsigned int v = buffer[i];
-        unsigned int start = d_p.neighbors_offset[v+1];
-        unsigned int end = d_p.neighbors_offset[v];
+        unsigned int start = d_p.neighbors_offset[v];
+        unsigned int end = d_p.neighbors_offset[v+1];
         for(int j = 0; j<(end - start); j+=32){
             int a = 0;
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
                 a = atomicSub(&d_p.degrees[u], 1);
-		printf("subtracted\n");
             }
 
             if(a == (level+1)){
@@ -83,6 +87,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
     if(lane_id == 0){
         atomicAdd(global_count, e[warp_id]);    
-        printf("global count: %d, was added with %d\n", global_count[0], e[warp_id]); 
 	}
+
 }
