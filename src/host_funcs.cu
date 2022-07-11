@@ -37,13 +37,19 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaEvent_t event_start;
     cudaEvent_t event_stop;
+    
+    if(write_to_disk){
+        cout<<"Writing degrees to disk started... "<<endl;
+        write_kcore_to_disk(data_graph.degrees, data_graph.V, "degrees.txt");
+        cout<<"Writing degrees to disk completed... "<<endl;
+    }
+    
     cudaEventCreate(&event_start);
     cudaEventCreate(&event_stop);
 
     cout<<"start copying graph to gpu..."<<endl;
     copy_graph_to_gpu(data_graph, data_pointers);
     cout<<"end copying graph to gpu..."<<endl;
-
     unsigned int level = 0;
     unsigned int *global_count;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
@@ -72,7 +78,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V);
+        write_kcore_to_disk(data_graph.degrees, data_graph.V, "k-core.txt");
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 
