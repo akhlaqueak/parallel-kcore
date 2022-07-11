@@ -100,6 +100,6 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level, int 
 }
 
 __global__ void test(unsigned int *degrees){
-    // if (threadIdx.x%32 == 0)
+    if (threadIdx.x%32 == 0)
         printf("%d.", degrees[threadIdx.x/32]);
 }
