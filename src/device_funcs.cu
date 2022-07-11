@@ -70,10 +70,10 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
         unsigned int end = d_p.neighbors_offset[v+1];
         for(int j = start + lane_id; j<end ; j+=32){
             int a = 0;
+                printf("%d*", j);
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
                 a = atomicSub(&d_p.degrees[u], 1);
-                printf("%d*", a);
             }
 
             if(a == (level+1)){
