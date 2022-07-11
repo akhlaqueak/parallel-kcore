@@ -19,11 +19,9 @@
 
 
 __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int* e, unsigned int level){
-    printf("a%d--", 99);
     unsigned int warp_id = threadIdx.x/32;
 //    unsigned int lane_id = threadIdx.x%32;
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
-    printf("a%d--", global_threadIdx);
     for(int i=global_threadIdx; i< V; i+=N_THREADS){
         if(degrees[i] == level){
             //store this node to shared buffer, at the corresponding warp location
@@ -56,7 +54,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     if(lane_id==0)
         e[warp_id] = 0;
 	
-    printf("c%d", d_p.degrees[500]);
 
     __syncwarp();
 
