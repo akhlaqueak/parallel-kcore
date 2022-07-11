@@ -65,15 +65,15 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaEventSynchronize(event_stop);
 
 
-    float time_milli_sec = 0;
-    cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
-    cout<<"Elapsed Time: "<<time_milli_sec<<endl;
+    // float time_milli_sec = 0;
+    // cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
+    // cout<<"Elapsed Time: "<<time_milli_sec<<endl;
 
     
-    if(write_to_disk){
-        cout<<"Writing kcore to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V);
-        cout<<"Writing kcore to disk completed... "<<endl;
-    }
+    // if(write_to_disk){
+    //     cout<<"Writing kcore to disk started... "<<endl;
+    //     write_kcore_to_disk(data_graph.degrees, data_graph.V);
+    //     cout<<"Writing kcore to disk completed... "<<endl;
+    // }
 
 }
