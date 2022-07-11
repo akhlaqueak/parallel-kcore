@@ -48,6 +48,7 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
 
     unsigned int warp_id = threadIdx.x/32;
     unsigned int lane_id = threadIdx.x%32;
+
   //  unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
 //    unsigned int mask = 0xFFFFFFFF;
 
@@ -72,6 +73,7 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
                 a = atomicSub(&d_p.degrees[u], 1);
+                printf("%d*", a);
             }
 
             if(a == (level+1)){
