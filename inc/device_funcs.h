@@ -24,7 +24,7 @@ __device__ void scan(unsigned int *degrees, unsigned int, unsigned int* buffer, 
 
 __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level, int V);
 
-__global__ void test(G_pointers&);
+__global__ void test(unsigned int*);
 
 
 #endif //CUTS_DEVICE_FUNCS_H
