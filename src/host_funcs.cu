@@ -48,7 +48,7 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaEventCreate(&event_stop);
 
     cout<<"start copying graph to gpu..."<<endl;
-    copy_graph_to_gpu(data_graph, data_pointers);
+    malloc_graph_gpu_memory(data_graph, data_pointers);
     cout<<"end copying graph to gpu..."<<endl;
 
     unsigned int level = 0;
