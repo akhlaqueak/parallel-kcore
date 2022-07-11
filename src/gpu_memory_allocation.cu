@@ -24,7 +24,6 @@ inline void chkerr(cudaError_t code)
     }
 }
 void malloc_graph_gpu_memory(Graph &g,G_pointers &p){
-    std::cout<<"memory graph g = "<<g.neighbors_offset[g.V]<<endl;
     chkerr(cudaMalloc(&(p.neighbors),g.neighbors_offset[g.V]*sizeof(unsigned int)));
     chkerr(cudaMemcpy(p.neighbors,g.neighbors,g.neighbors_offset[g.V]*sizeof(unsigned int),cudaMemcpyHostToDevice));
     chkerr(cudaMalloc(&(p.neighbors_offset),(g.V+1)*sizeof(unsigned int)));
