@@ -38,7 +38,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
     }
 }
 
-__global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
+__global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level, int V){
 
 
     __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NE];
@@ -51,14 +51,14 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
 
   //  unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
 //    unsigned int mask = 0xFFFFFFFF;
-	printf("c%d", d_p.V[0]);
+	printf("c%d", V);
 
     if(lane_id==0)
         e[warp_id] = 0;
 
     __syncwarp();
 
-    scan(d_p.degrees, d_p.V[0], buffer, e, level);
+    scan(d_p.degrees, V, buffer, e, level);
     __syncthreads();
 
 	if(lane_id==0){
