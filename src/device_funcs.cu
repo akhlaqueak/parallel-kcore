@@ -39,7 +39,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
     }
 }
 
-__global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level, int V){
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
 
 
     __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NE];
