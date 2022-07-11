@@ -51,14 +51,14 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
 
   //  unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
 //    unsigned int mask = 0xFFFFFFFF;
-	printf("c%d", d_p.V);
+	printf("c%d", d_p.V[0]);
 
     if(lane_id==0)
         e[warp_id] = 0;
 
     __syncwarp();
 
-    scan(d_p.degrees, d_p.V, buffer, e, level);
+    scan(d_p.degrees, d_p.V[0], buffer, e, level);
     __syncthreads();
 
 	if(lane_id==0){

@@ -47,7 +47,7 @@ typedef struct G_pointers {
     unsigned int* neighbors;
     unsigned int* neighbors_offset;
     unsigned int* degrees;
-    unsigned int V;
+    unsigned int* V;
 } G_pointers;//graph related
 
 #endif //CUTS_COMMON_H
