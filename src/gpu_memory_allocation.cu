@@ -31,7 +31,7 @@ void malloc_graph_gpu_memory(Graph &g,G_pointers &p){
     chkerr(cudaMalloc(&(p.degrees),(g.V)*sizeof(unsigned int)));
     chkerr(cudaMemcpy(p.degrees,g.degrees,(g.V)*sizeof(unsigned int),cudaMemcpyHostToDevice));
     chkerr(cudaMalloc(&(p.V),sizeof(unsigned int)));
-    chkerr(cudaMemcpy(p.V,g.V,sizeof(unsigned int),cudaMemcpyHostToDevice));
+    chkerr(cudaMemset(p.V,g.V,sizeof(unsigned int)));
 }
 
 void get_results_from_gpu(Graph &g,G_pointers &p){
