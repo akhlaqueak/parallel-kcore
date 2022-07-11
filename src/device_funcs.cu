@@ -22,7 +22,7 @@ __device__ void scan(G_pointers &d_p, unsigned int* buffer, unsigned int* e, uns
     unsigned int warp_id = threadIdx.x/32;
 //    unsigned int lane_id = threadIdx.x%32;
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
-    printf("a%d", global_threadIdx);
+    printf("a%d, v=%d", global_threadIdx, d_p.V);
     for(int i=global_threadIdx; i<d_p.V; i+=N_THREADS){
         if(d_p.degrees[i] == level){
             //store this node to shared buffer, at the corresponding warp location
