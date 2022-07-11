@@ -60,9 +60,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     scan(d_p.degrees, V, buffer, e, level);
     __syncthreads();
 
-	if(lane_id==0){
-	printf("z%d", e[warp_id]);
-	}
 
     for(int i=0; i<e[warp_id]; i++){
         unsigned int v = buffer[warp_id*MAX_NE + i];
@@ -70,7 +67,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int end = d_p.neighbors_offset[v+1];
         for(int j = start + lane_id; j<end ; j+=32){
             int a = 0;
-                printf("%d*", j);
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
                 a = atomicSub(&d_p.degrees[u], 1);
