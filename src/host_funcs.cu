@@ -52,28 +52,28 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaEventRecord(event_start);
 	cout<<"Entering in while"<<endl;
-	// while(global_count[0] < data_graph.V){
-	// cout<<"level: "<<level<<", global_count: "<<global_count[0]<<endl;
-        // PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level);
+	while(global_count[0] < data_graph.V){
+	cout<<"level: "<<level<<", global_count: "<<global_count[0]<<endl;
+        PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level);
         level += 1;
         chkerr(cudaDeviceSynchronize());
-    // }
+    }
 
-	// get_results_from_gpu(data_graph, data_pointers);
+	get_results_from_gpu(data_graph, data_pointers);
 
-    // cudaEventRecord(event_stop);
-    // cudaEventSynchronize(event_stop);
+    cudaEventRecord(event_stop);
+    cudaEventSynchronize(event_stop);
 
 
-    // float time_milli_sec = 0;
-    // cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
-    // cout<<"Elapsed Time: "<<time_milli_sec<<endl;
+    float time_milli_sec = 0;
+    cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
+    cout<<"Elapsed Time: "<<time_milli_sec<<endl;
 
     
-    // if(write_to_disk){
-    //     cout<<"Writing kcore to disk started... "<<endl;
-    //     write_kcore_to_disk(data_graph.degrees, data_graph.V);
-    //     cout<<"Writing kcore to disk completed... "<<endl;
-    // }
+    if(write_to_disk){
+        cout<<"Writing kcore to disk started... "<<endl;
+        write_kcore_to_disk(data_graph.degrees, data_graph.V);
+        cout<<"Writing kcore to disk completed... "<<endl;
+    }
 
 }
