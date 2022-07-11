@@ -99,7 +99,7 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level, int 
 
 }
 
-__global__ void test(unsigned int *d_p){
+__global__ void test(unsigned int *degrees){
     // if (threadIdx.x%32 == 0)
-        printf("%d.", d_p.degrees[threadIdx.x/32]);
+        printf("%d.", degrees[threadIdx.x/32]);
 }
