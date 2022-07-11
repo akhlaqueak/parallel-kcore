@@ -56,7 +56,7 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level, int 
     if(lane_id==0)
         e[warp_id] = 0;
 	
-    printf("c%d", d_p.degrees[0]);
+    printf("c%d", d_p.neighbors[0]);
 
     __syncwarp();
 
