@@ -16,7 +16,7 @@
  */
 
 #include "../inc/util.h"
-unsigned long long int file_reader(std::string input_file, vector<set<unsigned int>> &ns){
+unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns){
     double load_start = omp_get_wtime();
     ifstream infile;
     infile.open(input_file);
