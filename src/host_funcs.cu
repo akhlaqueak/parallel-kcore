@@ -57,7 +57,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaMemset(global_count,0,sizeof(unsigned int));
 
-    cudaMalloc(&(data_pointers.degrees),20000*sizeof(unsigned int));
+    // cudaMalloc(&(data_pointers.degrees),20000*sizeof(unsigned int));
     cudaEventRecord(event_start);
 	cout<<"Entering in while"<<endl;
 	while(global_count[0] < data_graph.V){
