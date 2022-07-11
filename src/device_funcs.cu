@@ -18,12 +18,12 @@
 #include "stdio.h"
 
 
-__device__ void scan(unsigned int *degrees, unsigned int* buffer, unsigned int* e, unsigned int level){
+__device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int* e, unsigned int level){
     unsigned int warp_id = threadIdx.x/32;
 //    unsigned int lane_id = threadIdx.x%32;
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
     printf("a%d--", global_threadIdx);
-    for(int i=global_threadIdx; i<d_p.V; i+=N_THREADS){
+    for(int i=global_threadIdx; i< V; i+=N_THREADS){
         if(degrees[i] == level){
             //store this node to shared buffer, at the corresponding warp location
 		if(e[warp_id] >= MAX_NE){
@@ -58,7 +58,7 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
 
     __syncwarp();
 
-    scan(d_p.degrees, buffer, e, level);
+    scan(d_p.degrees, d_p.V, buffer, e, level);
     __syncthreads();
 
 	if(lane_id==0){
