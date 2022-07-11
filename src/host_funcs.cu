@@ -50,7 +50,7 @@ void find_kcore(string data_file,bool write_to_disk){
     cout<<"start copying graph to gpu..."<<endl;
     copy_graph_to_gpu(data_graph, data_pointers);
     cout<<"end copying graph to gpu..."<<endl;
-    
+
     unsigned int level = 0;
     unsigned int *global_count;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
@@ -83,4 +83,33 @@ void find_kcore(string data_file,bool write_to_disk){
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 
+}
+
+void find_kcore_CPU(string data_file,bool write_to_disk){
+    cout<<"start loading graph file from disk to memory..."<<endl;    
+    Graph data_graph(data_file);
+    cout<<"graph loading complete..."<<endl;
+
+    int level = 0;
+    int count = 0;
+
+    while(count<data_graph.V){
+        for(int i=0; i<data_graph.V; i++){
+            if (degrees[i] == level){
+                int start = data_graph.neighbors_offset[v];
+                int end = data_graph.neighbors_offset[v+1];
+
+                for(int j = start; j<end; j++){
+                    int a = 0;
+                    unsigned int u = data_graph.neighbors[j];
+                    if(data_graph.degrees[u] > level){
+                        data_graph.degrees[u] --;
+                        a = data_graph.degrees[u];
+                    }
+
+                }
+               
+            }
+        }    
+    }
 }

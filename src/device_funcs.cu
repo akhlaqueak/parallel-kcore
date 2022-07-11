@@ -67,7 +67,7 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
         unsigned int v = buffer[warp_id*MAX_NE + i];
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
-        for(int j = lane_id; j<(end - start); j+=32){
+        for(int j = start + lane_id; j<end ; j+=32){
             int a = 0;
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
