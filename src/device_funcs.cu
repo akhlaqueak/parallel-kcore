@@ -81,7 +81,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             }
 
             if(a <= level){
-                printf("%d ", u);
+                // printf("%d ", u);
                 atomicAdd(&d_p.degrees[u], 1);
             }
         }
