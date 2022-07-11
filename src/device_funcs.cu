@@ -19,6 +19,7 @@
 
 
 __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int* e, unsigned int level){
+    printf("a%d--", 99);
     unsigned int warp_id = threadIdx.x/32;
 //    unsigned int lane_id = threadIdx.x%32;
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
