@@ -59,10 +59,10 @@ void find_kcore(string data_file,bool write_to_disk){
         chkerr(cudaDeviceSynchronize());
     }
 
-	get_results_from_gpu(data_graph, data_pointers);
+	// get_results_from_gpu(data_graph, data_pointers);
 
-    cudaEventRecord(event_stop);
-    cudaEventSynchronize(event_stop);
+    // cudaEventRecord(event_stop);
+    // cudaEventSynchronize(event_stop);
 
 
     // float time_milli_sec = 0;
