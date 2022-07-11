@@ -50,6 +50,7 @@ void find_kcore(string data_file,bool write_to_disk){
     cout<<"start copying graph to gpu..."<<endl;
     copy_graph_to_gpu(data_graph, data_pointers);
     cout<<"end copying graph to gpu..."<<endl;
+    
     unsigned int level = 0;
     unsigned int *global_count;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
