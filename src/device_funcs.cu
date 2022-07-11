@@ -18,7 +18,7 @@
 #include "stdio.h"
 
 
-__device__ void scan(G_pointers &d_p, unsigned int* buffer, unsigned int* e, unsigned int level){
+__device__ void scan(int *degrees, unsigned int* buffer, unsigned int* e, unsigned int level){
     unsigned int warp_id = threadIdx.x/32;
 //    unsigned int lane_id = threadIdx.x%32;
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
@@ -51,6 +51,7 @@ __global__ void PKC(G_pointers &d_p, unsigned int *global_count, int level){
 
   //  unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
 //    unsigned int mask = 0xFFFFFFFF;
+	printf("c%d", e[warp_id]);
 
     if(lane_id==0)
         e[warp_id] = 0;
