@@ -57,7 +57,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
     __syncwarp();
 
     scan(d_p, buffer, e, level);
-    __syncwarp();
+    __syncthreads();
 
 	// if(lane_id==0){
 	// printf("*%d", e[warp_id]);
