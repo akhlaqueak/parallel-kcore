@@ -58,7 +58,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __syncwarp();
 
     scan(d_p.degrees, V, buffer, e, level);
-    __syncwarp();
+    __syncthreads();
 
 
 
@@ -73,11 +73,11 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             if(d_p.degrees[u] > level){
                 a = atomicSub(&d_p.degrees[u], 1);
             
-                if(a == (level+1)){
-                    int loc = warp_id*MAX_NE + e[warp_id];
-                    buffer[loc] = u;
-                    atomicAdd(&e[warp_id], 1);
-                }
+                // if(a == (level+1)){
+                //     int loc = warp_id*MAX_NE + e[warp_id];
+                //     buffer[loc] = u;
+                //     atomicAdd(&e[warp_id], 1);
+                // }
 
                 if(a <= level){
                     // printf("%d ", u);
