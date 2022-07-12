@@ -20,7 +20,6 @@
 
 __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int* e, unsigned int level){
     unsigned int warp_id = threadIdx.x/32;
-//    unsigned int lane_id = threadIdx.x%32;
     unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
     for(int i=global_threadIdx; i< V; i+=N_THREADS){
         if(degrees[i] == level){
@@ -68,9 +67,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         for(int j = start + lane_id; j<end ; j+=32){
-            unsigned int a = 0;
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
+                unsigned int a = 0;
                 a = atomicSub(&d_p.degrees[u], 1);
             
                 if(a == (level+1)){
