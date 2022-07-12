@@ -80,7 +80,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 }
 
                 if(a <= level){
-                    printf("%d ", u);
+                    // printf("%d ", u);
                     atomicAdd(&d_p.degrees[u], 1);
                 }
             }
@@ -89,7 +89,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         __syncwarp();
     }
 
-    if(lane_id == 0){
+    if(lane_id == 0 && e[warp_id]!=0 ){
         atomicAdd(&global_count[0], e[warp_id]);    
 	}
 
