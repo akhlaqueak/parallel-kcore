@@ -20,7 +20,7 @@
 
 __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int* e, unsigned int level){
     unsigned int warp_id = threadIdx.x/32;
-    unsigned int global_threadIdx = blockIdx.x*BLK_DIM + threadIdx.x; 
+    unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(int i=global_threadIdx; i< V; i+=N_THREADS){
         if(degrees[i] == level){
             //store this node to shared buffer, at the corresponding warp location
@@ -72,11 +72,11 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = 0;
                 a = atomicSub(&d_p.degrees[u], 1);
             
-                if(a == (level+1)){
-                    int loc = warp_id*MAX_NE + e[warp_id];
-                    buffer[loc] = u;
-                    atomicAdd(&e[warp_id], 1);
-                }
+                // if(a == level){
+                //     int loc = warp_id*MAX_NE + e[warp_id];
+                //     buffer[loc] = u;
+                //     atomicAdd(&e[warp_id], 1);
+                // }
 
                 if(a <= level){
                     // printf("%d ", u);
