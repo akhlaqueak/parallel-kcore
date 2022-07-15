@@ -5,6 +5,6 @@
 Run the code by the following command, which will pull from github, and runs the code:
 
 
-`` nvcc main.cu src/* -lgomp -o gpu_bk.out 
+` nvcc main.cu src/* -lgomp -o gpu_bk.out `
 
-`` ./gpu_bk.out data_set/data/ours_format/Enron.g
+`./gpu_bk.out data_set/data/ours_format/Enron.g`
