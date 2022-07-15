@@ -1,0 +1,3 @@
+git pull
+nvcc main.cu src/* -lgomp -o gpu_bk.out
+./gpu_bk.out data_set/data/ours_format/Enron.g
