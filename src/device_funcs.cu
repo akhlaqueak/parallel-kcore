@@ -30,6 +30,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
 
             unsigned int loc = warp_id*MAX_NE + e[warp_id]; 
             buffer[loc] = i;
+            printf("%dS", i);
             atomicAdd(&e[warp_id], 1); 
 		
         }
