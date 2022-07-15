@@ -59,7 +59,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     scan(d_p.degrees, V, buffer, e, level);
     __syncthreads();
 
-    if(land_id == 0 && e[warp_id]!=0){
+    if(lane_id == 0 && e[warp_id]!=0){
         printf("%d ", e[warp_id]);
     }
 
