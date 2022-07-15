@@ -31,7 +31,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
             unsigned int loc = atomicAdd(&e[warp_id], 1); 
             loc = loc + warp_id*MAX_NE; 
             buffer[loc] = i;
-            printf("%dS", i);
+            // printf("%dS", i);
 		
         }
     }
@@ -61,7 +61,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __syncthreads();
 
     if(lane_id == 0 && e[warp_id]!=0){
-        printf("%d ", e[warp_id]);
+        // printf("%d ", e[warp_id]);
     }
 
     for(int i=0; i<e[warp_id]; i++){
@@ -79,11 +79,11 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 if(a == (level+1)){
                     unsigned int loc = atomicAdd(&e[warp_id], 1); 
                     loc = loc + warp_id*MAX_NE;             
-                    printf("**u=%d*i=%d*v=%d**", u, i, v);
+                    // printf("**u=%d*i=%d*v=%d**", u, i, v);
                 }
 
                 if(a <= level){
-                    printf("%d+", u);
+                    // printf("%d+", u);
                     atomicAdd(&d_p.degrees[u], 1);
                 }
             }
