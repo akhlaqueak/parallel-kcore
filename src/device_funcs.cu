@@ -28,11 +28,11 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
             printf("x"); continue;
         }
 
-            unsigned int loc = atomicAdd(&e[warp_id], 1); 
-            printf("loc=%d", loc);
-            loc = loc + (warp_id*MAX_NE); 
-            buffer[loc - 1] = i;
-            printf("%dS", i);		
+            atomicAdd(&e[warp_id], 1); 
+            unsigned int loc = warp_id*MAX_NE + e[warp_id] - 1; 
+            buffer[loc] = i;
+            printf("%dS", i);
+		
         }
     }
 }
@@ -77,11 +77,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 a = atomicSub(&d_p.degrees[u], 1);
             
                 if(a == (level+1)){
-                    int loc = atomicAdd(&e[warp_id], 1);
-                    loc = loc + (warp_id*MAX_NE);
-                    buffer[loc - 1] = u;
+                    atomicAdd(&e[warp_id], 1);
+                    int loc = warp_id*MAX_NE + e[warp_id] - 1;
+                    buffer[loc] = u;
                     printf("**u=%d*i=%d*v=%d**", u, i, v);
-                    
                 }
 
                 if(a <= level){
