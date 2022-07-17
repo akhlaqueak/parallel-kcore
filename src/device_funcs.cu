@@ -49,7 +49,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int lane_id = threadIdx.x%32;
 
   //  unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
-//    unsigned int mask = 0xFFFFFFFF;
+  //  unsigned int mask = 0xFFFFFFFF;
 
     if(lane_id==0)
         e[warp_id] = 0;
