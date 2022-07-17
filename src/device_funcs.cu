@@ -58,7 +58,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __syncwarp();
 
     scan(d_p.degrees, V, buffer, e, level);
-    __syncthreads();
+    // __syncthreads();
 
     if(lane_id == 0 && e[warp_id]!=0){
         // printf("%d ", e[warp_id]);
@@ -93,7 +93,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         __syncwarp();
     }
 
-    __syncthreads();
+    // __syncthreads();
 
     if(lane_id == 0 && e[warp_id]!=0 ){
         atomicAdd(&global_count[0], e[warp_id]);    
