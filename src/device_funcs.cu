@@ -23,16 +23,14 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
         if(degrees[i] == level){
-            //store this node to shared buffer, at the corresponding warp location
 		if(e[warp_id] >= MAX_NE){
-            printf("%d", e[0]); continue;
+            printf("x"); continue;
         }
 
+            //store this node to shared buffer, at the corresponding warp location
             unsigned int loc = atomicAdd(&e[warp_id], 1); 
             loc = loc + warp_id*MAX_NE; 
             buffer[loc] = i;
-            // printf("%dS", i);
-		
         }
     }
 }
