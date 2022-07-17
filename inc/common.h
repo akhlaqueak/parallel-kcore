@@ -20,7 +20,7 @@
 #define BLK_DIM 1024
 #define WARPS_EACH_BLK (BLK_DIM/32)
 #define WORK_UNITS (BLK_NUMS*WARPS_EACH_BLK)
-#define MAX_NE 500
+#define MAX_NE 400
 #define N_THREADS (BLK_DIM*BLK_NUMS)
 #include <iostream>
 #include <vector>
