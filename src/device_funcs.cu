@@ -75,7 +75,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 if(a == (level+1)){
         
                     if(e[warp_id] >= MAX_NE){
-                        printf("x"); continue;
+                        printf("x");
                     }
                     unsigned int loc = atomicAdd(&e[warp_id], 1); 
                     loc = loc + warp_id*MAX_NE;
