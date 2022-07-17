@@ -25,7 +25,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
         if(degrees[i] == level){
             //store this node to shared buffer, at the corresponding warp location
 		if(e[warp_id] >= MAX_NE){
-            printf("x"); continue;
+            printf("%d", e[0]); continue;
         }
 
             unsigned int loc = atomicAdd(&e[warp_id], 1); 
