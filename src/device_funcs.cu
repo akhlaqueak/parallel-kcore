@@ -23,13 +23,13 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
         if(degrees[i] == level){
-		if(e[warp_id] >= MAX_NE){
+		if(e[warp_id] >= MAX_NV){
             printf("x"); continue;
         }
 
             //store this node to shared buffer, at the corresponding warp location
             unsigned int loc = atomicAdd(&e[warp_id], 1); 
-            loc = loc + warp_id*MAX_NE; 
+            loc = loc + warp_id*MAX_NV; 
             buffer[loc] = i;
         }
     }
@@ -38,7 +38,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* buffer
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
 
 
-    __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NE];
+    __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NV];
     __shared__ unsigned int e[WARPS_EACH_BLK];
 
 
@@ -60,7 +60,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     for(int i=0; i<e[warp_id]; i++){
     
-        unsigned int v = buffer[warp_id*MAX_NE + i];
+        unsigned int v = buffer[warp_id*MAX_NV + i];
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
 
@@ -72,11 +72,11 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             
                 if(a == (level+1)){
         
-                    if(e[warp_id] >= MAX_NE){
+                    if(e[warp_id] >= MAX_NV){
                         printf("x");
                     }
                     unsigned int loc = atomicAdd(&e[warp_id], 1); 
-                    loc = loc + warp_id*MAX_NE;
+                    loc = loc + warp_id*MAX_NV;
                     buffer[loc] = u;           
                     // printf("**u=%d*i=%d*v=%d**", u, i, v);
                 }
