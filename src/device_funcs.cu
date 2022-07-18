@@ -1,19 +1,4 @@
-/*
- * cuTS:  Scaling Subgraph Isomorphism on Distributed Multi-GPU Systems Using
- *        Trie Based Data Structure
- *
- * Copyright (C) 2021 APPL Laboratories (aravind_sr@outlook.com)
- *
- * This software is available under the MIT license, a copy of which can be
- * found in the file 'LICENSE' in the top-level directory.
- *
- * For further information contact:
- *   (1) Lizhi Xiang (lizhi.xiang@wsu.edu)
- *   (2) Aravind Sukumaran-Rajam (aravind_sr@outlook.com)
- *
- * The citation information is provided in the 'README' in the top-level
- * directory.
- */
+
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 
@@ -71,16 +56,14 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 a = atomicSub(&d_p.degrees[u], 1);
             
                 if(a == (level+1)){
-        
-                    if(e[warp_id] >= MAX_NV){
-                        printf("x");
-                    }
+        // node degree became the level after decrementing... 
                     unsigned int loc = atomicAdd(&e[warp_id], 1); 
                     loc = loc + warp_id*MAX_NV;
                     buffer[loc] = u;           
                 }
 
                 if(a <= level){
+        // node degree became less than the level after decrementing... 
                     atomicAdd(&d_p.degrees[u], 1);
                 }
             }
