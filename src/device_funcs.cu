@@ -78,11 +78,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     unsigned int loc = atomicAdd(&e[warp_id], 1); 
                     loc = loc + warp_id*MAX_NV;
                     buffer[loc] = u;           
-                    // printf("**u=%d*i=%d*v=%d**", u, i, v);
                 }
 
                 if(a <= level){
-                    // printf("%d+", u);
                     atomicAdd(&d_p.degrees[u], 1);
                 }
             }
