@@ -25,7 +25,8 @@ Graph::Graph(std::string input_file){
 
     #pragma omp parallel for
     for(int i=0;i<V;i++){
-        for(int j=neighbors_offset[i], auto it = ns[i].begin(); j < neighbors_offset[i+1]; j++, it++)
+        auto it = ns[i].begin();
+        for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
             neighbors[j] = *it;
     }
     // AVG_degrees = E/V + 2;
