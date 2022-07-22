@@ -13,7 +13,6 @@ Graph::Graph(std::string input_file){
     #pragma omp parallel for
     for(int i=0;i<V;++i){
         degrees[i] = ns[i].size();
-        // neighbors_offset[i+1] = neighbors_offset[i] + degrees[i];
     }
 
     neighbors_offset = new unsigned int[V+1];
