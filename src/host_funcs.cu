@@ -44,7 +44,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaEventRecord(event_start);
 
-    unsigned long long int limit = 0;
+    size_t limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
 
     cout<<"default limit is: "<<limit<<endl;
