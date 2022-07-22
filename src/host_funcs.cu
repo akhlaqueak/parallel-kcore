@@ -43,6 +43,8 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaMemset(global_count,0,sizeof(unsigned int));
 
     cudaEventRecord(event_start);
+
+    cudaDeviceSetLimit(cudaLimitMallocHeapSize, 8*1024*1024*1024ULL);
 	cout<<"Entering in while"<<endl;
 	while(global_count[0] < data_graph.V){
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V);
