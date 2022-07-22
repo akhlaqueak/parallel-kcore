@@ -21,6 +21,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buff
             __syncwarp();
 
             if(loc >= MAX_NV){
+                printf("z");
                 loc -= MAX_NV;
                 *(helpers[warp_id] + loc) = i;
             }
@@ -57,7 +58,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     scan(d_p.degrees, V, &buffer[warp_id*MAX_NV], helpers, e, level);
 
 
-    for(int i=0; i<e[warp_id]; i++){
+    for(unsigned int i=0; i<e[warp_id]; i++){
     
         unsigned int v;
         if( i < MAX_NV ) 
@@ -88,6 +89,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     __syncwarp();
 
                     if(loc >= MAX_NV){
+                        printf("z");
+
                         loc-= MAX_NV;
                         *(helpers[warp_id] + loc) = u;
                     }
