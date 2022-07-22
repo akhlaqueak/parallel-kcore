@@ -87,11 +87,11 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
                     if(loc >= MAX_NV){
                         loc-= MAX_NV;
-                        *(helpers[warp_id] + loc) = i;
+                        *(helpers[warp_id] + loc) = u;
                     }
 
                     else{
-                        buffer[warp_id*MAX_NV + loc] = i;
+                        buffer[warp_id*MAX_NV + loc] = u;
                     }          
                 }
 
