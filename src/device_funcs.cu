@@ -53,7 +53,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncwarp();
 
-    scan(d_p.degrees, V, &buffer[warp_id*MAX_NV], e, level);
+    scan(d_p.degrees, V, &buffer[warp_id*MAX_NV], helpers, e, level);
 
 
     for(int i=0; i<e[warp_id]; i++){
