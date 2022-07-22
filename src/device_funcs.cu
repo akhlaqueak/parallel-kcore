@@ -23,7 +23,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buff
             if(loc >= MAX_NV){
                 loc -= MAX_NV;
                 *(helpers[warp_id] + loc) = i;
-                printf("%d ", loc);
+                // printf("%d ", loc);
             }
 
             else{
@@ -92,7 +92,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
                         loc-= MAX_NV;
                         *(helpers[warp_id] + loc) = u;
-                        printf("%dz", loc);
+                        // printf("%dz", loc);
                     }
 
                     else{
