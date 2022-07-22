@@ -18,7 +18,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buff
             if(loc == MAX_NV){
                 helpers[warp_id] = (unsigned int*) malloc(HELPER_SIZE);
                 if(helpers[warp_id] == NULL) printf("Memory not allocated... ");
-                else printf("success.");
+                // else printf("success.");
             }
             __syncwarp();
 
@@ -88,7 +88,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     if(loc == MAX_NV){
                         helpers[warp_id] = (unsigned int*) malloc(HELPER_SIZE);
                         if(helpers[warp_id] == NULL) printf("Memory not allocated... ");
-                        else printf("success.");
+                        // else printf("success.");
                     }
                     __syncwarp();
 
