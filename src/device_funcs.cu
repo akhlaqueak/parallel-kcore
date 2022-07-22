@@ -3,7 +3,7 @@
 #include "stdio.h"
 
 
-__device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buffer, unsigned int* e, unsigned int level){
+__device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buffer, unsigned int** helpers, unsigned int* e, unsigned int level){
     unsigned int warp_id = threadIdx.x/32;
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
@@ -16,7 +16,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buff
             unsigned int loc = atomicAdd(&e[warp_id], 1);
 
             if(loc == MAX_NV){
-                helpers[warp_id] = (int*) malloc(HELPER_SIZE);
+                helpers[warp_id] = (unsigned int*) malloc(HELPER_SIZE);
             }
 
             if(loc >= MAX_NV){
@@ -25,7 +25,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buff
             }
 
             else{
-                buffer[loc] = i;
+                w_buffer[loc] = i;
             }
         }
     }
@@ -47,7 +47,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     if(lane_id==0){
         e[warp_id] = 0;
-        helper[warp_id] = NULL;
+        helpers[warp_id] = NULL;
     }
 	
 
@@ -80,7 +80,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
                     
                     if(loc == MAX_NV){
-                        helpers[warp_id] = (int*) malloc(HELPER_SIZE);
+                        helpers[warp_id] = (unsigned int*) malloc(HELPER_SIZE);
                     }
 
                     if(loc >= MAX_NV){
