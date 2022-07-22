@@ -8,7 +8,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buff
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
         if(degrees[i] == level){
-		if(e[warp_id] >= MAX_NV){
+		if(e[warp_id] >= HELPER_SIZE){
             printf("x"); continue;
         }
 
@@ -78,7 +78,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 if(a == (level+1)){
         // node degree became the level after decrementing... 
                     unsigned int loc = atomicAdd(&e[warp_id], 1); 
-
+                    if(e[warp_id] >= HELPER_SIZE){
+                        printf("x"); continue;
+                    }
                     
                     if(loc == MAX_NV){
                         helpers[warp_id] = (unsigned int*) malloc(HELPER_SIZE);
