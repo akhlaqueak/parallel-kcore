@@ -64,7 +64,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         if( i < MAX_NV ) 
             v = buffer[warp_id*MAX_NV + i];
         else
-            v = helpers[warp_id][i-MAX_NV];
+            v = *(helpers[warp_id] + (i-MAX_NV));
 
 
         unsigned int start = d_p.neighbors_offset[v];
