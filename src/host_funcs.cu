@@ -23,7 +23,6 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaEvent_t event_start;
     cudaEvent_t event_stop;
     
-`
     
     cudaEventCreate(&event_start);
     cudaEventCreate(&event_stop);
