@@ -7,6 +7,7 @@
 #define WORK_UNITS (BLK_NUMS*WARPS_EACH_BLK)
 #define MAX_NV 200
 #define N_THREADS (BLK_DIM*BLK_NUMS)
+#define HELPER_SIZE 20000
 #include <iostream>
 #include <vector>
 #include <set>
