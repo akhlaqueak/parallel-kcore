@@ -34,18 +34,21 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
     __shared__ unsigned int addresses[blockDim.x];
     unsigned int lane_id = threadIdx.x%32;
     
-    for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
+    for(unsigned int i = 0; i < V; i+= N_THREADS){
         
+        unsigned int v = i + global_threadIdx;
 
-        predicate[threadIdx.x] = (degree[i] == level);
+        predicate[threadIdx.x] = v<V? (degree[i] == level) : 0;
+
         addresses[threadIdx.x] = predicate[threadIdx.x];
 
         exclusiveScanWarpLevel(&addresses[warp_id*WARP_SIZE]);
 
         if(     //check if we need to allocate a helper for this warp
             (lane_id == WARP_SIZE-1) && // only one thread in a warp does this job
-            // w_e: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
+                // w_e: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
             (*w_e + addresses[warp_id*WARP_SIZE + WARP_SIZE - 1] >= MAX_NV) &&  
+                // check if it's not already allocated
             (*w_helper == NULL)
             )
 
@@ -55,9 +58,9 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
         if(predicate[threadIdx.x]){
             unsigned int loc = addresses[threadIdx.x] + *w_e;
             if(loc < MAX_NV)
-                w_buffer[loc] = i;
+                w_buffer[loc] = v;
             else
-                *(*w_helper + (loc - MAX_NV)) = i;            
+                *(*w_helper + (loc - MAX_NV)) = v;            
         }
 
         __syncwarp();
