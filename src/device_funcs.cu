@@ -29,16 +29,15 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
                                     unsigned int** w_helper, unsigned int* w_e, unsigned int level){
     unsigned int warp_id = threadIdx.x/32;
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
-    unsigned int thread_id = threadIdx.x;
-    __shared__ bool predicate[blockDim.x];
-    __shared__ unsigned int addresses[blockDim.x];
+    __shared__ bool predicate[BLK_DIM];
+    __shared__ unsigned int addresses[BLK_DIM];
     unsigned int lane_id = threadIdx.x%32;
     
     for(unsigned int i = 0; i < V; i+= N_THREADS){
         
         unsigned int v = i + global_threadIdx;
 
-        predicate[threadIdx.x] = v<V? (degree[i] == level) : 0;
+        predicate[threadIdx.x] = v<V? (degrees[v] == level) : 0;
 
         addresses[threadIdx.x] = predicate[threadIdx.x];
 
