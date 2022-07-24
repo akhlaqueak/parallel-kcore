@@ -37,9 +37,9 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
         
         unsigned int v = i + global_threadIdx;
 
-        predicate[global_threadIdx] = v<V? (degrees[v] == level) : 0;
+        predicate[threadIdx.x] = v<V? (degrees[v] == level) : 0;
 
-        addresses[global_threadIdx] = predicate[global_threadIdx];
+        addresses[threadIdx.x] = predicate[threadIdx.x];
 
         exclusiveScanWarpLevel(&addresses[warp_id*WARP_SIZE]);
 
@@ -54,8 +54,8 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
             *w_helper = (unsigned int*) malloc(HELPER_SIZE);
         __syncwarp();
         
-        if(predicate[global_threadIdx]){
-            unsigned int loc = addresses[global_threadIdx] + *w_e;
+        if(predicate[threadIdx.x]){
+            unsigned int loc = addresses[threadIdx.x] + *w_e;
             if(loc < MAX_NV)
                 w_buffer[loc] = v;
             else
