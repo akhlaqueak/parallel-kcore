@@ -1,41 +1,74 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
+__device__ void exclusiveScanWarpLevel(unsigned int* addresses){
+    int lane_id = threadIdx.x%32;
 
+    for (int d = 2; d <= WARP_SIZE; d = d*2) {   
+        __syncwarp();  
+        if (lane_id % d == d - 1)  
+        {  
+            addresses[lane_id] += addresses[lane_id-d/2];  
+        } 
+    }
 
-__device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buffer, unsigned int** helpers, unsigned int* e, unsigned int level){
-    unsigned int warp_id = threadIdx.x/32;
-    unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
-    for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
-        if(degrees[i] == level){
-		if(e[warp_id] >= HELPER_SIZE){
-            printf("x"); continue;
-        }
+    if(lane_id == (WARP_SIZE-1)) {
+        addresses[lane_id] = 0;
+    }
 
-            //store this node to shared buffer, at the corresponding warp location
-            unsigned int loc = atomicAdd(&e[warp_id], 1);
-
-            if(loc == MAX_NV){
-                helpers[warp_id] = (unsigned int*) malloc(HELPER_SIZE);
-                if(helpers[warp_id] == NULL) printf("Memory not allocated... ");
-                // else printf("success.");
-                __syncwarp();
-            }
-
-            if(loc >= MAX_NV){
-                loc -= MAX_NV;
-                *(helpers[warp_id] + loc) = i;
-                // printf("%d ", loc);
-            }
-
-            else{
-                w_buffer[loc] = i;
-            }
+    for(int d=WARP_SIZE; d > 1; d/=2){
+        __syncwarp();
+        if(lane_id%d == d-1){
+            unsigned int val = addresses[lane_id-d/2];
+            addresses[lane_id-d/2] = addresses[lane_id];
+            addresses[lane_id] += val;
         }
     }
 }
+__device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned int* w_buffer, 
+                                    unsigned int** w_helper, unsigned int* w_e, unsigned int level){
+    unsigned int warp_id = threadIdx.x/32;
+    unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
+    unsigned int thread_id = threadIdx.x;
+    __shared__ bool predicate[blockDim.x];
+    __shared__ unsigned int addresses[blockDim.x];
+    unsigned int lane_id = threadIdx.x%32;
+    
+    for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
+        
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
+        predicate[threadIdx.x] = (degree[i] == level);
+        addresses[threadIdx.x] = predicate[threadIdx.x];
+
+        exclusiveScanWarpLevel(&addresses[warp_id*WARP_SIZE]);
+
+        if(     //check if we need to allocate a helper for this warp
+            (lane_id == WARP_SIZE-1) && // only one thread in a warp does this job
+            // w_e: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
+            (*w_e + addresses[warp_id*WARP_SIZE + WARP_SIZE - 1] >= MAX_NV) &&  
+            (*w_helper == NULL)
+            )
+
+            *w_helper = (unsigned int*) malloc(HELPER_SIZE);
+        __syncwarp();
+        
+        if(predicate[threadIdx.x]){
+            unsigned int loc = addresses[threadIdx.x] + *w_e;
+            if(loc < MAX_NV)
+                w_buffer[loc] = i;
+            else
+                *(*w_helper + (loc - MAX_NV)) = i;            
+        }
+
+        __syncwarp();
+
+        if(lane_id == WARP_SIZE - 1)
+            atomicAdd(w_e, addresses[WARP_SIZE-1]);
+ 
+    }
+}
+
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
 
     __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NV];
@@ -57,7 +90,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncwarp();
 
-    scan(d_p.degrees, V, &buffer[warp_id*MAX_NV], helpers, e, level);
+    compactWarpLevel(d_p.degrees, d_p.V, &buffer[warp_id*MAX_NV], &helpers[warp_id], &e[warp_id], level);
 
 
     for(unsigned int i=0; i<e[warp_id]; i++){
