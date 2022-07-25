@@ -32,9 +32,9 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
     unsigned int lane_id = threadIdx.x%32;
 
     
-    for(unsigned int v = global_threadIdx; v < V; v+= N_THREADS){
+    for(unsigned int i = 0; i < V; i+= N_THREADS){
         
-        // unsigned int v = i + global_threadIdx; 
+        unsigned int v = i + global_threadIdx; 
 
         // all threads should get some value, if vertices are less rest of the threads get zero
         predicate[threadIdx.x] = v<V? (degrees[v] == level) : 0;
