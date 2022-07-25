@@ -30,8 +30,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
     unsigned int lane_id = threadIdx.x%32;
-    if(threadIdx.x<MAX_NV)
-        w_buffer[threadIdx.x] = 99;
+
     
     for(unsigned int i = 0; i < V; i+= N_THREADS){
         
@@ -49,12 +48,12 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
         if(     //check if we need to allocate a helper for this warp
             (lane_id == WARP_SIZE-1) && // only one thread in a warp does this job
                 // w_e: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
-            (*w_e + addresses[threadIdx.x] >= MAX_NV) &&  
+            (w_e[0] + addresses[threadIdx.x] >= MAX_NV) &&  
                 // check if it's not already allocated
-            (*w_helper == NULL)
+            (w_helper[0] == NULL)
             ){
 
-            *w_helper = (unsigned int*) malloc(HELPER_SIZE);
+            w_helper[0] = (unsigned int*) malloc(HELPER_SIZE);
             printf("allocated%d ", *w_e + addresses[threadIdx.x]);
             }
         __syncwarp();
@@ -64,9 +63,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
             if(loc < MAX_NV)
                 w_buffer[loc] = v;
             else
-                *(*w_helper + (loc - MAX_NV)) = v;   
-                
-            printf("%d-%d ", w_buffer[loc], degrees[v]);         
+                w_helper[0][loc - MAX_NV]  = v;   
         }
 
         // if(global_threadIdx > 31 && global_threadIdx<96)
@@ -114,7 +111,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
         if( i < MAX_NV ) 
             v = buffer[warp_id*MAX_NV + i];
         else
-            v = *(helpers[warp_id] + (i-MAX_NV));
+            v = helpers[warp_id] [i-MAX_NV];
 
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
@@ -127,6 +124,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
             
                 if(a == (level+1)){
         // node degree became the level after decrementing... 
+        // this node should be processsed at this level, hence should be added to buffer/helper
                     unsigned int loc = atomicAdd(&e[warp_id], 1); 
                     if(e[warp_id] >= HELPER_SIZE){
                         printf("x"); continue;
