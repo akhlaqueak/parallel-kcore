@@ -33,8 +33,9 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
     
     for(unsigned int i = 0; i < V; i+= N_THREADS){
         
-        unsigned int v = i + global_threadIdx;
+        unsigned int v = i + global_threadIdx; 
 
+        // all threads should get some value, if vertices are less rest of the threads get zero
         predicate[threadIdx.x] = v<V? (degrees[v] == level) : 0;
 
         addresses[threadIdx.x] = predicate[threadIdx.x];
@@ -63,12 +64,11 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
         }
 
         __syncwarp();
-        // if(global_threadIdx < 64) {
-        //     printf("%d-%d-%d ", threadIdx.x, predicate[threadIdx.x], addresses[threadIdx.x]);
-        //     if(lane_id == 31) printf("\n");
-        // }
+
         if(lane_id == WARP_SIZE - 1)
             atomicAdd(w_e, addresses[threadIdx.x]);
+
+        __syncwarp();
  
     }
 }
@@ -97,7 +97,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
     compactWarpLevel(d_p.degrees, d_p.V, &buffer[warp_id*MAX_NV], &helpers[warp_id], &e[warp_id], level);
 
-    __syncwarp();
 
     for(unsigned int i=0; i<e[warp_id]; i++){
     
@@ -131,15 +130,15 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
                         __syncwarp();
                     }
 
-                    if(loc >= MAX_NV){
+                    if(loc < MAX_NV){
 
-                        loc-= MAX_NV;
-                        *(helpers[warp_id] + loc) = u;
+                        buffer[warp_id*MAX_NV + loc] = u;
                         // printf("%dz", loc);
                     }
 
                     else{
-                        buffer[warp_id*MAX_NV + loc] = u;
+                        loc-= MAX_NV;
+                        *(helpers[warp_id] + loc) = u;
                     }          
                 }
 
