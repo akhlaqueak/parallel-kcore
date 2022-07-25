@@ -51,6 +51,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
 
             *w_helper = (unsigned int*) malloc(HELPER_SIZE);
             printf("allocated%d ", *w_e + addresses[threadIdx.x]);
+            }
         __syncwarp();
         
         if(predicate[threadIdx.x]){
