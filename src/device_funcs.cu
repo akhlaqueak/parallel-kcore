@@ -30,8 +30,8 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
     unsigned int lane_id = threadIdx.x%32;
-
-    w_buffer[threadIdx.x] = 99;
+    if(threadIdx.x<MAX_NV)
+        w_buffer[threadIdx.x] = 99;
     
     for(unsigned int i = 0; i < V; i+= N_THREADS){
         
