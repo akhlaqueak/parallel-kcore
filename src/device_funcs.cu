@@ -6,7 +6,7 @@ __device__ void exclusiveScanWarpLevel(unsigned int* addresses){
 
     for (int d = 2; d <= WARP_SIZE; d = d*2) {   
         __syncwarp();  
-        if (lane_id % d == d - 1)  
+        if (lane_id % d == d-1)  
             addresses[lane_id] += addresses[lane_id-d/2];  
     }
 
@@ -16,7 +16,7 @@ __device__ void exclusiveScanWarpLevel(unsigned int* addresses){
 
     for(int d=WARP_SIZE; d > 1; d/=2){
         __syncwarp();
-        if(lane_id%d == d-1){
+        if(lane_id % d == d-1){
             unsigned int val = addresses[lane_id-d/2];
             addresses[lane_id-d/2] = addresses[lane_id];
             addresses[lane_id] += val;
@@ -63,6 +63,8 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
                 *(*w_helper + (loc - MAX_NV)) = v;            
         }
 
+        if(global_threadIdx > 31 && global_threadIdx<64)
+            printf("%d-%d ", predicate[threadIdx.x], addresses[threadIdx.x])
         __syncwarp();
 
         if(lane_id == WARP_SIZE - 1){
