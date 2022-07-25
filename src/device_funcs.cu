@@ -55,8 +55,9 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
             }
         __syncwarp();
         
+            unsigned int loc;
         if(predicate[threadIdx.x]){
-            unsigned int loc = addresses[threadIdx.x] + *w_e;
+            loc = addresses[threadIdx.x] + w_e[0];
             if(loc < MAX_NV)
                 w_buffer[loc] = v;
             else
@@ -64,12 +65,12 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
         }
 
         if(global_threadIdx > 31 && global_threadIdx<96)
-            printf("%d-%d ", predicate[threadIdx.x], addresses[threadIdx.x]);
+            printf("%d-%d ", addresses[threadIdx.x], w_buffer[loc]);
         __syncwarp();
 
         if(lane_id == WARP_SIZE - 1){
             // atomicAdd(w_e, addresses[threadIdx.x]);
-            *w_e += addresses[threadIdx.x];
+            w_e[0] += addresses[threadIdx.x];
         }
 
         __syncwarp();
@@ -102,7 +103,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
     __syncwarp();
 
-    for(unsigned int i=0; i<e[warp_id]; i++){
+    for(unsigned int i=0; i < e[warp_id]; i++){
     
         unsigned int v;
         if( i < MAX_NV ) 
@@ -114,7 +115,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
 
-        for(int j = start + lane_id; j<end ; j+=32){
+        for(int j = start + lane_id; j<end ; j += WARP_SIZE){
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
                 unsigned int a = 0;
