@@ -55,7 +55,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
             }
         __syncwarp();
         
-            unsigned int loc;
+            unsigned int loc = 0;
         if(predicate[threadIdx.x]){
             loc = addresses[threadIdx.x] + w_e[0];
             if(loc < MAX_NV)
