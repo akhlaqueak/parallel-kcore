@@ -97,6 +97,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
     compactWarpLevel(d_p.degrees, d_p.V, &buffer[warp_id*MAX_NV], &helpers[warp_id], &e[warp_id], level);
 
+    __syncwarp();
 
     for(unsigned int i=0; i<e[warp_id]; i++){
     
