@@ -5,5 +5,5 @@
 #include "./common.h"
 unsigned int file_reader(std::string input_file, vector<set<unsigned int>> &ns);
 
-void write_kcore_to_disk(unsigned int*, unsigned long long int, std::string file);
+void write_to_disk(unsigned int*, unsigned long long int, std::string file);
 #endif //CUTS_UTIL_H

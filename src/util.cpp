@@ -34,7 +34,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
     return V;
 }
 
-void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::string file){
+void write_to_disk(unsigned int *degrees, unsigned long long int V, std::string file){
     std::ofstream out(file);
     out<<V<<endl;
 

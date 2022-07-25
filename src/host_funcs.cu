@@ -25,7 +25,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     if(write_to_disk){
         cout<<"Writing degrees to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V, "degrees.txt");
+        write_to_disk(data_graph.degrees, data_graph.V, "degrees.txt");
         cout<<"Writing degrees to disk completed... "<<endl;
     }
     
@@ -58,7 +58,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
 
 	cout<<"Entering in while"<<endl;
-	while(global_count[0] < data_graph.V && level<2000){ //level less than 2000 is for experimental purposes, need to remove... 
+	while(global_count[0] < data_graph.V && level< 500){ //level less than 500 is for experimental purposes, need to remove... 
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         chkerr(cudaDeviceSynchronize());
@@ -85,7 +85,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
 }
 
-void find_kcore_CPU(string data_file,bool write_to_disk){
+void find_kcore_CPU(string data_file, bool write_to_disk){
     cout<<"start loading graph file from disk to memory..."<<endl;    
     Graph data_graph(data_file);
     cout<<"graph loading complete..."<<endl;
