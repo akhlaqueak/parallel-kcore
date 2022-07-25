@@ -58,7 +58,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
 
 	cout<<"Entering in while"<<endl;
-	while(global_count[0] < data_graph.V){
+	while(global_count[0] < data_graph.V && level<2000){ //level less than 2000 is for experimental purposes, need to remove... 
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         chkerr(cudaDeviceSynchronize());
