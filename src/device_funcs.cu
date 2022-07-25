@@ -46,7 +46,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
         if(     //check if we need to allocate a helper for this warp
             (lane_id == WARP_SIZE-1) && // only one thread in a warp does this job
                 // w_e: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
-            (*w_e + addresses[warp_id*WARP_SIZE + WARP_SIZE - 1] >= MAX_NV) &&  
+            (*w_e + addresses[threadIdx.x] >= MAX_NV) &&  
                 // check if it's not already allocated
             (*w_helper == NULL)
             )
@@ -65,7 +65,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
         __syncwarp();
 
         if(lane_id == WARP_SIZE - 1)
-            atomicAdd(w_e, addresses[warp_id*WARP_SIZE + WARP_SIZE-1]);
+            atomicAdd(w_e, addresses[threadIdx.x]);
  
     }
 }
