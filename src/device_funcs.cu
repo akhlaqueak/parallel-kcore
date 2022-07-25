@@ -47,9 +47,10 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
             (*w_e + addresses[threadIdx.x] >= MAX_NV) &&  
                 // check if it's not already allocated
             (*w_helper == NULL)
-            )
+            ){
 
             *w_helper = (unsigned int*) malloc(HELPER_SIZE);
+            printf("allocated%d ", *w_e + addresses[threadIdx.x]);
         __syncwarp();
         
         if(predicate[threadIdx.x]){
@@ -61,10 +62,10 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
         }
 
         __syncwarp();
-        if(global_threadIdx < 64) {
-            printf("%d-%d-%d ", threadIdx.x, predicate[threadIdx.x], addresses[threadIdx.x]);
-            if(lane_id == 31) printf("\n");
-        }
+        // if(global_threadIdx < 64) {
+        //     printf("%d-%d-%d ", threadIdx.x, predicate[threadIdx.x], addresses[threadIdx.x]);
+        //     if(lane_id == 31) printf("\n");
+        // }
         if(lane_id == WARP_SIZE - 1)
             atomicAdd(w_e, addresses[threadIdx.x]);
  
