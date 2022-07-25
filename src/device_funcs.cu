@@ -8,15 +8,15 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buff
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
         if(degrees[i] == level){
-		if(e[warp_id] >= HELPER_SIZE){
-            printf("x"); continue;
-        }
+            if(e[warp_id] >= HELPER_SIZE + MAX_NV){
+                printf("x"); continue; //TODO: put assert here... cuda assert? or casser?
+            }
 
             //store this node to shared buffer, at the corresponding warp location
             unsigned int loc = atomicAdd(&e[warp_id], 1);
 
             if(loc == MAX_NV){
-                helpers[warp_id] = (unsigned int*) malloc(HELPER_SIZE);
+                helpers[warp_id] = (unsigned int*) malloc(HELPER_SIZE); // TODO: linked list and a flush of share memory
                 if(helpers[warp_id] == NULL) printf("Memory not allocated... ");
                 // else printf("success.");
                 __syncwarp();
@@ -24,7 +24,7 @@ __device__ void scan(unsigned int *degrees, unsigned int V, unsigned int* w_buff
 
             if(loc >= MAX_NV){
                 loc -= MAX_NV;
-                *(helpers[warp_id] + loc) = i;
+                *(helpers[warp_id] + loc) = i; //ToDo: check the other notation
                 // printf("%d ", loc);
             }
 
@@ -54,7 +54,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         helpers[warp_id] = NULL;
     }
 	
-
+    // TODO: remove the warp level implementations, go to block level.
     __syncwarp();
 
     scan(d_p.degrees, V, &buffer[warp_id*MAX_NV], helpers, e, level);
@@ -64,9 +64,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
         unsigned int v;
         if( i < MAX_NV ) 
-            v = buffer[warp_id*MAX_NV + i];
+            v = buffer[warp_id*MAX_NV + i]; //TODO: macro to find index at i 
         else
-            v = *(helpers[warp_id] + (i-MAX_NV));
+            v = *(helpers[warp_id] + (i-MAX_NV)); //TODO: bracket notation
 
 
         unsigned int start = d_p.neighbors_offset[v];
@@ -75,7 +75,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         for(int j = start + lane_id; j<end ; j+=32){
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
-                unsigned int a = 0;
+                unsigned int a = 0; // TODO: don't initialize
                 a = atomicSub(&d_p.degrees[u], 1);
             
                 if(a == (level+1)){
@@ -115,8 +115,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     }
 
     if(lane_id == 0 && e[warp_id]!=0 ){
-        atomicAdd(&global_count[0], e[warp_id]);
-        free(helpers[warp_id]);  
+        atomicAdd(&global_count[0], e[warp_id]); //TODO: global_count only can be replaced
+        free(helpers[warp_id]);  //TODO: check if helper is allotted... 
 	}
 
 }
