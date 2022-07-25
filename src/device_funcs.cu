@@ -69,6 +69,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
             // atomicAdd(w_e, addresses[threadIdx.x]);
             *w_e += addresses[threadIdx.x];
             if(threadIdx.x<64) printf("%d ", *w_e);
+        }
 
         __syncwarp();
  
