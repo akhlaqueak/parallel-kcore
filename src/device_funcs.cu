@@ -32,7 +32,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
     unsigned int lane_id = threadIdx.x%32;
 
     
-    for(unsigned int v = global_threadIdx; i < V; i+= N_THREADS){
+    for(unsigned int v = global_threadIdx; v < V; v+= N_THREADS){
         
         // unsigned int v = i + global_threadIdx; 
 
