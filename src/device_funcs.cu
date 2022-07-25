@@ -63,7 +63,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
                 *(*w_helper + (loc - MAX_NV)) = v;            
         }
 
-        if(global_threadIdx > 31 && global_threadIdx<64)
+        if(global_threadIdx > 31 && global_threadIdx<96)
             printf("%d-%d ", predicate[threadIdx.x], addresses[threadIdx.x]);
         __syncwarp();
 
