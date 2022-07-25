@@ -68,8 +68,8 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
                 *(*w_helper + (loc - MAX_NV)) = v;            
         }
 
-        if(global_threadIdx > 31 && global_threadIdx<96)
-            printf("%d-%d ", addresses[threadIdx.x], w_buffer[loc]);
+        // if(global_threadIdx > 31 && global_threadIdx<96)
+        //     printf("%d-%d ", addresses[threadIdx.x], w_buffer[loc]);
         __syncwarp();
 
         if(lane_id == WARP_SIZE - 1){
@@ -114,7 +114,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
             v = buffer[warp_id*MAX_NV + i];
         else
             v = *(helpers[warp_id] + (i-MAX_NV));
-
+        printf("%d ", v);
 
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
