@@ -8,6 +8,7 @@
 #define MAX_NV 200
 #define N_THREADS (BLK_DIM*BLK_NUMS)
 #define HELPER_SIZE (sizeof(unsigned int) *10000)
+#define THID threadIdx.x
 #include <iostream>
 #include <vector>
 #include <set>
