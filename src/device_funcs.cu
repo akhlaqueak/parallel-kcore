@@ -20,7 +20,6 @@ __device__ void writeToBuffer(unsigned int* w_buffer,  unsigned int** w_helper, 
 }
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* w_buffer, unsigned int** w_helper, unsigned int* w_e, unsigned int level){
-    unsigned int warp_id = threadIdx.x/32;
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
         if(degrees[i] == level){
