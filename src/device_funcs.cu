@@ -5,17 +5,17 @@ __device__ void writeToBuffer(unsigned int* w_buffer,  unsigned int** w_helper, 
     unsigned int loc = atomicAdd(w_e, 1);
     assert(w_e[0] < HELPER_SIZE + MAX_NV);
 
-    if(loc == MAX_NV){
-        w_helper = (unsigned int*) malloc(HELPER_SIZE); // TODO: linked list and a flush of shared memory
+    if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
+        w_helper[0] = (unsigned int*) malloc(HELPER_SIZE); 
         assert(w_helper[0] != NULL); 
-        __syncwarp();
     }
+    __syncwarp();
     
-    if(loc >= MAX_NV){
-        w_helper[0][loc-MAX_NV] = v; //ToDo: check the other notation
+    if(loc < MAX_NV){
+        w_buffer[loc] = v;
     }
     else{
-        w_buffer[loc] = v;
+        w_helper[0][loc-MAX_NV] = v; 
     }
 }
 
@@ -29,6 +29,10 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     }
 }
 
+__device__ unsigned int readFromBuffer(unsigned int* w_buffer, unsigned int** w_helper, unsigned int loc){
+    return ( loc < MAX_NV ) ? w_buffer[loc] : w_helper[0][loc-MAX_NV]; 
+}
+
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
 
 
@@ -40,9 +44,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int warp_id = threadIdx.x/32;
     unsigned int lane_id = threadIdx.x%32;
 
-  //  unsigned int global_idx = (blockIdx.x)*WARPS_EACH_BLK+warp_id;
-  //  unsigned int mask = 0xFFFFFFFF;
-
     if(lane_id==0){
         e[warp_id] = 0;
         helpers[warp_id] = NULL;
@@ -51,17 +52,12 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // TODO: remove the warp level implementations, go to block level.
     __syncwarp();
 
-    scan(d_p.degrees, V, buffer+warp_id*MAX_NV, helpers+warp_id, e+warp_id, level);
+    selectNodesAtLevel(d_p.degrees, V, buffer+warp_id*MAX_NV, helpers+warp_id, e+warp_id, level);
 
 
     for(unsigned int i=0; i<e[warp_id]; i++){
     
-        unsigned int v;
-        if( i < MAX_NV ) 
-            v = buffer[warp_id*MAX_NV + i]; //TODO: macro to find index at i 
-        else
-            v = *(helpers[warp_id] + (i-MAX_NV)); //TODO: bracket notation
-
+        unsigned int v = readFromBuffer(buffer+warp_id*MAX_NV, helpers+warp_id, i);
 
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
