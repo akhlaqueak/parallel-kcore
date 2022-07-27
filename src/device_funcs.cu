@@ -115,8 +115,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     }
 
     if(lane_id == 0 && e[warp_id]!=0 ){
-        atomicAdd(&global_count[0], e[warp_id]); //TODO: global_count only can be replaced
-        free(helpers[warp_id]);  //TODO: check if helper is allotted... 
+        atomicAdd(global_count, e[warp_id]); //TODO: global_count only can be replaced
+        if(helpers[warp_id]) free(helpers[warp_id]);  //TODO: check if helper is allotted... 
 	}
 
 }
