@@ -1,7 +1,7 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
-__device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int* e, unsigned int v){
+__device__ void writeToBuffer(unsigned int* buffer,  unsigned int* helper, unsigned int* e, unsigned int v){
     unsigned int loc = atomicAdd(e, 1);
     assert(e[0] < HELPER_SIZE + MAX_NV);
 
@@ -28,7 +28,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     }
 }
 
-__device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
+__device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int* helper, unsigned int loc){
     return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
 }
 
@@ -36,9 +36,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
 
     __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NV];
-    __shared__ unsigned int e = 0;
-    __shared__ unsigned int* helper = NULL;
+    __shared__ unsigned int e;
+    __shared__ unsigned int* helper;
 
+    if(THID == 0){
+        e = 0;
+        helper = NULL;
+    }
 
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
@@ -91,6 +95,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     if(THID == 0 && e!=0){
         atomicAdd(global_count, e);
+        if(helper!=NULL) free(helper);
     }
 
 }
