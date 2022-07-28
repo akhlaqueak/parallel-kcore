@@ -42,6 +42,8 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         __syncthreads();
 
+        if(THID == 0) printf("%d ", e[0]);
+
         
 
         if(     //check if we need to allocate a helper for this block
