@@ -34,11 +34,13 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         unsigned int v = i + global_threadIdx; 
 
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
-        predicate[THID] = v<V? (degrees[v] == level) : 0;
+        predicate[THID] = (v<V)? (degrees[v] == level) : 0;
 
         addresses[THID] = predicate[THID];
 
         exclusiveScan(addresses);
+
+        __syncthreads();
 
         if(level == 1 && blockIdx.x == 35)
             printf("%d*%d*%d ", THID, predicate[THID], addresses[THID]);
