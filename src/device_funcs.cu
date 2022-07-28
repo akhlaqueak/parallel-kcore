@@ -51,15 +51,16 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int lane_id = THID % 32;
 
 	
-    // DONE: remove the warp level implementations, go to block level.
     __syncwarp();
 
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
     __syncthreads();
-    // TODO: Need to look into the issue when e < WARPS_EACH_BLK
 
-    for(unsigned int i = warp_id; i<e ; i = warp_id + e_processed){
+    // e is being incrmented within the loop, 
+    // warps should process all the nodes added during the execution of loop
+    // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
+    for(unsigned int i = warp_id; i<e ; i += N_THREADS){
     
         unsigned int v, start, end;
 
@@ -71,8 +72,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             v = readFromBuffer(buffer, &helper, i);
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
-            unsigned int ep;
-            ep = atomicAdd(&e_processed, 1);
+            // atomicAdd(&e_processed, 1);
         }
 
         v = __shfl_sync(0xFFFFFFFF, v, 0);
