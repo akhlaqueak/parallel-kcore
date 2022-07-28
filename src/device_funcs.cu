@@ -71,8 +71,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             v = readFromBuffer(buffer, &helper, i);
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
-            atomicAdd(&e_processed, 1);
-            printf("%d-%d-%d ", e , e_processed, i);
+            unsigned int ep;
+            ep = atomicAdd(&e_processed, 1);
+            printf("%d-%d-%d ", e , ep, i);
         }
 
         v = __shfl_sync(0xFFFFFFFF, v, 0);
