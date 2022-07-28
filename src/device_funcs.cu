@@ -89,7 +89,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         __syncthreads();
     }
 
-    if(THID == 0){
+    if(THID == 0 && e!=0){
         atomicAdd(global_count, e);
     }
 
