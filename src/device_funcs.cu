@@ -1,7 +1,7 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
-__device__ void writeToBuffer(unsigned int* buffer,  unsigned int* helper, unsigned int* e, unsigned int v){
+__device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int* e, unsigned int v){
     unsigned int loc = atomicAdd(e, 1);
     assert(e[0] < HELPER_SIZE + MAX_NV);
 
@@ -80,7 +80,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    writeToBuffer(buffer, helper, e, u);
+                    writeToBuffer(buffer, &helper, e, u);
                 }
 
                 if(a <= level){
