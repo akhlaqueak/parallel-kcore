@@ -39,18 +39,14 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         addresses[THID] = predicate[THID];
 
         exclusiveScan(addresses);
-
-        if(THID == BLK_DIM-1 && blockIdx.x == 31 && level == 1) printf("%d ", addresses[THID]);
-
-        __syncthreads();
-
         
         
-
-        if(     //check if we need to allocate a helper for this block
-            (THID == BLK_DIM-1) && // only one thread in a block does this job
+        
+        //check if we need to allocate a helper for this block
+        if(     
+            (THID == BLK_DIM-1) && // only last thread in a block does this job
                 // e[0]: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
-            (e[0] + addresses[THID] >= MAX_NV) &&  
+                (e[0] + addresses[THID] >= MAX_NV) &&  
                 // check if it's not already allocated
                 (helper[0] == NULL)
             ){
@@ -58,25 +54,26 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
                 helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
                 assert(helper[0]!=NULL);
         }
-        
+
+        __syncthreads();
+            
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + e[0];
             if(loc < MAX_NV)
                 buffer[loc] = v;
-                else
+            else
                 helper[0][loc - MAX_NV]  = v;   
-            }
-            
-            
-            
-            if(THID == BLK_DIM - 1){
-                
-                e[0] += addresses[THID] + predicate[THID];
-            }
-            
-            __syncthreads();
-            
         }
+            
+            
+            
+        if(THID == BLK_DIM - 1){            
+            e[0] += (addresses[THID] + predicate[THID]);
+        }
+        
+        __syncthreads();
+            
+    }
 }
 
 
