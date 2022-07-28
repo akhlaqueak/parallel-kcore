@@ -40,8 +40,8 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         exclusiveScan(addresses);
 
-        if(level == 1 && global_threadIdx < BLK_DIM)
-            printf("%d:%d-%d ", THID, predicate[THID], addresses[THID]);
+        if(level == 1 && blockIdx.x == 35)
+            printf("%d*%d*%d ", THID, predicate[THID], addresses[THID]);
         
 
         if(     //check if we need to allocate a helper for this block
