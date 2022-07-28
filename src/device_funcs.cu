@@ -33,13 +33,15 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         
         unsigned int v = i + global_threadIdx; 
 
-        // all threads should get some value, if vertices are less rest of the threads get zero
+        // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = v<V? (degrees[v] == level) : 0;
 
         addresses[THID] = predicate[THID];
 
         exclusiveScan(addresses);
 
+        if(level == 1 && global_threadIdx < BLK_DIM)
+            printf("%d:%d-%d ", THID, predicate[THID], addresses[THID]);
         
 
         if(     //check if we need to allocate a helper for this block
