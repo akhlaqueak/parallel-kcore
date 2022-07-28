@@ -72,7 +72,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
             atomicAdd(&e_processed, 1);
-            printf("%d-%d ", e , e_processed);
+            printf("%d-%d-%d ", e , e_processed, i);
         }
 
         v = __shfl_sync(0xFFFFFFFF, v, 0);
