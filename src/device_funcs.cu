@@ -58,7 +58,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     // TODO: Need to look into the issue when e < WARPS_EACH_BLK
 
-    for(unsigned int i = warp_id; i<e ; i = e_processed){
+    for(unsigned int i = warp_id; i<e ; i = warp_id + e_processed){
     
         unsigned int v, start, end;
 
