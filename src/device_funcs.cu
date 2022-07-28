@@ -56,7 +56,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
-    printf("%d ", e);
+    __syncthreads();
+    if(THID == 0) printf("%d ", e);
     // TODO: Need to look into the issue when e < WARPS_EACH_BLK
 
     for(unsigned int i = warp_id; i<e ; i = warp_id + e_processed){
