@@ -57,6 +57,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
+    if(THID == 0) printf("%d ", e);
+
     // e is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
