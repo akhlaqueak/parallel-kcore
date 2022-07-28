@@ -67,10 +67,11 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             }
             
             
+            __syncthreads();
             
             if(THID == BLK_DIM - 1){
                 e[0] += addresses[THID];
-                printf("%d ", e[0]);
+                printf("%d*%d ", blockIdx.x, e[0]);
             }
             
             __syncthreads();
