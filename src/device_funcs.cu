@@ -83,7 +83,7 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
         helper[0] = (unsigned int*) malloc(HELPER_SIZE); 
         assert(helper[0] != NULL); 
     }
-    __syncwarp();
+    __syncthreads();
     
     if(loc < MAX_NV){
         buffer[loc] = v;
@@ -117,7 +117,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int lane_id = THID % 32;
 
 	
-    __syncwarp();
+    __syncthreads();
 
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
