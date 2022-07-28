@@ -1,6 +1,80 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
+
+__device__ void exclusiveScan(unsigned int* addresses){
+
+    for (int d = 2; d <= BLK_DIM; d = d*2) {   
+        __syncthreads();  
+        if (THID % d == d-1)  
+            addresses[THID] += addresses[THID-d/2];  
+    }
+
+    if(THID == (BLK_DIM-1)) {
+        addresses[THID] = 0;
+    }
+
+    for(int d=BLK_DIM; d > 1; d/=2){
+        __syncthreads();
+        if(THID % d == d-1){
+            unsigned int val = addresses[THID-d/2];
+            addresses[THID-d/2] = addresses[THID];
+            addresses[THID] += val;
+        }
+    }
+}
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int** helper, unsigned int* e, unsigned int level){
+
+    unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 
+    __shared__ bool predicate[BLK_DIM];
+    __shared__ unsigned int addresses[BLK_DIM];
+    
+    for(unsigned int i = 0; i < V; i+= N_THREADS){
+        
+        unsigned int v = i + global_threadIdx; 
+
+        // all threads should get some value, if vertices are less rest of the threads get zero
+        predicate[THID] = v<V? (degrees[v] == level) : 0;
+
+        addresses[THID] = predicate[THID];
+
+        exclusiveScan(addresses);
+
+        
+
+        if(     //check if we need to allocate a helper for this block
+            (THID == BLK_DIM-1) && // only one thread in a block does this job
+                // e[0]: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
+            (e[0] + addresses[THID] >= MAX_NV) &&  
+                // check if it's not already allocated
+            (helper[0] == NULL)
+            ){
+
+            helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
+            assert(helper[0]!=NULL);
+        }
+        __syncthreads();
+        
+        if(predicate[THID]){
+            unsigned int loc = addresses[THID] + e[0];
+            if(loc < MAX_NV)
+                buffer[loc] = v;
+            else
+                helper[0][loc - MAX_NV]  = v;   
+        }
+
+
+
+        if(THID == BLK_DIM - 1){
+            e[0] += addresses[THID];
+        }
+
+        __syncthreads();
+ 
+    }
+}
+
+
 __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int* e, unsigned int v){
     unsigned int loc = atomicAdd(e, 1);
     assert(e[0] < HELPER_SIZE + MAX_NV);
@@ -19,14 +93,6 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
     }
 }
 
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int** helper, unsigned int* e, unsigned int level){
-    unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
-    for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
-        if(degrees[i] == level){
-            writeToBuffer(buffer, helper, e , i);
-        }
-    }
-}
 
 __device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
     assert(loc < MAX_NV + HELPER_SIZE);
