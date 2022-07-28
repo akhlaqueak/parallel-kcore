@@ -42,8 +42,6 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         __syncthreads();
 
-        if(level == 1 && blockIdx.x == 35)
-            printf("%d*%d*%d ", THID, predicate[THID], addresses[THID]);
         
 
         if(     //check if we need to allocate a helper for this block
@@ -163,6 +161,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     atomicAdd(d_p.degrees+u, 1);
                 }
             }
+            __syncwarp();
         }
 
         __syncthreads();
