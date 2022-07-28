@@ -57,7 +57,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
     __syncthreads();
-    if(THID == 0) printf("%d ", e);
     // TODO: Need to look into the issue when e < WARPS_EACH_BLK
 
     for(unsigned int i = warp_id; i<e ; i = warp_id + e_processed){
@@ -74,7 +73,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             end = d_p.neighbors_offset[v+1];
             unsigned int ep;
             ep = atomicAdd(&e_processed, 1);
-            printf("%d-%d-%d ", e , ep, i);
         }
 
         v = __shfl_sync(0xFFFFFFFF, v, 0);
