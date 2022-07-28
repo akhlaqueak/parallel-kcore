@@ -29,6 +29,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 }
 
 __device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
+    assert(loc < MAX_NV + HELPER_SIZE);
     return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
 }
 
@@ -97,7 +98,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     }
 
     if(THID == 0 && e!=0){
-        atomicAdd(global_count, e);
+        atomicAdd(global_count, e); // atomic since contention among blocks
         if(helper!=NULL) free(helper);
     }
 
