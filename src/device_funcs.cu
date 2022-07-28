@@ -60,7 +60,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // e is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
-    for(unsigned int i = warp_id; i<e ; i += N_THREADS){
+    for(unsigned int i = warp_id; i<e ; i = warp_id + e_processed){
     
         unsigned int v, start, end;
 
@@ -72,7 +72,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             v = readFromBuffer(buffer, &helper, i);
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
-            // atomicAdd(&e_processed, 1);
+            atomicAdd(&e_processed, 1);
         }
 
         v = __shfl_sync(0xFFFFFFFF, v, 0);
