@@ -58,7 +58,6 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
                 helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
                 assert(helper[0]!=NULL);
         }
-        __syncthreads();
         
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + e[0];
@@ -69,10 +68,10 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             }
             
             
-            __syncthreads();
             
             if(THID == BLK_DIM - 1){
-                e[0] += addresses[THID];
+                
+                e[0] += addresses[THID] + predicate[THID];
             }
             
             __syncthreads();
