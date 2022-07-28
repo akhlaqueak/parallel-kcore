@@ -42,8 +42,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         __syncthreads();
 
-        if(THID == 0) printf("%d ", e[0]);
-
+        
         
 
         if(     //check if we need to allocate a helper for this block
@@ -51,11 +50,11 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
                 // e[0]: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
             (e[0] + addresses[THID] >= MAX_NV) &&  
                 // check if it's not already allocated
-            (helper[0] == NULL)
+                (helper[0] == NULL)
             ){
-
-            helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
-            assert(helper[0]!=NULL);
+                
+                helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
+                assert(helper[0]!=NULL);
         }
         __syncthreads();
         
@@ -63,19 +62,20 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             unsigned int loc = addresses[THID] + e[0];
             if(loc < MAX_NV)
                 buffer[loc] = v;
-            else
+                else
                 helper[0][loc - MAX_NV]  = v;   
+            }
+            
+            
+            
+            if(THID == BLK_DIM - 1){
+                e[0] += addresses[THID];
+                printf("%d ", e[0]);
+            }
+            
+            __syncthreads();
+            
         }
-
-
-
-        if(THID == BLK_DIM - 1){
-            e[0] += addresses[THID];
-        }
-
-        __syncthreads();
- 
-    }
 }
 
 
