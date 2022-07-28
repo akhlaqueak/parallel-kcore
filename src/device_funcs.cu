@@ -40,7 +40,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         exclusiveScan(addresses);
 
-        if(blockIdx.x == 31 && level == 1) printf("%d*%d*%d ", v, predicate[THID], addresses[THID]);
+        if(THID == BLK_DIM-1 && blockIdx.x == 31 && level == 1) printf("%d ", addresses[THID]);
 
         __syncthreads();
 
