@@ -65,7 +65,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         // it's done to reduce multiple accesses to global memory... 
 
         if(lane_id == 0){ 
-            v = readFromBuffer(buffer, helper, i);
+            v = readFromBuffer(buffer, &helper, i);
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
         }
