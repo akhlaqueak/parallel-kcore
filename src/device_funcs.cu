@@ -38,10 +38,12 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NV];
     __shared__ unsigned int e;
     __shared__ unsigned int* helper;
+    __shared__ unsigned int e_processed;
 
     if(THID == 0){
         e = 0;
         helper = NULL;
+        e_processed = 0;
     }
 
     unsigned int warp_id = THID / 32;
@@ -56,11 +58,11 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     // TODO: Need to look into the issue when e < WARPS_EACH_BLK
 
-    for(unsigned int i = warp_id; i<e ; i += WARPS_EACH_BLK){
+    for(unsigned int i = warp_id; i<e ; i = e_processed){
     
         unsigned int v, start, end;
 
-        // only first lane reads the node from buffer, start and end
+        // only first lane reads buffer, start and end
         // it is then broadcasted to all lanes in the warp
         // it's done to reduce multiple accesses to global memory... 
 
@@ -68,6 +70,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             v = readFromBuffer(buffer, &helper, i);
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
+            atomicAdd(e_processed, 1);
         }
 
         v = __shfl_sync(0xFFFFFFFF, v, 0);
