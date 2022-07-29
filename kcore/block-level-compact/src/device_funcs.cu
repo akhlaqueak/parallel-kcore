@@ -133,6 +133,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // for that purpose initial is introduced, is incremented whenever a warp takes a job. 
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads...
+
+        if(initial == e) break;
+        
         i = initial + warp_id;
         
         if(THID == 0){
