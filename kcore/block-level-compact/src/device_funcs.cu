@@ -70,7 +70,6 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             
         if(THID == BLK_DIM - 1){            
             e[0] += (addresses[THID] + predicate[THID]);
-            printf("%d ", e[0]);
         }
         
         __syncthreads();
@@ -127,9 +126,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
-    // e is being incrmented within the loop, 
+    // e is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
-    // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
+    // for that purpose e_processed is introduced, is incremented whenever a warp takes a job. 
     for(unsigned int i = warp_id; i<e ; i = warp_id + e_processed){
     
         unsigned int v, start, end;
@@ -158,6 +157,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             
                 if(a == level+1){
                     writeToBuffer(buffer, &helper, &e, u);
+                    printf("%d ", 1);
                 }
 
                 if(a <= level){
