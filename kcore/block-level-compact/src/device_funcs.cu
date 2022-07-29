@@ -80,7 +80,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int* e, unsigned int v){
     unsigned int loc = atomicAdd(e, 1);
-    assert(e[0] < HELPER_SIZE + MAX_NV);
+    assert(loc < HELPER_SIZE + MAX_NV);
 
     if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
         helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
