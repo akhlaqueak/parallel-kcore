@@ -54,15 +54,15 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
                 helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
                 assert(helper[0]!=NULL);
         }
+        
         __syncthreads();
-
         
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + e[0];
             if(loc < MAX_NV)
-            buffer[loc] = v;
+                buffer[loc] = v;
             else
-            helper[0][loc - MAX_NV]  = v;   
+                helper[0][loc - MAX_NV]  = v;   
         }
         
         __syncthreads();
@@ -70,6 +70,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             
         if(THID == BLK_DIM - 1){            
             e[0] += (addresses[THID] + predicate[THID]);
+            printf("%d ", e[0]);
         }
         
         __syncthreads();
