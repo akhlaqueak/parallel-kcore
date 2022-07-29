@@ -124,13 +124,16 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
-    __syncthreads();
-
+    int i;
     // e is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processed is introduced, is incremented whenever a warp takes a job. 
-    for(unsigned int i = warp_id; i<e ; __syncthreads(), i = warp_id + e_processed){
-    
+    while(true){
+        __syncthreads();
+        if(e_processed == e) break;
+        i = warp_id + e_processed;
+        if(i >= e) continue;
+
         unsigned int v, start, end;
 
         // only first lane reads buffer, start and end
