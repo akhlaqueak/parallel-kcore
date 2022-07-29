@@ -126,6 +126,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __syncthreads();
 
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
+
+    if(level == 1) printf("%d ", e);
     
     // e is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
