@@ -145,7 +145,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 initial = e;
         }
         __syncthreads();
-        if(!i<e) continue;
+        if(e <= i) continue;
 
         unsigned int v, start, end;
 
