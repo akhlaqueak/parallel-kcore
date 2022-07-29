@@ -41,6 +41,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         exclusiveScan(addresses);
         
         
+        __syncthreads();
         
         //check if we need to allocate a helper for this block
         if(     
