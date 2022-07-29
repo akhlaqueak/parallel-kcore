@@ -148,8 +148,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         v = __shfl_sync(0xFFFFFFFF, v, 0);
         start = __shfl_sync(0xFFFFFFFF, start, 0);
         end = __shfl_sync(0xFFFFFFFF, end, 0);
-        __syncthreads();
-
+        
+        __syncwarp();
         for(int j = start + lane_id; j<end ; j+=32){
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
@@ -165,10 +165,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     atomicAdd(d_p.degrees+u, 1);
                 }
             }
-            __syncthreads();
+            __syncwarp();
         }
 
-        __syncthreads();
+        __syncwarp();
     }
     __syncthreads();
 
