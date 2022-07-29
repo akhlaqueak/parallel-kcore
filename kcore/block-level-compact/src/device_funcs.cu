@@ -132,7 +132,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         __syncthreads();
         if(e_processed == e) break;
         i = warp_id + e_processed;
-        if(i > e) continue;
+        if(i >= e) continue;
 
         unsigned int v, start, end;
 
