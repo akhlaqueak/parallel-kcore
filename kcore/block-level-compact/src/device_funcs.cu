@@ -50,7 +50,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
                 // check if it's not already allocated
                 (helper[0] == NULL)
             ){
-                
+                printf("Memory allocate in compact");  
                 helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
                 assert(helper[0]!=NULL);
         }
@@ -86,6 +86,7 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
 
     if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
         helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
+        printf("Memory allocate in atomic");  
         assert(helper[0] != NULL); 
     }
     
