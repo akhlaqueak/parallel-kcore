@@ -128,7 +128,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processed is introduced, is incremented whenever a warp takes a job. 
     while(true){
-        // __syncthreads();
+        __syncthreads(); //syncthreads must be executed by all the threads...
         if(e_processed >= e) break;
         i = warp_id + e_processed;
         if(i >= e) continue;
@@ -151,7 +151,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         start = __shfl_sync(0xFFFFFFFF, start, 0);
         end = __shfl_sync(0xFFFFFFFF, end, 0);
         
-        __syncwarp();
         for(int j = start + lane_id; j<end ; j+=32){
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
