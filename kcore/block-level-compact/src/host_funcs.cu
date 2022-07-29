@@ -23,11 +23,11 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaEvent_t event_start;
     cudaEvent_t event_stop;
     
-    if(write_to_disk){
-        cout<<"Writing degrees to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V, "degrees.txt");
-        cout<<"Writing degrees to disk completed... "<<endl;
-    }
+    // if(write_to_disk){
+    //     cout<<"Writing degrees to disk started... "<<endl;
+    //     write_kcore_to_disk(data_graph.degrees, data_graph.V, "degrees.txt");
+    //     cout<<"Writing degrees to disk completed... "<<endl;
+    // }
     
     cudaEventCreate(&event_start);
     cudaEventCreate(&event_stop);
@@ -51,7 +51,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     limit = 1024*1024*1024ULL;
     chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
-
+    limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
 
     cout<<"new limit is: "<<limit<<endl;
@@ -79,7 +79,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V, "k-core.txt");
+        write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file + "-kcore.txt" );
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 

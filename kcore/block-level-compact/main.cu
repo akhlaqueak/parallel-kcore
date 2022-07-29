@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
         exit(-1);
     }
     std::string data_graph_file = argv[1];
-    bool write_to_disk = false;
+    bool write_to_disk = true;
    
     find_kcore(data_graph_file,write_to_disk);
     
