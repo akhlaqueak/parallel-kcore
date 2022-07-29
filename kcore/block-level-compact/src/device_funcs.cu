@@ -59,12 +59,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + e[0];
-            if(loc < MAX_NV)
-                buffer[loc] = v;
-            else{
-                assert(helper[0]!=NULL);
-                helper[0][loc - MAX_NV]  = v;   
-            }
+            writeToBuffer(buffer, &helper, loc, v);
         }
         
         __syncthreads();
@@ -80,7 +75,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 }
 
 
-__device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int* e, unsigned int v){
+__device__ void getWriteLoc(unsigned int* buffer,  unsigned int** helper, unsigned int* e){
     unsigned int loc = atomicAdd(e, 1);
     assert(loc < HELPER_SIZE + MAX_NV);
 
@@ -89,7 +84,10 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
         printf("Memory allocate in atomic");  
         assert(helper[0] != NULL); 
     }
-    
+    return loc;
+}
+
+__device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int loc, unsigned int v){
     if(loc < MAX_NV){
         buffer[loc] = v;
     }
@@ -168,7 +166,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    writeToBuffer(buffer, &helper, &e, u);
+                    unsigned int loc = getWriteLoc(buffer, &helper, &e);
+                    writeToBuffer(buffer, &helper, loc, u);
                     // printf("%d ", 1);
                 }
 
