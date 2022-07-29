@@ -61,8 +61,10 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             unsigned int loc = addresses[THID] + e[0];
             if(loc < MAX_NV)
                 buffer[loc] = v;
-            else
+            else{
+                assert(helper[0]!=NULL);
                 helper[0][loc - MAX_NV]  = v;   
+            }
         }
         
         __syncthreads();
