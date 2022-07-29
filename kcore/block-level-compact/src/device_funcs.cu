@@ -75,7 +75,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 }
 
 
-__device__ void getWriteLoc(unsigned int* buffer,  unsigned int** helper, unsigned int* e){
+__device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
     unsigned int loc = atomicAdd(e, 1);
     assert(loc < HELPER_SIZE + MAX_NV);
 
@@ -166,7 +166,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    unsigned int loc = getWriteLoc(buffer, &helper, &e);
+                    unsigned int loc = getWriteLoc(&helper, &e);
                     writeToBuffer(buffer, &helper, loc, u);
                     // printf("%d ", 1);
                 }
