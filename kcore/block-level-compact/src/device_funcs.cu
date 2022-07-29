@@ -111,7 +111,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int buffer[MAX_NV];
     __shared__ unsigned int e;
     __shared__ unsigned int* helper;
-    __shared__ unsigned int e_processed;
+    __shared__ unsigned int initial;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
@@ -119,7 +119,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     if(THID == 0){
         e = 0;
         helper = NULL;
-        e_processed = 0;
+        initial = 0;
     }
 
 
@@ -130,12 +130,18 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     // e is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
-    // for that purpose e_processed is introduced, is incremented whenever a warp takes a job. 
+    // for that purpose initial is introduced, is incremented whenever a warp takes a job. 
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads...
-        if(e_processed == e) break;
-        i = warp_id + e_processed;
-        if(i >= e) continue;
+        i = initial + warp_id;
+        
+        if(THID == 0){
+            initial += WARPS_EACH_BLK;
+            if(e < initial )
+                initial = e;
+        }
+        
+        if(e < i) continue;
 
         unsigned int v, start, end;
 
@@ -147,10 +153,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             v = readFromBuffer(buffer, &helper, i);
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
-            atomicAdd(&e_processed, 1);
-        }
-
-        
+        }        
         v = __shfl_sync(0xFFFFFFFF, v, 0);
         start = __shfl_sync(0xFFFFFFFF, start, 0);
         end = __shfl_sync(0xFFFFFFFF, end, 0);
