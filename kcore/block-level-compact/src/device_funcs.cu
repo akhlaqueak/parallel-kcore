@@ -134,7 +134,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads...
 
-        if(initial >= e) break;
+        if(initial == e) break;
 
         i = initial + warp_id;
         
@@ -143,7 +143,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             if(e < initial )
                 initial = e;
         }
-        
+        __syncthreads();
         if(e < i) continue;
 
         unsigned int v, start, end;
