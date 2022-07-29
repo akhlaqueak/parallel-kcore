@@ -54,6 +54,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
                 helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
                 assert(helper[0]!=NULL);
         }
+        __syncthreads();
 
         
         if(predicate[THID]){
