@@ -129,7 +129,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // e is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processed is introduced, is incremented whenever a warp takes a job. 
-    for(unsigned int i = warp_id; i<e ; i = warp_id + e_processed){
+    for(unsigned int i = warp_id; i<e ; __syncthreads(), i = warp_id + e_processed){
     
         unsigned int v, start, end;
 
@@ -168,7 +168,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             __syncwarp();
         }
 
-        __syncwarp();
+        
     }
     __syncthreads();
 
