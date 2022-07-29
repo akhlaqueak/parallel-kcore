@@ -1,0 +1,4 @@
+git pull
+make
+git push
+./gpu_bk data_set/data/ours_format/Enron.g
