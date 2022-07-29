@@ -51,7 +51,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
                 // check if it's not already allocated
                 (helper[0] == NULL)
             ){
-                printf("Memory allocate in compact");  
+                // printf("Memory allocate in compact");  
                 helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
                 assert(helper[0]!=NULL);
         }
