@@ -55,16 +55,16 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
                 assert(helper[0]!=NULL);
         }
 
-        __syncthreads();
-            
+        
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + e[0];
             if(loc < MAX_NV)
-                buffer[loc] = v;
+            buffer[loc] = v;
             else
-                helper[0][loc - MAX_NV]  = v;   
+            helper[0][loc - MAX_NV]  = v;   
         }
-            
+        
+        __syncthreads();
             
             
         if(THID == BLK_DIM - 1){            
@@ -144,7 +144,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         }
 
         __syncwarp();
-        
+
         v = __shfl_sync(0xFFFFFFFF, v, 0);
         start = __shfl_sync(0xFFFFFFFF, start, 0);
         end = __shfl_sync(0xFFFFFFFF, end, 0);
