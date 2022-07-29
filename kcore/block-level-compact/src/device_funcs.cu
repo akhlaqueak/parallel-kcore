@@ -59,7 +59,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + e[0];
-            writeToBuffer(buffer, &helper, loc, v);
+            writeToBuffer(buffer, helper, loc, v);
         }
         
         __syncthreads();
