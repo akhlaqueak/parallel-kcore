@@ -67,7 +67,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             
             
         if(THID == BLK_DIM - 1){            
-            e[0] += (addresses[THID] + predicate[THID]);
+            e[0] += (addresses[THID] );
         }
         
         __syncthreads();
