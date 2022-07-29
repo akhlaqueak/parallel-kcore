@@ -108,6 +108,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int e;
     __shared__ unsigned int* helper;
     __shared__ unsigned int e_processed;
+    unsigned int warp_id = THID / 32;
+    unsigned int lane_id = THID % 32;
 
     if(THID == 0){
         e = 0;
@@ -115,8 +117,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         e_processed = 0;
     }
 
-    unsigned int warp_id = THID / 32;
-    unsigned int lane_id = THID % 32;
 
 	
     __syncthreads();
@@ -143,6 +143,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             atomicAdd(&e_processed, 1);
         }
 
+        __syncwarp();
+        
         v = __shfl_sync(0xFFFFFFFF, v, 0);
         start = __shfl_sync(0xFFFFFFFF, start, 0);
         end = __shfl_sync(0xFFFFFFFF, end, 0);
