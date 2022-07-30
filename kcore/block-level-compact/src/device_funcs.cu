@@ -100,7 +100,7 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
 
 
 __device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
-    assert(loc < MAX_NV + HELPER_SIZE && helper[0]!=NULL);
+    assert(loc < MAX_NV + HELPER_SIZE);
     return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
 }
 
