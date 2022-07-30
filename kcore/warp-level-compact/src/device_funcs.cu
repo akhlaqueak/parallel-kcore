@@ -54,7 +54,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
             (w_helper[0] == NULL)
             ){
 
-            w_helper[0] = (unsigned int*) malloc(sizeof(unsinged int) * HELPER_SIZE);
+            w_helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE);
             printf("allocated%d ", *w_e + addresses[THID]);
             }
         __syncwarp();
