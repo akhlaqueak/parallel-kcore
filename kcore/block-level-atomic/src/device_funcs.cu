@@ -26,8 +26,7 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int** helper, unsigned int* e, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
-    for(unsigned int i=global_threadIdx; i<N_THREADS; i+= N_THREADS){
-        // if(i>N_THREADS && THID == 50) printf("%d:%d ", blockIdx.x, i);
+    for(unsigned int i=global_threadIdx; i<100000; i+= N_THREADS){
         if(degrees[i] == level){
             // unsigned int loc = getWriteLoc(helper, e);
             // writeToBuffer(buffer, helper, loc, i);
