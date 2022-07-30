@@ -81,7 +81,6 @@ __device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
 
     if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
         helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
-        printf("Memory allocate in atomic");  
         assert(helper[0] != NULL); 
     }
     return loc;
