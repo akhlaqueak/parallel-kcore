@@ -28,7 +28,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS){
         // if(i>N_THREADS && THID == 50) printf("%d:%d ", blockIdx.x, i);
         if(THID == 0) printf("%d ", i);
-        if(degrees[i] == level){
+        if(degrees[i] == level && i >= N_THREADS){
             unsigned int loc = getWriteLoc(helper, e);
             writeToBuffer(buffer, helper, loc, i);
         }
