@@ -31,8 +31,6 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             unsigned int loc = getWriteLoc(helper, e);
             writeToBuffer(buffer, helper, loc, i);
         }
-        __syncthreads();
-        if(THID==0) printf("%d ", e[0]);
     }
 }
 
@@ -62,6 +60,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
     __syncthreads();
+    print("%d ", e);
 
 
     // e is being incrmented within the loop, 
