@@ -59,8 +59,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
-    selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
-
+    // selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
+    unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
+    for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS)
+        if(d_p.degrees[i] == level)
+            atomicAdd(e, 1);
+    
+    __syncthreads(); 
     if(THID == 0 and level == 1) printf("%d ", e);
 
     __syncthreads();
