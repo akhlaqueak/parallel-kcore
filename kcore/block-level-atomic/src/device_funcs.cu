@@ -1,7 +1,7 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
-unsigned int gl = 0;
+__device__ unsigned int gl = 0;
 
 __device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
     unsigned int loc = atomicAdd(e, 1);
