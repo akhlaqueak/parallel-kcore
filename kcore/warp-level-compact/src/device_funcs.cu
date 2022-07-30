@@ -100,6 +100,12 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
         helper[0][loc-MAX_NV] = v; 
     }
 }
+
+__device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
+    assert(loc < MAX_NV + HELPER_SIZE);
+    return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
+}
+
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
 
@@ -126,16 +132,16 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
     __syncwarp();
 
     for(unsigned int i=0; i < e[warp_id]; i++){
-    
-        unsigned int v;
-        if( i < MAX_NV ) 
-            v = buffer[warp_id*MAX_NV + i];
-        else
-            v = helpers[warp_id] [i-MAX_NV];
-
-        unsigned int start = d_p.neighbors_offset[v];
-        unsigned int end = d_p.neighbors_offset[v+1];
-
+        unsigned int v, start, end;
+        if(lane_id == 0){ 
+            v = readFromBuffer(buffer, &helper, i);
+            start = d_p.neighbors_offset[v];
+            end = d_p.neighbors_offset[v+1];
+        }        
+        v = __shfl_sync(0xFFFFFFFF, v, 0);
+        start = __shfl_sync(0xFFFFFFFF, start, 0);
+        end = __shfl_sync(0xFFFFFFFF, end, 0);
+        
         for(int j = start + lane_id; j<end ; j += WARP_SIZE){
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){

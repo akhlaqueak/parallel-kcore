@@ -1,21 +1,26 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
-__device__ void writeToBuffer(unsigned int* w_buffer,  unsigned int** w_helper, unsigned int* w_e, unsigned int v){
-    unsigned int loc = atomicAdd(w_e, 1);
-    assert(w_e[0] < HELPER_SIZE + MAX_NV);
+__device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
+    unsigned int loc = atomicAdd(e, 1);
+    assert(loc < HELPER_SIZE + MAX_NV);
 
     if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
-        w_helper[0] = (unsigned int*) malloc(HELPER_SIZE); 
-        assert(w_helper[0] != NULL); 
+        helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
+        printf("Memory allocate in atomic");  
+        assert(helper[0] != NULL); 
     }
-    __syncwarp();
-    
+    return loc;
+}
+
+__device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int loc, unsigned int v){
+    assert(loc < HELPER_SIZE + MAX_NV);
     if(loc < MAX_NV){
-        w_buffer[loc] = v;
+        buffer[loc] = v;
     }
     else{
-        w_helper[0][loc-MAX_NV] = v; 
+        assert(helper[0]!=NULL);
+        helper[0][loc-MAX_NV] = v; 
     }
 }
 
@@ -23,14 +28,17 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
         if(degrees[i] == level){
-            writeToBuffer(w_buffer, w_helper, w_e , i);
+            unsigned int loc = getWriteLoc(w_helper, w_e);
+            writeToBuffer(w_buffer, w_helper, loc, i);
         }
     }
 }
 
-__device__ unsigned int readFromBuffer(unsigned int* w_buffer, unsigned int** w_helper, unsigned int loc){
-    return ( loc < MAX_NV ) ? w_buffer[loc] : w_helper[0][loc-MAX_NV]; 
+__device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
+    assert(loc < MAX_NV + HELPER_SIZE);
+    return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
 }
+
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
 
@@ -49,25 +57,31 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     }
 	
     // TODO: remove the warp level implementations, go to block level.
-    __syncwarp();
+    __syncthreads();
 
     selectNodesAtLevel(d_p.degrees, V, buffer+warp_id*MAX_NV, helpers+warp_id, e+warp_id, level);
 
+    __syncthreads();
 
     for(unsigned int i=0; i<e[warp_id]; i++){
-    
-        unsigned int v = readFromBuffer(buffer+warp_id*MAX_NV, helpers+warp_id, i);
-
-        unsigned int start = d_p.neighbors_offset[v];
-        unsigned int end = d_p.neighbors_offset[v+1];
-
+        unsigned int v, start, end;
+        if(lane_id == 0){ 
+            v = readFromBuffer(buffer+(warp_id*MAX_NV), helpers+warp_id, i);
+            start = d_p.neighbors_offset[v];
+            end = d_p.neighbors_offset[v+1];
+        }        
+        v = __shfl_sync(0xFFFFFFFF, v, 0);
+        start = __shfl_sync(0xFFFFFFFF, start, 0);
+        end = __shfl_sync(0xFFFFFFFF, end, 0);
+            
         for(int j = start + lane_id; j<end ; j+=32){
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    writeToBuffer(buffer+warp_id*MAX_NV, helpers+warp_id, e+warp_id, u);
+                    unsigned int loc = getWriteLoc(helpers+warp_id, e+warp_id);
+                    writeToBuffer(buffer+(warp_id*MAX_NV), helpers+warp_id, loc, u);
                 }
 
                 if(a <= level){
