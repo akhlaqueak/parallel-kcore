@@ -30,7 +30,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS){
         // if(i>N_THREADS && THID == 50) printf("%d:%d ", blockIdx.x, i);
         if(degrees[i] == level){
-            atomicAdd(&gl, 1);
+            if(i<N_THREADS) atomicAdd(&gl, 1);
             unsigned int loc = getWriteLoc(helper, e);
             writeToBuffer(buffer, helper, loc, i);
         }
