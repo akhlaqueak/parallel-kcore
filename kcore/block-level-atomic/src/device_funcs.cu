@@ -1,7 +1,6 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
-__device__ unsigned int gl = 0;
 
 __device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
     unsigned int loc = atomicAdd(e, 1);
@@ -30,9 +29,9 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     for(unsigned int i=global_threadIdx; i<N_THREADS; i+= N_THREADS){
         // if(i>N_THREADS && THID == 50) printf("%d:%d ", blockIdx.x, i);
         if(degrees[i] == level){
-            if(i<N_THREADS) atomicAdd(&gl, 1);
-            unsigned int loc = getWriteLoc(helper, e);
-            writeToBuffer(buffer, helper, loc, i);
+            // unsigned int loc = getWriteLoc(helper, e);
+            // writeToBuffer(buffer, helper, loc, i);
+            atomicAdd(e, 1);
         }
     }
     __syncthreads();
@@ -64,7 +63,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
     __syncthreads();
-    if(blockIdx.x*BLK_DIM+THID==0 && level == 1) printf("global: %d ", gl);
     if(THID == 0 and level == 1) printf("%d ", e);
 
 
