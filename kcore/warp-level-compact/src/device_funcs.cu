@@ -102,7 +102,7 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
 }
 
 __device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
-    assert(loc < MAX_NV + HELPER_SIZE);
+    assert(loc < MAX_NV + HELPER_SIZE && helper[0]!=NULL);
     return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
 }
 
@@ -134,7 +134,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
     for(unsigned int i=0; i < e[warp_id]; i++){
         unsigned int v, start, end;
         if(lane_id == 0){ 
-            v = readFromBuffer(buffer, &helper, i);
+            v = readFromBuffer(buffer+(warp_id*MAX_NV), helpers+warp_id, i);
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
         }        

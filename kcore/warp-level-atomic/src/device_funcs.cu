@@ -35,7 +35,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 }
 
 __device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
-    assert(loc < MAX_NV + HELPER_SIZE);
+    assert(loc < MAX_NV + HELPER_SIZE && helper[0]!=NULL);
     return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
 }
 
