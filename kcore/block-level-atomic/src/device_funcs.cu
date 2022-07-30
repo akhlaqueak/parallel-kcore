@@ -30,7 +30,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS){
         // if(i>N_THREADS && THID == 50) printf("%d:%d ", blockIdx.x, i);
         if(degrees[i] == level){
-            atomicAdd(gl, 1);
+            atomicAdd(&gl, 1);
             unsigned int loc = getWriteLoc(helper, e);
             writeToBuffer(buffer, helper, loc, i);
         }
@@ -64,7 +64,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
     __syncthreads();
-    if(blockIdx.x*BLK_DIM+THID==0 && level == 1) print("%d ", gl);
+    if(blockIdx.x*BLK_DIM+THID==0 && level == 1) printf("%d ", gl);
 
 
     // e is being incrmented within the loop, 
