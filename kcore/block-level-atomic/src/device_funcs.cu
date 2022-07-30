@@ -61,8 +61,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
-    __syncthreads();
     if(THID == 0 and level == 1) printf("%d ", e);
+    __syncthreads();
 
 
     // e is being incrmented within the loop, 
