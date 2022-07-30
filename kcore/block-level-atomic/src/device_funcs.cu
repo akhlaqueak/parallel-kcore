@@ -13,6 +13,7 @@ __device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
 }
 
 __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int loc, unsigned int v){
+    assert(loc < HELPER_SIZE + MAX_NV);
     if(loc < MAX_NV){
         buffer[loc] = v;
     }
