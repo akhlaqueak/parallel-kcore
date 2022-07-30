@@ -64,7 +64,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
     __syncthreads();
-    if(blockIdx.x*BLK_DIM+THID==0 && level == 1) printf("%d %d", gl, e);
+    if(blockIdx.x*BLK_DIM+THID==0 && level == 1) printf("global: %d ", gl);
+    if(THID == 0 and level == 1) printf("%d ", e);
 
 
     // e is being incrmented within the loop, 
