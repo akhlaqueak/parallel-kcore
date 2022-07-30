@@ -32,6 +32,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             writeToBuffer(buffer, helper, loc, i);
         }
     }
+    __syncthreads();
 }
 
 __device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
