@@ -29,33 +29,33 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
     
-    for(unsigned int i = 0; i < V; i+= N_THREADS){
+    for(unsigned int base = 0; base < V; base += N_THREADS){
         
-        unsigned int v = i + global_threadIdx; 
+        unsigned int v = base + global_threadIdx; 
 
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
 
         addresses[THID] = predicate[THID];
 
-        exclusiveScan(addresses);
-        
-        
         __syncthreads();
+
+        exclusiveScan(addresses);
         
         //check if we need to allocate a helper for this block
         if(     
-            (THID == BLK_DIM-1) && // only last thread in a block does this job
+                (THID == BLK_DIM-1) && // only last thread in a block does this job
                 // e[0]: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
                 (e[0] + addresses[THID] >= MAX_NV) &&  
                 // check if it's not already allocated
                 (helper[0] == NULL)
             ){
-                // printf("Memory allocate in compact");  
-                helper[0] = (unsigned int*) malloc(HELPER_SIZE);            
+                // printf("Memory allocate in compact ");  
+                helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE);            
                 assert(helper[0]!=NULL);
         }
         
+        // this sync is necessary so that memory is allocated before writing to buffer
         __syncthreads();
         
         if(predicate[THID]){
@@ -63,11 +63,12 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             writeToBuffer(buffer, helper, loc, v);
         }
         
+        // this sync is necessary so that e[0] is updated after all threads have been written to buffer
         __syncthreads();
             
             
         if(THID == BLK_DIM - 1){            
-            e[0] += (addresses[THID] );
+            e[0] += (addresses[THID] + predicate[THID]);
         }
         
         __syncthreads();
@@ -110,7 +111,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int buffer[MAX_NV];
     __shared__ unsigned int e;
     __shared__ unsigned int* helper;
-    __shared__ unsigned int initial;
+    __shared__ unsigned int base;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
@@ -118,7 +119,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     if(THID == 0){
         e = 0;
         helper = NULL;
-        initial = 0;
+        base = 0;
     }
 
 
@@ -131,22 +132,22 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     // e is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
-    // for that purpose initial is introduced, is incremented whenever a warp takes a job.
+    // for that purpose base is introduced, is incremented whenever a warp takes a job.
      
     while(true){
-        __syncthreads(); //syncthreads must be executed by all the threads...
+        __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
 
-        if(initial == e) break;
+        if(base == e) break;
 
-        i = initial + warp_id;
+        i = base + warp_id;
         
         if(THID == 0){
-            initial += WARPS_EACH_BLK;
-            if(e < initial )
-                initial = e;
+            base += WARPS_EACH_BLK;
+            if(e < base )
+                base = e;
         }
         __syncthreads();
-        if(e <= i) continue;
+        if(i >= e) continue; // this warp won't have to do anything 
 
         unsigned int v, start, end;
 
