@@ -32,7 +32,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             writeToBuffer(buffer, helper, loc, i);
         }
         __syncthreads();
-        if(THID==0 && i<N_THREADS) printf("%d ", e[0]);
+        if(THID==0) printf("%d ", e[0]);
     }
 }
 
