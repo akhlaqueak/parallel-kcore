@@ -1,4 +1,8 @@
+#!/bin/bash
 git pull
 make
-git push
-./gpu_bk data_set/data/ours_format/Enron.g
+if [[ $1 == "" ]]; then
+	./gpu_bk ../data_set/data/ours_format/Enron.g
+else
+	./gpu_bk ../data_set/data/ours_format/$1
+fi
