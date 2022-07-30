@@ -63,6 +63,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     if(THID == 0 and level == 1) printf("%d ", e);
 
+    __syncthreads();
 
     // e is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
