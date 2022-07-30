@@ -28,9 +28,8 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS){
         if(degrees[i] == level){
-            // unsigned int loc = getWriteLoc(helper, e);
-            // writeToBuffer(buffer, helper, loc, i);
-            atomicAdd(e, 1);
+            unsigned int loc = getWriteLoc(helper, e);
+            writeToBuffer(buffer, helper, loc, i);
         }
     }
     __syncthreads();
