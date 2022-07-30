@@ -38,10 +38,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         addresses[THID] = predicate[THID];
 
-        __syncthreads();
-
         exclusiveScan(addresses);
-        __syncthreads();
         
         //check if we need to allocate a helper for this block
         if(     
@@ -134,7 +131,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // e is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose base is introduced, is incremented whenever a warp takes a job.
-     
+
+    // for(unsigned int i = warp_id; i<e ; i = warp_id + base){
+    // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
 
