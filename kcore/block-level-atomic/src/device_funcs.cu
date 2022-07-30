@@ -27,7 +27,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     for(unsigned int i=global_threadIdx; i< V; i+= N_THREADS){
         if(degrees[i] == level){
             unsigned int loc = getWriteLoc(helper, e);
-            writeToBuffer(buffer, helper, loc, u);
+            writeToBuffer(buffer, helper, loc, i);
         }
     }
 }
@@ -44,6 +44,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int e;
     __shared__ unsigned int* helper;
     __shared__ unsigned int base;
+    unsigned int warp_id = THID / 32;
+    unsigned int lane_id = THID % 32;
+    unsigned int i;
 
     if(THID == 0){
         e = 0;
@@ -51,11 +54,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         base = 0;
     }
 
-    unsigned int warp_id = THID / 32;
-    unsigned int lane_id = THID % 32;
-
-	
-    __syncwarp();
 
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
 
