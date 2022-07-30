@@ -66,7 +66,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             atomicAdd(&e, 1);
     
     __syncthreads(); 
-    if(THID == 0 and level == 1) printf("%d ", e);
+    
+    if(THID == BLK_DIM-1 && level == 1) printf("%d ", e);
 
     __syncthreads();
 
