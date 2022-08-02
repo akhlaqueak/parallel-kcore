@@ -90,7 +90,7 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
             helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
             assert(helper[0] != NULL); 
         }
-        while(helper[0]!=NULL);
+        while(helper[0]==NULL);
         helper[0][loc-MAX_NV] = v; 
     }
 }
