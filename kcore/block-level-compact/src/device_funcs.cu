@@ -156,7 +156,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         // todo: better if to read from global memory by all lanes
 
         
-        unsigned int v = readFromBuffer(shBuffer, &glBuffer, i);
+        unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         
