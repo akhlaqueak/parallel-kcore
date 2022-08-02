@@ -91,7 +91,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer_p
             assert(glBuffer_p[0] != NULL); 
             __threadfence();
         }
-        else while(glBuffer_p[0]==NULL) printf("T "); // busy wait until glBuffer is allocated 
+        else while(glBuffer_p[0]==NULL) printf("%d ", blockIdx.x); // busy wait until glBuffer is allocated 
         
         glBuffer_p[0][loc-MAX_NV] = v; 
     }
