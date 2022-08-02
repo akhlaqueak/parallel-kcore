@@ -157,13 +157,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         
-        // for(int j = start + lane_id; j<end ; j+=32){
-        unsigned int b1 = start;
-        while(b1 < end){
-            __syncwarp();
-            unsigned int j = b1 + lane_id;
-            b1 += 32;
-            if(j >= end) continue;
+        for(int j = start + lane_id; j<end ; j+=32){
+        // unsigned int b1 = start;
+        // while(b1 < end){
+        //     __syncwarp();
+        //     unsigned int j = b1 + lane_id;
+        //     b1 += 32;
+        //     if(j >= end) continue;
 
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
