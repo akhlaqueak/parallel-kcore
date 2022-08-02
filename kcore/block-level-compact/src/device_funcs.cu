@@ -133,9 +133,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // bufTail = 10;
     // for(unsigned int i = warp_id; i<bufTail ; i += WARPS_EACH_BLK){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
-    while(base < bufTail){
+    while(true){
         __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
-
+        if(base == bufTail) break;
         i = base + warp_id;
         
         if(THID == 0){
