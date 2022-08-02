@@ -88,6 +88,7 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
     else{
         if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
             helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
+            printf("A ");
             assert(helper[0] != NULL); 
         }
         while(helper[0]==NULL);
