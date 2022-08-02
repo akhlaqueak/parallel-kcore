@@ -5,11 +5,11 @@
 #include "./common.h"
 
 
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* w_buffer, unsigned int** helpers, unsigned int* e, unsigned int level);
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* w_buffer, unsigned int** helpers, unsigned int* bufTail, unsigned int level);
 
-__device__ inline unsigned int getWriteLoc(unsigned int* e);
+__device__ inline unsigned int getWriteLoc(unsigned int* bufTail);
 
-__device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int loc, unsigned int v);
+__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int loc, unsigned int v);
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V);
 

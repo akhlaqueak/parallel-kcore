@@ -23,7 +23,7 @@ __device__ void exclusiveScan(unsigned int* addresses){
         }
     }
 }
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* buffer, unsigned int** helper, unsigned int* e, unsigned int level){
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
 
     unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 
     __shared__ bool predicate[BLK_DIM];
@@ -40,33 +40,33 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         exclusiveScan(addresses);
         
-        //check if we need to allocate a helper for this block
+        //check if we need to allocate a glBuffer for this block
         if(     
                 (THID == BLK_DIM-1) && // only last thread in a block does this job
-                // e[0]: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
-                (e[0] + addresses[THID] >= MAX_NV) &&  
+                // bufTail[0]: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
+                (bufTail[0] + addresses[THID] >= MAX_NV) &&  
                 // check if it's not already allocated
-                (helper[0] == NULL)
+                (glBuffer[0] == NULL)
             ){
                 // printf("Memory allocate in compact ");  
-                helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE);            
-                assert(helper[0]!=NULL);
+                glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);            
+                assert(glBuffer[0]!=NULL);
         }
         
-        // this sync is necessary so that memory is allocated before writing to buffer
+        // this sync is necessary so that memory is allocated before writing to shBuffer
         __syncthreads();
         
         if(predicate[THID]){
-            unsigned int loc = addresses[THID] + e[0];
-            writeToBuffer(buffer, helper, loc, v);
+            unsigned int loc = addresses[THID] + bufTail[0];
+            writeToBuffer(shBuffer, glBuffer, loc, v);
         }
         
-        // this sync is necessary so that e[0] is updated after all threads have been written to buffer
+        // this sync is necessary so that bufTail[0] is updated after all threads have been written to shBuffer
         __syncthreads();
             
             
         if(THID == BLK_DIM - 1){            
-            e[0] += (addresses[THID] + predicate[THID]);
+            bufTail[0] += (addresses[THID] + predicate[THID]);
         }
         
         __syncthreads();
@@ -74,89 +74,89 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     }
 }
 
-//todo: use inline and redue getwriteloc only to get loc, don't need helper
-__device__ inline unsigned int getWriteLoc(unsigned int* e){
-    unsigned int loc = atomicAdd(e, 1);
+//todo: use inline and redue getwriteloc only to get loc, don't need glBuffer
+__device__ inline unsigned int getWriteLoc(unsigned int* bufTail){
+    unsigned int loc = atomicAdd(bufTail, 1);
     return loc;
 }
 
-__device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int loc, unsigned int v){
-    assert(loc < HELPER_SIZE + MAX_NV);
+__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int loc, unsigned int v){
+    assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV){
-        buffer[loc] = v;
+        shBuffer[loc] = v;
     }
     else{
-        if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
-            helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
+        if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
+            glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
             printf("A ");
-            assert(helper[0] != NULL); 
+            assert(glBuffer[0] != NULL); 
         }
-        else while(helper[0]==NULL);
+        else while(glBuffer[0]==NULL) printf("T");
         
-        helper[0][loc-MAX_NV] = v; 
+        glBuffer[0][loc-MAX_NV] = v; 
     }
 }
 
 
-__device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
-    assert(loc < MAX_NV + HELPER_SIZE);
-    return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
+__device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int loc){
+    assert(loc < MAX_NV + GLBUFFER_SIZE);
+    return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
 }
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
     
     
-    __shared__ unsigned int buffer[MAX_NV];
-    __shared__ unsigned int e;
-    __shared__ unsigned int* helper;
+    __shared__ unsigned int shBuffer[MAX_NV];
+    __shared__ unsigned int bufTail;
+    __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
 
     if(THID == 0){
-        e = 0;
-        helper = NULL;
+        bufTail = 0;
+        glBuffer = NULL;
         base = 0;
     }
 
     __syncthreads();
 
-    selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
+    selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
 
-    if(level == 1 && THID == 0) printf("%d ", e);
+    if(level == 1 && THID == 0) printf("%d ", bufTail);
     
-    // e is being incremented within the loop, 
+    // bufTail is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose base is introduced, is incremented whenever a warp takes a job.
     // todo: busy waiting on several blocks
 
-    // e = 10;
-    // for(unsigned int i = warp_id; i<e ; i += WARPS_EACH_BLK){
+    // bufTail = 10;
+    // for(unsigned int i = warp_id; i<bufTail ; i += WARPS_EACH_BLK){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
 
-        if(base == e) break;
+        if(base == bufTail) break;
 
         i = base + warp_id;
         
         if(THID == 0){
             base += WARPS_EACH_BLK;
-            if(e < base )
-                base = e;
+            if(bufTail < base )
+                base = bufTail;
         }
         __syncthreads();
-        if(i >= e) continue; // this warp won't have to do anything 
+        if(i >= bufTail) continue; // this warp won't have to do anything 
 
 
-        // only first lane reads buffer, start and end
+        // only first lane reads shBuffer, start and end
         // it is then broadcasted to all lanes in the warp
         // it's done to reduce multiple accesses to global memory... 
         // todo: better if to read from global memory by all lanes
 
         
-        unsigned int v = readFromBuffer(buffer, &helper, i);
+        unsigned int v = readFromBuffer(shBuffer, &glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         
@@ -166,8 +166,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    unsigned int loc = getWriteLoc(&e);
-                    writeToBuffer(buffer, &helper, loc, u);
+                    unsigned int loc = getWriteLoc(&bufTail);
+                    writeToBuffer(shBuffer, &glBuffer, loc, u);
                     // printf("%d ", 1);
                 }
 
@@ -181,9 +181,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     __syncthreads();
 
-    if(THID == 0 && e!=0){
-        atomicAdd(global_count, e); // atomic since contention among blocks
-        if(helper!=NULL) free(helper);
+    if(THID == 0 && bufTail!=0){
+        atomicAdd(global_count, bufTail); // atomic since contention among blocks
+        if(glBuffer!=NULL) free(glBuffer);
     }
 
 }

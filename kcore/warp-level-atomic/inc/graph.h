@@ -6,7 +6,7 @@
 class Graph{
 public:
     unsigned int V;
-    unsigned int E;
+    unsigned int bufTail;
     unsigned int AVG_DEGREE = 0;
     unsigned int * neighbors;
     unsigned int * neighbors_offset;

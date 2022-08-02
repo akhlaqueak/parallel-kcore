@@ -11,8 +11,8 @@ def convert(data_file):
         write_lines.append(line)
     for line in lines[1:]:
         s = int(line.split('\t')[0])
-        e = int(line.split('\t')[1])
-        line = 'e {} {} {}\n'.format(s,e,1)
+        bufTail = int(line.split('\t')[1])
+        line = 'bufTail {} {} {}\n'.format(s,bufTail,1)
         write_lines.append(line)
     write_lines.append('t # -1\n')
     gsi_write_file = os.path.join('/home/lizhi/research/cuts/sm_dataset/query/gsi_format/7nodes',os.path.basename(data_file))

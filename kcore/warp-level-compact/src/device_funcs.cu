@@ -46,7 +46,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
 
         
 
-        if(     //check if we need to allocate a helper for this warp
+        if(     //check if we need to allocate a glBuffer for this warp
             (lane_id == WARP_SIZE-1) && // only one thread in a warp does this job
                 // w_e: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
             (w_e[0] + addresses[THID] >= MAX_NV) &&  
@@ -54,7 +54,7 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
             (w_helper[0] == NULL)
             ){
 
-            w_helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE);
+            w_helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
             printf("allocated%d ", *w_e + addresses[THID]);
             }
         __syncwarp();
@@ -78,39 +78,39 @@ __device__ void compactWarpLevel(unsigned int *degrees, unsigned int V, unsigned
     }
 }
 
-__device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
-    unsigned int loc = atomicAdd(e, 1);
-    assert(loc < HELPER_SIZE + MAX_NV);
+__device__ unsigned int getWriteLoc(unsigned int** glBuffer, unsigned int* bufTail){
+    unsigned int loc = atomicAdd(bufTail, 1);
+    assert(loc < GLBUFFER_SIZE + MAX_NV);
 
-    if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
-        helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
+    if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
+        glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
         printf("Memory allocate in atomic");  
-        assert(helper[0] != NULL); 
+        assert(glBuffer[0] != NULL); 
     }
     return loc;
 }
 
-__device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int loc, unsigned int v){
-    assert(loc < HELPER_SIZE + MAX_NV);
+__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int loc, unsigned int v){
+    assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV){
-        buffer[loc] = v;
+        shBuffer[loc] = v;
     }
     else{
-        assert(helper[0]!=NULL);
-        helper[0][loc-MAX_NV] = v; 
+        assert(glBuffer[0]!=NULL);
+        glBuffer[0][loc-MAX_NV] = v; 
     }
 }
 
-__device__ unsigned int readFromBuffer(unsigned int* buffer, unsigned int** helper, unsigned int loc){
-    assert(loc < MAX_NV + HELPER_SIZE);
-    return ( loc < MAX_NV ) ? buffer[loc] : helper[0][loc-MAX_NV]; 
+__device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int** glBuffer, unsigned int loc){
+    assert(loc < MAX_NV + GLBUFFER_SIZE);
+    return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[0][loc-MAX_NV]; 
 }
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
 
 
-    __shared__ unsigned int buffer[WARPS_EACH_BLK*MAX_NV];
-    __shared__ unsigned int e[WARPS_EACH_BLK];
+    __shared__ unsigned int shBuffer[WARPS_EACH_BLK*MAX_NV];
+    __shared__ unsigned int bufTail[WARPS_EACH_BLK];
     __shared__ unsigned int* helpers[WARPS_EACH_BLK];
 
 
@@ -121,20 +121,20 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
   //  unsigned int mask = 0xFFFFFFFF;
 
     if(lane_id==0){
-        e[warp_id] = 0;
+        bufTail[warp_id] = 0;
         helpers[warp_id] = NULL;
     }
 	
 
 
-    compactWarpLevel(d_p.degrees, d_p.V, buffer+(warp_id*MAX_NV), helpers+warp_id, e+warp_id, level);
+    compactWarpLevel(d_p.degrees, d_p.V, shBuffer+(warp_id*MAX_NV), helpers+warp_id, bufTail+warp_id, level);
 
     __syncwarp();
 
-    for(unsigned int i=0; i < e[warp_id]; i++){
+    for(unsigned int i=0; i < bufTail[warp_id]; i++){
         unsigned int v, start, end;
         if(lane_id == 0){ 
-            v = readFromBuffer(buffer+(warp_id*MAX_NV), helpers+warp_id, i);
+            v = readFromBuffer(shBuffer+(warp_id*MAX_NV), helpers+warp_id, i);
             start = d_p.neighbors_offset[v];
             end = d_p.neighbors_offset[v+1];
         }        
@@ -150,9 +150,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
             
                 if(a == (level+1)){
                     // node degree became the level after decrementing... 
-                    // this node should be processsed at this level, hence should be added to buffer/helper
-                    unsigned int loc = getWriteLoc(helpers+warp_id, e+warp_id);
-                    writeToBuffer(buffer+(warp_id*MAX_NV), helpers+warp_id, loc, u);
+                    // this node should be processsed at this level, hence should be added to shBuffer/glBuffer
+                    unsigned int loc = getWriteLoc(helpers+warp_id, bufTail+warp_id);
+                    writeToBuffer(shBuffer+(warp_id*MAX_NV), helpers+warp_id, loc, u);
                 }
 
                 if(a <= level){
@@ -165,8 +165,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level){
         __syncwarp();
     }
 
-    if(lane_id == 0 && e[warp_id]!=0 ){
-        atomicAdd(global_count, e[warp_id]);
+    if(lane_id == 0 && bufTail[warp_id]!=0 ){
+        atomicAdd(global_count, bufTail[warp_id]);
         if(helpers[warp_id]!=NULL) free(helpers[warp_id]);  
 	}
 

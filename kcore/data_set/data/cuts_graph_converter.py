@@ -14,8 +14,8 @@ for i,s in enumerate(snap_graphs):
     for line in lines:
         parts = line.split('\t')
         s = int(parts[0])
-        e = int(parts[1])
-        t = max(s,e)
+        bufTail = int(parts[1])
+        t = max(s,bufTail)
         if max_node < t:
             max_node = t
     cuts_file = './ours_format/{}'.format(cuts_graphs[i])
