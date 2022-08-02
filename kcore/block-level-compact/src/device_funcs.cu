@@ -76,8 +76,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 //todo: use inline and redue getwriteloc only to get loc, don't need glBuffer
 __device__ inline unsigned int getWriteLoc(unsigned int* bufTail){
-    unsigned int loc = atomicAdd(bufTail, 1);
-    return loc;
+    return atomicAdd(bufTail, 1);
 }
 
 __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer_p, unsigned int loc, unsigned int v){
@@ -134,10 +133,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // bufTail = 10;
     // for(unsigned int i = warp_id; i<bufTail ; i += WARPS_EACH_BLK){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
-    while(true){
+    while(base < bufTail){
         __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
-
-        if(base == bufTail) break;
 
         i = base + warp_id;
         
@@ -160,7 +157,14 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         
-        for(int j = start + lane_id; j<end ; j+=32){
+        // for(int j = start + lane_id; j<end ; j+=32){
+        unsigned int b1 = start;
+        while(b1 < end){
+            __syncwarp();
+            unsigned int j = b1 + lane_id;
+            b1 += 32;
+            if(j >= end) continue;
+
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
