@@ -91,7 +91,8 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
             printf("A ");
             assert(helper[0] != NULL); 
         }
-        while(helper[0]==NULL);
+        else while(helper[0]==NULL);
+        
         helper[0][loc-MAX_NV] = v; 
     }
 }
