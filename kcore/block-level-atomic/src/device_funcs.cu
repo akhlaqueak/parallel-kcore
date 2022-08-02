@@ -14,7 +14,9 @@ __device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
 }
 
 __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int loc, unsigned int v){
+    // todo: make it single pointer, helper
     assert(loc < HELPER_SIZE + MAX_NV);
+
     if(loc < MAX_NV){
         buffer[loc] = v;
     }
@@ -59,17 +61,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
-    // selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
-    unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
-    for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS)
-        if(d_p.degrees[i] == level)
-            atomicAdd(&e, 1);
+    selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
+
     
-    __syncthreads(); 
-    
-    if(THID == BLK_DIM-1 && level == 1) printf("%d ", e);
-    return;
-    __syncthreads();
 
     // e is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
@@ -116,6 +110,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
+                    
                     unsigned int loc = getWriteLoc(&helper, &e);
                     writeToBuffer(buffer, &helper, loc, u);
                 }

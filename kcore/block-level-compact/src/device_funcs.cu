@@ -74,15 +74,9 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     }
 }
 
-
-__device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e){
+//todo: use inline and redue getwriteloc only to get loc, don't need helper
+__device__ inline unsigned int getWriteLoc(unsigned int* e){
     unsigned int loc = atomicAdd(e, 1);
-    assert(loc < HELPER_SIZE + MAX_NV);
-
-    if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
-        helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
-        assert(helper[0] != NULL); 
-    }
     return loc;
 }
 
@@ -92,7 +86,11 @@ __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsi
         buffer[loc] = v;
     }
     else{
-        assert(helper[0]!=NULL);
+        if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate helper
+            helper[0] = (unsigned int*) malloc(sizeof(unsigned int) * HELPER_SIZE); 
+            assert(helper[0] != NULL); 
+        }
+        while(helper[0]!=NULL);
         helper[0][loc-MAX_NV] = v; 
     }
 }
@@ -120,8 +118,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         base = 0;
     }
 
-
-	
     __syncthreads();
 
     selectNodesAtLevel(d_p.degrees, V, buffer, &helper, &e, level);
@@ -131,8 +127,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // e is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose base is introduced, is incremented whenever a warp takes a job.
+    // todo: busy waiting on several blocks
 
-    // for(unsigned int i = warp_id; i<e ; i = warp_id + base){
+    // e = 10;
+    // for(unsigned int i = warp_id; i<e ; i += WARPS_EACH_BLK){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
@@ -149,20 +147,16 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         __syncthreads();
         if(i >= e) continue; // this warp won't have to do anything 
 
-        unsigned int v, start, end;
 
         // only first lane reads buffer, start and end
         // it is then broadcasted to all lanes in the warp
         // it's done to reduce multiple accesses to global memory... 
+        // todo: better if to read from global memory by all lanes
 
-        if(lane_id == 0){ 
-            v = readFromBuffer(buffer, &helper, i);
-            start = d_p.neighbors_offset[v];
-            end = d_p.neighbors_offset[v+1];
-        }        
-        v = __shfl_sync(0xFFFFFFFF, v, 0);
-        start = __shfl_sync(0xFFFFFFFF, start, 0);
-        end = __shfl_sync(0xFFFFFFFF, end, 0);
+        
+        unsigned int v = readFromBuffer(buffer, &helper, i);
+        unsigned int start = d_p.neighbors_offset[v];
+        unsigned int end = d_p.neighbors_offset[v+1];
         
         for(int j = start + lane_id; j<end ; j+=32){
             unsigned int u = d_p.neighbors[j];
@@ -170,7 +164,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    unsigned int loc = getWriteLoc(&helper, &e);
+                    unsigned int loc = getWriteLoc(&e);
                     writeToBuffer(buffer, &helper, loc, u);
                     // printf("%d ", 1);
                 }
@@ -182,6 +176,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             }
         }        
     }
+    
     __syncthreads();
 
     if(THID == 0 && e!=0){

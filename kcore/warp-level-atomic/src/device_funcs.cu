@@ -62,6 +62,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
+    // this loop is good, as every thread in a warp will run if i<e[warp_id]
     for(unsigned int i=0; i<e[warp_id]; i++){
         unsigned int v, start, end;
         if(lane_id == 0){ 

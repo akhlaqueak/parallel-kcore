@@ -7,7 +7,7 @@
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* w_buffer, unsigned int** helpers, unsigned int* e, unsigned int level);
 
-__device__ unsigned int getWriteLoc(unsigned int** helper, unsigned int* e);
+__device__ inline unsigned int getWriteLoc(unsigned int* e);
 
 __device__ void writeToBuffer(unsigned int* buffer,  unsigned int** helper, unsigned int loc, unsigned int v);
 
