@@ -89,8 +89,8 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer_p
             glBuffer_p[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
             assert(glBuffer_p[0] != NULL); 
         }
-        else while(glBuffer_p[0]==NULL);
-        //  printf("%p ", glBuffer_p[0]); // busy wait until glBuffer is allocated 
+        else while(glBuffer_p[0]==NULL)
+         printf("%p ", glBuffer_p[0]); // busy wait until glBuffer is allocated 
         
         glBuffer_p[0][loc-MAX_NV] = v; 
     }
@@ -172,7 +172,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 if(a == level+1){
                     unsigned int loc = getWriteLoc(&bufTail);
                     writeToBuffer(shBuffer, &glBuffer, loc, u);
-                    if(loc>= MAX_NV) printf("%d ", loc);
                 }
 
                 if(a <= level){
