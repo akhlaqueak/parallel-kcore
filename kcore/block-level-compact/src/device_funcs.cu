@@ -91,7 +91,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, 
             printf("A ");
             assert(glBuffer[0] != NULL); 
         }
-        else while(glBuffer[0]==NULL) printf("T");
+        else while(glBuffer[0]==NULL); // busy wait until glBuffer is allocated 
         
         glBuffer[0][loc-MAX_NV] = v; 
     }
