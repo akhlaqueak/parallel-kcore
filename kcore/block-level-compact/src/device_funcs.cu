@@ -80,7 +80,7 @@ __device__ inline unsigned int getWriteLoc(unsigned int* bufTail){
     return loc;
 }
 
-__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int loc, unsigned int v){
+__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer_p, unsigned int loc, unsigned int v){
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV){
         shBuffer[loc] = v;
@@ -89,8 +89,9 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, 
         if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
             glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
             assert(glBuffer[0] != NULL); 
+            __threadfence();
         }
-        else while(glBuffer[0]==NULL) loc-1; // busy wait until glBuffer is allocated 
+        else while(glBuffer[0]==NULL); // busy wait until glBuffer is allocated 
         
         glBuffer[0][loc-MAX_NV] = v; 
     }
