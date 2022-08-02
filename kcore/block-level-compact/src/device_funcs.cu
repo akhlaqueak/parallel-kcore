@@ -90,7 +90,8 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer_p
             assert(glBuffer_p[0] != NULL); 
         }
         else while(glBuffer_p[0]==NULL)
-         printf("%p ", glBuffer_p[0]); // busy wait until glBuffer is allocated 
+        //  printf("%p ", glBuffer_p[0])
+         ; // busy wait until glBuffer is allocated 
         
         glBuffer_p[0][loc-MAX_NV] = v; 
     }
@@ -156,14 +157,14 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
+        // unsigned int b1 = start;
+        // while(b1 < end){
+        //     __syncwarp();
+        //     unsigned int j = b1 + lane_id;
+        //     b1 += 32;
+        //     if(j >= end) continue;
         
-        // for(int j = start + lane_id; j<end ; j+=32){
-        unsigned int b1 = start;
-        while(b1 < end){
-            __syncwarp();
-            unsigned int j = b1 + lane_id;
-            b1 += 32;
-            if(j >= end) continue;
+        for(int j = start + lane_id; j<end ; j+=32){
 
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
