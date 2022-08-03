@@ -79,7 +79,7 @@ __device__ inline unsigned int getWriteLoc(unsigned int* bufTail){
     return atomicAdd(bufTail, 1);
 }
 
-__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer_p, unsigned int loc, unsigned int v){
+__device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** glBuffer_p, unsigned int loc, unsigned int v){
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV){
         shBuffer[loc] = v;
@@ -90,7 +90,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer_p
             assert(glBuffer_p[0] != NULL); 
         }
         else while(glBuffer_p[0]==NULL)
-        //  printf("%p ", glBuffer_p[0])
+        //  printf("%p ", glBuffer_p[0]);
          ; // busy wait until glBuffer is allocated 
         
         glBuffer_p[0][loc-MAX_NV] = v; 
@@ -108,7 +108,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
-    __shared__ unsigned int* glBuffer;
+    __shared__ volatile unsigned int* glBuffer;
     __shared__ unsigned int base;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
@@ -160,7 +160,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int b1 = start;
         while(true){
             __syncwarp();
-            printf("1");
             if(b1 >= end) break;
             unsigned int j = b1 + lane_id;
             b1 += 32;
