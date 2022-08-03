@@ -86,7 +86,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** g
     }
     else{
         if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
-            glBuffer_p[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
+            glBuffer_p[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
             assert(glBuffer_p[0] != NULL); 
         }
         else while(glBuffer_p[0]==NULL)
