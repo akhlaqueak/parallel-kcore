@@ -9,7 +9,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 __device__ inline unsigned int getWriteLoc(unsigned int* bufTail);
 
-__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int loc, unsigned int v);
+__device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** glBuffer, unsigned int loc, unsigned int v);
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V);
 __device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int loc);
