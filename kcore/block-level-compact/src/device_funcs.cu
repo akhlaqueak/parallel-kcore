@@ -173,7 +173,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             
                 if(a == level+1){
                     unsigned int loc = getWriteLoc(&bufTail);
-                    writeToBuffer(shBuffer, (volatile unsigned int *)&glBuffer, loc, u);
+                    writeToBuffer(shBuffer, (volatile unsigned int **)&glBuffer, loc, u);
                 }
 
                 if(a <= level){
