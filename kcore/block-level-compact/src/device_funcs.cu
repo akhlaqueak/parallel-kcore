@@ -23,7 +23,7 @@ __device__ void exclusiveScan(unsigned int* addresses){
         }
     }
 }
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, volatile unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
 
     unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 
     __shared__ bool predicate[BLK_DIM];
@@ -58,7 +58,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + bufTail[0];
-            writeToBuffer(shBuffer, (volatile unsigned int **) glBuffer, loc, v);
+            writeToBuffer(shBuffer, glBuffer, loc, v);
         }
         
         // this sync is necessary so that bufTail[0] is updated after all threads have been written to shBuffer
@@ -98,7 +98,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** g
 }
 
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int loc){
+__device__ unsigned int readFromBuffer(unsigned int* shBuffer, volatile unsigned int* glBuffer, unsigned int loc){
     assert(loc < MAX_NV + GLBUFFER_SIZE);
     return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
 }
@@ -108,7 +108,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
-    __shared__ unsigned int* glBuffer;
+    __shared__ volatile unsigned int* glBuffer;
     __shared__ unsigned int base;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
@@ -173,7 +173,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             
                 if(a == level+1){
                     unsigned int loc = getWriteLoc(&bufTail);
-                    writeToBuffer(shBuffer, (volatile unsigned int **)&glBuffer, loc, u);
+                    writeToBuffer(shBuffer, &glBuffer, loc, u);
                 }
 
                 if(a <= level){
