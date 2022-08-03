@@ -23,7 +23,7 @@ __device__ void exclusiveScan(unsigned int* addresses){
         }
     }
 }
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, volatile unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, volatile unsigned int** glBuffer, unsigned int* bufTail, unsigned int level, unsigned int* lock){
 
     unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 
     __shared__ bool predicate[BLK_DIM];
@@ -41,24 +41,24 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         exclusiveScan(addresses);
         
         //check if we need to allocate a glBuffer for this block
-        if(     
-                (THID == BLK_DIM-1) && // only last thread in a block does this job
-                // bufTail[0]: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
-                (bufTail[0] + addresses[THID] >= MAX_NV) &&  
-                // check if it's not already allocated
-                (glBuffer[0] == NULL)
-            ){
-                // printf("Memory allocate in compact ");  
-                glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);            
-                assert(glBuffer[0]!=NULL);
-        }
+        // if(     
+        //         (THID == BLK_DIM-1) && // only last thread in a block does this job
+        //         // bufTail[0]: no. of nodes already selected, addresses[...]: no. of nodes in currect scan
+        //         (bufTail[0] + addresses[THID] >= MAX_NV) &&  
+        //         // check if it's not already allocated
+        //         (glBuffer[0] == NULL)
+        //     ){
+        //         // printf("Memory allocate in compact ");  
+        //         glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);            
+        //         assert(glBuffer[0]!=NULL);
+        // }
         
         // this sync is necessary so that memory is allocated before writing to shBuffer
-        __syncthreads();
+        // __syncthreads();
         
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + bufTail[0];
-            writeToBuffer(shBuffer, glBuffer, loc, v);
+            writeToBuffer(shBuffer, glBuffer, loc, v, lock);
         }
         
         // this sync is necessary so that bufTail[0] is updated after all threads have been written to shBuffer
@@ -79,20 +79,26 @@ __device__ inline unsigned int getWriteLoc(unsigned int* bufTail){
     return atomicAdd(bufTail, 1);
 }
 
-__device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** glBuffer_p, unsigned int loc, unsigned int v){
+__device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** glBuffer_p, unsigned int loc, unsigned int v, unsigned int* lock){
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV){
         shBuffer[loc] = v;
     }
     else{
-        if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
-            glBuffer_p[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
-            assert(glBuffer_p[0] != NULL); 
-        }
-        else while(glBuffer_p[0]==NULL)
-        //  printf("1");
-         ; // busy wait until glBuffer is allocated 
+        // if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
+        //     glBuffer_p[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
+        //     assert(glBuffer_p[0] != NULL); 
+        // }
+        // else while(glBuffer_p[0]==NULL)
+        // //  printf("1");
+        //  ; // busy wait until glBuffer is allocated 
         
+        while(loc>=MAX_NV && glBuffer_p[0]==NULL){
+            if(atomicExch(lock, 1) == 0){
+                glBuffer_p[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
+            }
+        }
+
         glBuffer_p[0][loc-MAX_NV] = v; 
     }
 }
@@ -112,12 +118,14 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int base;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
+    __shared__ unsigned int lock;
     unsigned int i;
 
     if(THID == 0){
         bufTail = 0;
         glBuffer = NULL;
         base = 0;
+        lock = 0;
     }
 
     __syncthreads();
@@ -173,7 +181,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             
                 if(a == level+1){
                     unsigned int loc = getWriteLoc(&bufTail);
-                    writeToBuffer(shBuffer, &glBuffer, loc, u);
+                    writeToBuffer(shBuffer, &glBuffer, loc, u, lock);
                 }
 
                 if(a <= level){
@@ -181,7 +189,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     atomicAdd(d_p.degrees+u, 1);
                 }
             }
-            // __syncwarp();
         }        
     }
     
