@@ -54,7 +54,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         // }
         
         // this sync is necessary so that memory is allocated before writing to shBuffer
-        // __syncthreads();
+        __syncthreads();
         
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + bufTail[0];
