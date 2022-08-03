@@ -90,7 +90,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** g
             assert(glBuffer_p[0] != NULL); 
         }
         else while(glBuffer_p[0]==NULL)
-         printf("1");
+        //  printf("1");
          ; // busy wait until glBuffer is allocated 
         
         glBuffer_p[0][loc-MAX_NV] = v; 
