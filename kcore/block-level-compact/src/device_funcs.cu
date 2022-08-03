@@ -133,7 +133,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level, &lock);
 
-    if(level == 1 && THID == 0) printf("%d ", bufTail);
+    // if(level == 1 && THID == 0) printf("%d ", bufTail);
     
     // bufTail is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
@@ -166,6 +166,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
+        __syncwarp();
         // unsigned int b1 = start;
         // while(true){
         //     __syncwarp();
