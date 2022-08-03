@@ -160,6 +160,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int b1 = start;
         while(true){
             __syncwarp();
+            printf("1");
             if(b1 >= end) break;
             unsigned int j = b1 + lane_id;
             b1 += 32;
