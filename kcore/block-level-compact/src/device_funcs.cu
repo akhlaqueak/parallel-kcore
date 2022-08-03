@@ -58,7 +58,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         
         if(predicate[THID]){
             unsigned int loc = addresses[THID] + bufTail[0];
-            writeToBuffer(shBuffer, glBuffer, loc, v);
+            writeToBuffer(shBuffer, (volatile unsigned int **) glBuffer, loc, v);
         }
         
         // this sync is necessary so that bufTail[0] is updated after all threads have been written to shBuffer
