@@ -130,7 +130,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
-    selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
+    selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level, &lock);
 
     if(level == 1 && THID == 0) printf("%d ", bufTail);
     
@@ -181,7 +181,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             
                 if(a == level+1){
                     unsigned int loc = getWriteLoc(&bufTail);
-                    writeToBuffer(shBuffer, &glBuffer, loc, u, lock);
+                    writeToBuffer(shBuffer, &glBuffer, loc, u, &lock);
                 }
 
                 if(a <= level){
