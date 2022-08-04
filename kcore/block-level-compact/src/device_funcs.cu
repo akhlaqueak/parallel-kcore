@@ -97,10 +97,10 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** g
         // //  printf("1");
         //  ; // busy wait until glBuffer is allocated 
         
-        while(lock==0){
+        while(lock[0]!=2){
             if(atomicExch(lock, 1) == 0){
                 glBuffer_p[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
-                printf("a ");
+                atomicExch(lock, 2);
             }
         }
 
