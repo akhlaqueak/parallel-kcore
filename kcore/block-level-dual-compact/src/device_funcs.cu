@@ -45,7 +45,7 @@ __device__ void exclusiveScanWarpLevel(unsigned int* addresses){
         }
     }
 }
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, volatile unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
 
     unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 
     __shared__ bool predicate[BLK_DIM];
@@ -101,14 +101,14 @@ __device__ inline unsigned int getWriteLoc(unsigned int* bufTail){
     return atomicAdd(bufTail, 1);
 }
 
-__device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** glBuffer_p, unsigned int loc, unsigned int v){
+__device__ void writeToBuffer(unsigned int* shBuffer,   unsigned int** glBuffer_p, unsigned int loc, unsigned int v){
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV){
         shBuffer[loc] = v;
     }
     else{
         if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
-            glBuffer_p[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
+            glBuffer_p[0] = ( unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
             assert(glBuffer_p[0] != NULL); 
         }
         else while(glBuffer_p[0]==NULL)
@@ -120,7 +120,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** g
 }
 
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer, volatile unsigned int* glBuffer, unsigned int loc){
+__device__ unsigned int readFromBuffer(unsigned int* shBuffer,  unsigned int* glBuffer, unsigned int loc){
     assert(loc < MAX_NV + GLBUFFER_SIZE);
     return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
 }
@@ -130,7 +130,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
-    __shared__ volatile unsigned int* glBuffer;
+    __shared__  unsigned int* glBuffer;
     __shared__ unsigned int base;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;

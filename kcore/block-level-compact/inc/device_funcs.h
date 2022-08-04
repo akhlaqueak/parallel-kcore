@@ -5,13 +5,13 @@
 #include "./common.h"
 
 
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, volatile unsigned int** glBuffer, unsigned int* bufTail, unsigned int level, unsigned int* lock);
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int* bufTail, unsigned int level, unsigned int* lock);
 
 __device__ inline unsigned int getWriteLoc(unsigned int* bufTail);
 
-__device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** glBuffer_p, unsigned int loc, unsigned int v, unsigned int* lock);
+__device__ void writeToBuffer(unsigned int* shBuffer,   unsigned int** glBuffer_p, unsigned int loc, unsigned int v, unsigned int* lock);
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer, volatile unsigned int* glBuffer, unsigned int loc);
+__device__ unsigned int readFromBuffer(unsigned int* shBuffer,  unsigned int* glBuffer, unsigned int loc);
 
 __device__ void exclusiveScan(unsigned int* addresses);
 
