@@ -155,7 +155,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
-    __shared__  unsigned int* glBuffer;
+    __shared__ volatile unsigned int* glBuffer;
     __shared__ unsigned int base;
     __shared__ unsigned int predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];

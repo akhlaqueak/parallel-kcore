@@ -24,7 +24,7 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer,  unsigned int* gl
 
 __device__ inline bool allocationRequired(volatile unsigned int* glBuffer, unsigned int loc, unsigned int dim);
 
-__device__ inline void allocateMemory(volatile unsigned int** glBufferPtr, unsigned int loc);
+__device__ inline void allocateMemory(volatile unsigned int** glBufferPtr);
 
 __device__ void allocateMemoryMutex(volatile unsigned int** glBufferPtr, unsigned int loc, unsigned int* lock);
 
