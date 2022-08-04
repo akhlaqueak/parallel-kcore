@@ -118,6 +118,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
 // }
 
 __device__ void writeToBuffer(unsigned int* shBuffer,   volatile unsigned int* glBuffer, unsigned int loc, unsigned int v){
+    printf("%d ", loc);
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV)
         shBuffer[loc] = v;
@@ -147,7 +148,7 @@ __device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
 __device__ void allocateMemoryMutex(volatile unsigned int** glBufferPtr, unsigned int loc, unsigned int* lock){
     if(atomicExch(lock, 1) == 0)
         allocateMemory(glBufferPtr);
-    while(glBufferPtr[0] == NULL) printf("w");
+    while(glBufferPtr[0] == NULL) ;
 }    
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
