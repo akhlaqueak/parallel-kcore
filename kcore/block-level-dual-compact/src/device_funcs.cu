@@ -26,7 +26,7 @@ __device__ void scanBlock(unsigned int* addresses){
 }
 
 __device__ void scanWarp(unsigned int* addresses){
-
+    unsigned int lane_id = THID%WARP_SIZE;
     for (int d = 2; d <= WARP_SIZE; d = d*2) {   
         __syncwarp();  
         if (lane_id % d == d-1)  
@@ -86,7 +86,7 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
 }
 
 __device__ void compactWarp(unsigned int* temp, unsigned int* predicate, 
-    unsigned int* shBuffer, volatile unsigned int** glBufferPtr, unsigned int* bufTail_p, unsigned int* lock){
+    unsigned int* shBuffer, volatile unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int* lock){
     
     __shared__ unsigned int addresses[WARP_SIZE];
     unsigned int lane_id = THID%WARP_SIZE;
@@ -98,7 +98,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     scanWarp(addresses);
     
     if(lane_id == WARP_SIZE-1)
-        bTail = atomicAdd(bufTail, addresses[lane_id]+predicate[lane_id]);
+        bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
     
     addresses[lane_id]+=bTail;
 
@@ -137,10 +137,10 @@ __device__ inline bool allocationRequired(volatile unsigned int* glBuffer, unsig
     return (THID%dim == dim-1 && // last thread of warp or block
         glBuffer == NULL && // global buffer is not allocated before
         loc >= MAX_NV
-    )
+    );
 }
-__device__ inline void allocateMemory(volatile unsigned int** glBufferPtr, unsigned int loc){
-        glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);            
+__device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
+        glBufferPtr[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);            
         assert(glBufferPtr[0]!=NULL);        
 }
 
@@ -159,6 +159,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int base;
     __shared__ unsigned int predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
+    __shared__ unsigned int lock;
 
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
@@ -168,6 +169,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     glBuffer = NULL;
     base = 0;
     predicate[THID] = 0;
+    lock = 0;
     
     compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
 
@@ -205,7 +207,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             __syncwarp();
 
-            compactWarp(temp+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail);
+            compactWarp(temp+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &lock);
             
             if(b1 >= end) break;
 
