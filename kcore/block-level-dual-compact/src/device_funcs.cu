@@ -126,7 +126,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,   volatile unsigned int* g
 }
 
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer,  unsigned int* glBuffer, unsigned int loc){
+__device__ unsigned int readFromBuffer(unsigned int* shBuffer,  volatile unsigned int* glBuffer, unsigned int loc){
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
 }
@@ -146,7 +146,7 @@ __device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
 
 __device__ void allocateMemoryMutex(volatile unsigned int** glBufferPtr, unsigned int loc, unsigned int* lock){
     if(atomicExch(lock, 1) == 0)
-        allocateMemory(glBufferPtr, loc);
+        allocateMemory(glBufferPtr);
     while(glBufferPtr[0] == NULL);
 }    
 
