@@ -23,6 +23,28 @@ __device__ void exclusiveScan(unsigned int* addresses){
         }
     }
 }
+
+__device__ void exclusiveScanWarpLevel(unsigned int* addresses){
+
+    for (int d = 2; d <= WARP_SIZE; d = d*2) {   
+        __syncwarp();  
+        if (THID % d == d-1)  
+            addresses[THID] += addresses[THID-d/2];  
+    }
+
+    if(THID == (WARP_SIZE-1)) {
+        addresses[THID] = 0;
+    }
+
+    for(int d=WARP_SIZE; d > 1; d/=2){
+        __syncwarp();
+        if(THID % d == d-1){
+            unsigned int val = addresses[THID-d/2];
+            addresses[THID-d/2] = addresses[THID];
+            addresses[THID] += val;
+        }
+    }
+}
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, volatile unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
 
     unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 

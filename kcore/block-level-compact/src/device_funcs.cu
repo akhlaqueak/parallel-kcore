@@ -23,6 +23,10 @@ __device__ void exclusiveScan(unsigned int* addresses){
         }
     }
 }
+
+
+
+
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, volatile unsigned int** glBuffer, unsigned int* bufTail, unsigned int level, unsigned int* lock){
 
     unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 
@@ -93,7 +97,7 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  volatile unsigned int** g
         // //  printf("1");
         //  ; // busy wait until glBuffer is allocated 
         
-        while(glBuffer_p[0]==NULL){
+        while(lock==0){
             if(atomicExch(lock, 1) == 0){
                 glBuffer_p[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
                 printf("a ");
@@ -166,7 +170,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
-        __syncwarp();
         // unsigned int b1 = start;
         // while(true){
         //     __syncwarp();
