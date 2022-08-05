@@ -148,14 +148,14 @@ __device__ inline bool allocationRequired(volatile unsigned int* glBuffer, unsig
 }
 __device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
         glBufferPtr[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
-        printf("alloc ");        
+        printf("allocated %d %d\n", blockIdx.x, THID);
         assert(glBufferPtr[0]!=NULL);        
 }
 
 __device__ void allocateMemoryMutex(volatile unsigned int** glBufferPtr, unsigned int loc, unsigned int* lock){
     if(atomicExch(lock, 1) == 0){
         
-        printf("mutexallocated %d %d\n", blockIdx.x, THID);
+        printf("mutex %d %d\n", blockIdx.x, THID);
         allocateMemory(glBufferPtr);
     }
     while(glBufferPtr[0] == NULL);
