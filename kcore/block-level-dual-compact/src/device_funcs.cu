@@ -118,7 +118,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
 // }
 
 __device__ void writeToBuffer(unsigned int* shBuffer,   volatile unsigned int* glBuffer, unsigned int loc, unsigned int v){
-    printf("%d ", loc);
+    // printf("%d ", loc);
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV)
         shBuffer[loc] = v;
