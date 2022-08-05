@@ -153,12 +153,12 @@ __device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
 }
 
 __device__ void allocateMemoryMutex(volatile unsigned int** glBufferPtr, unsigned int loc, unsigned int* lock){
-    if(atomicExch(lock, 1) == 0){
-        
-        printf("mutex %d %d\n", blockIdx.x, THID);
-        allocateMemory(glBufferPtr);
-    }
-    while(glBufferPtr[0] == NULL);
+    while(glBufferPtr[0] == NULL)
+        if(atomicExch(lock, 1) == 0){
+            
+            printf("mutex %d %d\n", blockIdx.x, THID);
+            allocateMemory(glBufferPtr);
+        }
 }    
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
