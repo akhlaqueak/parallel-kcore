@@ -227,7 +227,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             unsigned int j = b1 + lane_id;
             b1 += WARP_SIZE;
             if(j >= end) continue;
-        
 
             unsigned int u = d_p.neighbors[j];
             if(d_p.degrees[u] > level){
@@ -238,6 +237,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     predicate[THID] = 1;
                     // unsigned int loc = getWriteLoc(&bufTail);
                     // writeToBuffer(shBuffer, &glBuffer, loc, u);
+                }else{
+                    predicate[THID] = 0;
                 }
 
                 if(a <= level){
