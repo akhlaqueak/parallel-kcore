@@ -105,8 +105,8 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     addresses[lane_id]+=bTail;
 
 
-    if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE))
-        allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
+    // if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE))
+    //     allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
 
     __syncwarp();
 
@@ -213,7 +213,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             __syncwarp();
 
-            // compactWarp(temp+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &lock);
+            compactWarp(temp+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &lock);
             
             if(b1 >= end) break;
 
