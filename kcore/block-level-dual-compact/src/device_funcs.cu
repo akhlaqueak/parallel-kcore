@@ -100,7 +100,10 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     if(lane_id == WARP_SIZE-1)
         bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
     
+    __syncwarp();
+    
     addresses[lane_id]+=bTail;
+
 
     if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE))
         allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
