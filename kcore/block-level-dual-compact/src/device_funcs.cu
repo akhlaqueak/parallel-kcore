@@ -103,6 +103,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     __syncwarp();
     
     addresses[lane_id]+=bTail;
+    printf("%d ", bTail);
 
 
     // if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE))
@@ -176,7 +177,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     lock = 0;
     
     compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
-    if(level == 1 && THID == 0) printf("%d ", bufTail);
+    // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
 
 
