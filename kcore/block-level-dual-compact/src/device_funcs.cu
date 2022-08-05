@@ -98,11 +98,11 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 
     scanWarp(addresses);
 
-    if(THID>=64 and THID<96) printf("%d-%d ", addresses[lane_id], predicate[lane_id]);
+    // if(THID>=64 and THID<96) printf("%d-%d ", addresses[lane_id], predicate[lane_id]);
     
     if(lane_id == WARP_SIZE-1){
         bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
-        printf("\n%d %d %d\n", bTail, addresses[lane_id], predicate[lane_id]);
+        // printf("\n%d %d %d\n", bTail, addresses[lane_id], predicate[lane_id]);
     }
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
@@ -126,7 +126,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 // }
 
 __device__ void writeToBuffer(unsigned int* shBuffer,   volatile unsigned int* glBuffer, unsigned int loc, unsigned int v){
-    printf("loc: %d ", loc);
+    // printf("loc: %d ", loc);
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV)
         shBuffer[loc] = v;
