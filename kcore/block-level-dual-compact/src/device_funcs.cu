@@ -94,7 +94,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     unsigned int bTail;
     
     addresses[lane_id] = predicate[lane_id];
-    if(THID<32) printf("%dx", addresses[lane_id]);
+    if(THID<32) printf("%dx", predicate[lane_id]);
     scanWarp(addresses);
     if(THID<32) printf("%d ", addresses[lane_id]);
     
