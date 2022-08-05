@@ -99,7 +99,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     
     if(lane_id == WARP_SIZE-1){
         bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
-        printf("%d %d %d", bTail, addresses[lane_id], predicate[lane_id]);
+        printf("%d %d %d--", bTail, addresses[lane_id], predicate[lane_id]);
     }
     
     __syncwarp();
