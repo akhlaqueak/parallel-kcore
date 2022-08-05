@@ -45,6 +45,7 @@ __device__ void scanWarp(unsigned int* addresses){
             addresses[lane_id] += val;
         }
     }
+    __syncwarp();
 }
 
 __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  volatile unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level){
@@ -95,8 +96,9 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     
     addresses[lane_id] = predicate[lane_id];
     if(THID<32) printf("%dx", predicate[lane_id]);
+
     scanWarp(addresses);
-    __syncwarp();
+
     if(THID<32) printf("%d ", addresses[lane_id]);
     
     if(lane_id == WARP_SIZE-1){
