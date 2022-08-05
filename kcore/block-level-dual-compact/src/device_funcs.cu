@@ -107,9 +107,10 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     addresses[lane_id]+=bTail;
 
 
-    if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE))
+    if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE)){
+        printf("trying allocation at: %d %d \n", blockIdx.x, THID);
         allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
-
+    }
     __syncwarp();
 
     if(predicate[lane_id])
