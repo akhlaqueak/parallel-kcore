@@ -218,7 +218,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         // following while loop will keep all threads active until the continue condition
         while(true){
             __syncwarp();
-
+            predicate[THID] = 0;
             compactWarp(temp+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &lock);
             
             if(b1 >= end) break;
