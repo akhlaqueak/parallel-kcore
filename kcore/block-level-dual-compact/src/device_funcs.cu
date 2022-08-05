@@ -105,13 +105,13 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
         printf("\n%d %d %d\n", bTail, addresses[lane_id], predicate[lane_id]);
     }
     
-    bTail = __shfl_sync(-1, bTail, WARP_SIZE-1);
+    bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
     
     addresses[lane_id]+=bTail;
 
 
-    // if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE))
-    //     allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
+    if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE))
+        allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
 
     __syncwarp();
 
