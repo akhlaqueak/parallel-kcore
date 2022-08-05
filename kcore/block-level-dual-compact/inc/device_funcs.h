@@ -15,7 +15,7 @@ __device__ void scanWarp(unsigned int* addresses);
 __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  
     volatile unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level);
 
-__device__ void compactWarp(unsigned int* temp, unsigned int* predicate, 
+__device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigned int* predicate, 
     unsigned int* shBuffer, volatile unsigned int** glBufferPtr, unsigned int* bufTail_p, unsigned int* lock);
 
 __device__ void writeToBuffer(unsigned int* shBuffer,   volatile unsigned int* glBuffer, unsigned int loc, unsigned int v);

@@ -86,10 +86,9 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
     }
 }
 
-__device__ void compactWarp(unsigned int* temp, unsigned int* predicate, 
+__device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigned int* predicate, 
     unsigned int* shBuffer, volatile unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int* lock){
     
-    __shared__ unsigned int addresses[WARP_SIZE];
     unsigned int lane_id = THID%WARP_SIZE;
 
     unsigned int bTail;
@@ -169,6 +168,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int base;
     __shared__ unsigned int predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
+    __shared__ unsigned int addresses[BLK_DIM];
     __shared__ unsigned int lock;
 
     unsigned int warp_id = THID / 32;
@@ -218,8 +218,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         // following while loop will keep all threads active until the continue condition
         while(true){
             __syncwarp();
-            predicate[THID] = 0;
-            compactWarp(temp+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &lock);
+
+            compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &lock);
             
             if(b1 >= end) break;
 
