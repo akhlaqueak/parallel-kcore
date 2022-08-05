@@ -123,7 +123,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 // }
 
 __device__ void writeToBuffer(unsigned int* shBuffer,   volatile unsigned int* glBuffer, unsigned int loc, unsigned int v){
-    if(blockIdx.x == 10) printf("loc: %d ", loc);
+    // if(blockIdx.x == 10) printf("loc: %d ", loc);
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV)
         shBuffer[loc] = v;
@@ -146,14 +146,15 @@ __device__ inline bool allocationRequired(volatile unsigned int* glBuffer, unsig
     );
 }
 __device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
-        glBufferPtr[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);            
+        glBufferPtr[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
+        printf("alloc ");        
         assert(glBufferPtr[0]!=NULL);        
 }
 
 __device__ void allocateMemoryMutex(volatile unsigned int** glBufferPtr, unsigned int loc, unsigned int* lock){
     if(atomicExch(lock, 1) == 0){
         
-        printf("allocated");
+        printf("mutexallocated");
         allocateMemory(glBufferPtr);
     }
     while(glBufferPtr[0] == NULL);
