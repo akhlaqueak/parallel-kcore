@@ -94,12 +94,12 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     unsigned int bTail;
     
     addresses[lane_id] = predicate[lane_id];
-    
+    printf("%d ", addresses[lane_id]);
     scanWarp(addresses);
     
     if(lane_id == WARP_SIZE-1){
         bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
-        printf("%d %d %d--", bTail, addresses[lane_id], predicate[lane_id]);
+        printf("\n%d %d %d\n", bTail, addresses[lane_id], predicate[lane_id]);
     }
     
     __syncwarp();
