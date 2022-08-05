@@ -147,7 +147,7 @@ __device__ inline bool allocationRequired(volatile unsigned int* glBuffer, unsig
     );
 }
 __device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
-        glBufferPtr[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
+        glBufferPtr[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
         printf("allocated %d %d\n", blockIdx.x, THID);
         assert(glBufferPtr[0]!=NULL);        
 }
