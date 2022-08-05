@@ -97,13 +97,14 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     
     scanWarp(addresses);
     
-    if(lane_id == WARP_SIZE-1)
+    if(lane_id == WARP_SIZE-1){
         bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
+        printf("%d %d %d", bTail, addresses[lane_id], predicate[lane_id]);
+    }
     
     __syncwarp();
     
     addresses[lane_id]+=bTail;
-    printf("%d ", bTail);
 
 
     // if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE))
