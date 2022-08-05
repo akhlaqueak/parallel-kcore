@@ -151,8 +151,11 @@ __device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
 }
 
 __device__ void allocateMemoryMutex(volatile unsigned int** glBufferPtr, unsigned int loc, unsigned int* lock){
-    if(atomicExch(lock, 1) == 0)
+    if(atomicExch(lock, 1) == 0){
+        
+        printf("allocated");
         allocateMemory(glBufferPtr);
+    }
     while(glBufferPtr[0] == NULL);
 }    
 
