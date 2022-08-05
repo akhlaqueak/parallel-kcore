@@ -94,8 +94,8 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* predicate,
     unsigned int bTail;
     
     addresses[lane_id] = predicate[lane_id];
-    printf("%d ", addresses[lane_id]);
     scanWarp(addresses);
+    printf("%d ", addresses[lane_id]);
     
     if(lane_id == WARP_SIZE-1){
         bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
