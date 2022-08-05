@@ -105,7 +105,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
         printf("\n%d %d %d\n", bTail, addresses[lane_id], predicate[lane_id]);
     }
     
-    __shfl_sync(-1, bTail, WARP_SIZE-1);
+    bTail = __shfl_sync(-1, bTail, WARP_SIZE-1);
     
     addresses[lane_id]+=bTail;
 
