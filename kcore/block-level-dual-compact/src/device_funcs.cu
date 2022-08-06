@@ -124,7 +124,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 // }
 
 __device__ void writeToBuffer(unsigned int* shBuffer,    unsigned int* glBuffer, unsigned int loc, unsigned int v){
-    if(blockIdx.x == 20) printf("%d ", loc);
+    if(blockIdx.x == 8) printf("%d ", loc);
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV)
         shBuffer[loc] = v;
