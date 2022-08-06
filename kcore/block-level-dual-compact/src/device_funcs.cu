@@ -48,7 +48,7 @@ __device__ void scanWarp(unsigned int* addresses){
     __syncwarp();
 }
 
-__device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  volatile unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level){
+__device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,   unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level){
 
     unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 
     __shared__ bool predicate[BLK_DIM];
@@ -87,7 +87,7 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
 }
 
 __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigned int* predicate, 
-    unsigned int* shBuffer, volatile unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int* lock){
+    unsigned int* shBuffer,  unsigned int** glBufferPtr, unsigned int* bufTailPtr, volatile unsigned int* lock){
     
     unsigned int lane_id = THID%WARP_SIZE;
 
@@ -96,7 +96,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     addresses[lane_id] = predicate[lane_id];
 
     scanWarp(addresses);
-
+    // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
         bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
@@ -123,7 +123,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 //     return atomicAdd(bufTail, 1);
 // }
 
-__device__ void writeToBuffer(unsigned int* shBuffer,   volatile unsigned int* glBuffer, unsigned int loc, unsigned int v){
+__device__ void writeToBuffer(unsigned int* shBuffer,    unsigned int* glBuffer, unsigned int loc, unsigned int v){
     // if(blockIdx.x == 10) printf("loc: %d ", loc);
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     if(loc < MAX_NV)
@@ -133,32 +133,33 @@ __device__ void writeToBuffer(unsigned int* shBuffer,   volatile unsigned int* g
 }
 
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer,  volatile unsigned int* glBuffer, unsigned int loc){
+__device__ unsigned int readFromBuffer(unsigned int* shBuffer,   unsigned int* glBuffer, unsigned int loc){
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
 }
 
 
 
-__device__ inline bool allocationRequired(volatile unsigned int* glBuffer, unsigned int loc, unsigned int dim){
+__device__ inline bool allocationRequired( unsigned int* glBuffer, unsigned int loc, unsigned int dim){
     return (THID%dim == dim-1 && // last thread of warp or block
         glBuffer == NULL && // global buffer is not allocated before
         loc >= MAX_NV
     );
 }
-__device__ inline void allocateMemory(volatile unsigned int** glBufferPtr){
-        glBufferPtr[0] = (volatile unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
+__device__ inline void allocateMemory( unsigned int** glBufferPtr){
+        glBufferPtr[0] = ( unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
         printf("allocated %d %d\n", blockIdx.x, THID);
         assert(glBufferPtr[0]!=NULL);        
 }
 
-__device__ void allocateMemoryMutex(volatile unsigned int** glBufferPtr, unsigned int loc, unsigned int* lock){
-    while((volatile unsigned int*) glBufferPtr[0] == NULL)
-        if(atomicExch(lock, 1) == 0){
-            
-            printf("mutex %d %d\n", blockIdx.x, THID);
-            allocateMemory(glBufferPtr);
-        }
+__device__ void allocateMemoryMutex( unsigned int** glBufferPtr, unsigned int loc, volatile unsigned int* lock){
+    if(atomicExch(lock, 1) == 0){        
+        printf("mutex %d %d\n", blockIdx.x, THID);
+        allocateMemory(glBufferPtr);
+        lock[0] = 2;
+        __threadfence_block();
+    }
+    while(lock[0]!=2);
 }    
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
@@ -166,12 +167,12 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
-    __shared__ volatile unsigned int* glBuffer;
+    __shared__  unsigned int* glBuffer;
     __shared__ unsigned int base;
     __shared__ unsigned int predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
-    __shared__ unsigned int lock;
+    __shared__ volatile unsigned int lock;
 
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
@@ -192,6 +193,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // bufTail is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose base is introduced, is incremented whenever a warp takes a job.
+    
     // todo: busy waiting on several blocks
 
     // bufTail = 10;
