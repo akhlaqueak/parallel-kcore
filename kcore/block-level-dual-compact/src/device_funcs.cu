@@ -166,7 +166,7 @@ __device__ void synchronizeBlocks(volatile unsigned int* blockCounter){
     
     if (THID==0)
     {
-        unsigned int val = atomicAdd((unsigned int*)blockCounter, 1);
+        atomicAdd((unsigned int*)blockCounter, 1);
         __threadfence();
     }
     
@@ -204,7 +204,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
-
+    __syncthreads();
 
     
     // bufTail is being incremented within the loop, 
