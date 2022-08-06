@@ -166,8 +166,8 @@ __device__ void synchronizeBlocks(volatile unsigned int* blockCounter){
     
     if (THID==0)
     {
-        atomicAdd((unsigned int*)blockCounter, 1);
-        printf("%d ", blockCounter[0]);
+        unsigned int val = atomicAdd((unsigned int*)blockCounter, 1);
+        printf("%d ", val);
         __threadfence();
     }
     
