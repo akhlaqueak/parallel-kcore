@@ -170,7 +170,7 @@ __device__ void syncBlocks(volatile unsigned int* blockCounter){
         __threadfence();
         while(blockCounter[0]<BLK_NUMS){
             
-            printf("%d ", blockCounter[0]);
+            // printf("%d ", blockCounter[0]);
         };// busy wait until all blocks increment
     }
     
