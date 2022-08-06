@@ -172,7 +172,7 @@ __device__ void synchronizeBlocks(volatile unsigned int* blockCounter){
     }
     
     if(THID==0){
-        while(blockCounter[0]<BLK_NUMS)// busy wait until all blocks increment
+        while(blockCounter[0]<BLK_NUMS);// busy wait until all blocks increment
     }
     __syncthreads();
 }
