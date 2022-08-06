@@ -203,7 +203,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     allocLock = 0;
     readLock = 0;
 
-    // compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
+    compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
     __syncthreads();
@@ -216,11 +216,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // todo: busy waiting on several blocks
 
     syncBlocks(blockCounter);
-
     return;
     // bufTail = 10;
     // for(unsigned int i = warp_id; i<bufTail ; i += WARPS_EACH_BLK){
-    // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
+    // this for loop is a wrong choice, as many threads might exit from the loop checking the condition     
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
         if(base == bufTail) break;
