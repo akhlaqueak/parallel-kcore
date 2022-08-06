@@ -28,5 +28,8 @@ __device__ inline void allocateMemory( unsigned int** glBufferPtr);
 
 __device__ void allocateMemoryMutex( unsigned int** glBufferPtr, unsigned int loc, volatile unsigned int* lock);
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V);
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned int* blockCounter);
+
+__device__ void synchronizeBlocks(volatile unsigned int* blockCounter);
+
 #endif //CUTS_DEVICE_FUNCS_H

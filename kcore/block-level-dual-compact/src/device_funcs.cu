@@ -108,7 +108,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 
 
     if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE)){
-        printf("trying allocation at: %d %d \n", blockIdx.x, THID);
+        // printf("trying allocation at: %d %d \n", blockIdx.x, THID);
         allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
     }
     __syncwarp();
@@ -156,13 +156,26 @@ __device__ void allocateMemoryMutex( unsigned int** glBufferPtr, unsigned int lo
     if(atomicExch((unsigned int*)lock, 1) == 0){        
         printf("mutex %d %d\n", blockIdx.x, THID);
         allocateMemory(glBufferPtr);
-        lock[0] = 2;
-        __threadfence_block();
+        lock[0] = 2; // not necessary to do it atomically, since it's the only thread in critical section
+        __threadfence_block(); // it ensures the writes done by this thread are visible by all other threads in the block
     }
     while(lock[0]!=2);
 }    
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
+__device__ void synchronizeBlocks(volatile unsigned int* blockCounter){
+    
+    if (THID==0)
+    {
+        atomicAdd((unsigned int*)blockCounter, 1);
+        __threadfence();
+    }
+    
+    if(THID==0)
+        while(blockCounter[0]<BLK_NUMS);// busy wait until all blocks increment
+    __syncthreads();
+}
+
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned int* blockCounter){
     
     
     __shared__ unsigned int shBuffer[MAX_NV];
@@ -183,6 +196,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     base = 0;
     predicate[THID] = 0;
     lock = 0;
+    blockCounter = 0;
     
     compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
@@ -196,6 +210,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     // todo: busy waiting on several blocks
 
+    synchronizeBlocks(blockCounter);
     // bufTail = 10;
     // for(unsigned int i = warp_id; i<bufTail ; i += WARPS_EACH_BLK){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
