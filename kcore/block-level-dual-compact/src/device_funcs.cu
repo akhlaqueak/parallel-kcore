@@ -189,7 +189,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
-    __shared__ volatile unsigned int lock;
+    __shared__ volatile unsigned int allocLock;
+    __shared__ volatile unsigned int readLock;
 
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
@@ -199,9 +200,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     glBuffer = NULL;
     base = 0;
     predicate[THID] = 0;
-    lock = 0;
-    
-    compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
+    alloclock = 0;
+    readLock = 0;
+
+    // compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
     __syncthreads();
@@ -241,7 +243,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             __syncwarp();
 
-            compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &lock);
+            compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &allocLock);
             
             if(b1 >= end) break;
 
