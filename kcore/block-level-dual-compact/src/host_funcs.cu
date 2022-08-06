@@ -66,6 +66,7 @@ void find_kcore(string data_file,bool write_to_disk){
         chkerr(cudaDeviceSynchronize());
         cout<<"*********Completed level: "<<level<<", global_count: "<<global_count[0]<<" *********"<<endl;
         level += 1;
+        blockCounter[0] = 0;
     }
 
 	get_results_from_gpu(data_graph, data_pointers);
