@@ -162,20 +162,20 @@ __device__ void allocateMemoryMutex( unsigned int** glBufferPtr, unsigned int lo
     while(lock[0]!=2);
 }    
 
-__device__ void synchronizeBlocks(volatile unsigned int* blockCounter){
+__device__ void syncBlocks(volatile unsigned int* blockCounter){
     
     if (THID==0)
     {
         atomicAdd((unsigned int*)blockCounter, 1);
         __threadfence();
-    }
-    
-    if(THID==0){
         while(blockCounter[0]<BLK_NUMS){
             
             printf("%d ", blockCounter[0]);
         };// busy wait until all blocks increment
     }
+    
+
+    
     __syncthreads();
 }
 
@@ -203,7 +203,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     allocLock = 0;
     readLock = 0;
 
-    compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
+    // compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
     __syncthreads();
@@ -215,7 +215,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     // todo: busy waiting on several blocks
 
-    // synchronizeBlocks(blockCounter);
+    syncBlocks(blockCounter);
     // bufTail = 10;
     // for(unsigned int i = warp_id; i<bufTail ; i += WARPS_EACH_BLK){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
@@ -260,8 +260,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     predicate[THID] = 1;
                     // unsigned int loc = getWriteLoc(&bufTail);
                     // writeToBuffer(shBuffer, &glBuffer, loc, u);
-                }else{
-                    predicate[THID] = 0;
                 }
 
                 if(a <= level){
