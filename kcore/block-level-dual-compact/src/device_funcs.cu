@@ -148,13 +148,13 @@ __device__ inline bool allocationRequired( unsigned int* glBuffer, unsigned int 
 }
 __device__ inline void allocateMemory( unsigned int** glBufferPtr){
         glBufferPtr[0] = ( unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
-        printf("allocated %d %d\n", blockIdx.x, THID);
+        // printf("allocated %d %d\n", blockIdx.x, THID);
         assert(glBufferPtr[0]!=NULL);        
 }
 
 __device__ void allocateMemoryMutex( unsigned int** glBufferPtr, unsigned int loc, volatile unsigned int* lock){
     if(atomicExch((unsigned int*)lock, 1) == 0){        
-        printf("mutex %d %d\n", blockIdx.x, THID);
+        // printf("mutex %d %d\n", blockIdx.x, THID);
         allocateMemory(glBufferPtr);
         lock[0] = 2; // not necessary to do it atomically, since it's the only thread in critical section
         __threadfence_block(); // it ensures the writes done by this thread are visible by all other threads in the block
@@ -215,7 +215,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     // todo: busy waiting on several blocks
 
-    synchronizeBlocks(blockCounter);
+    // synchronizeBlocks(blockCounter);
     // bufTail = 10;
     // for(unsigned int i = warp_id; i<bufTail ; i += WARPS_EACH_BLK){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition     
