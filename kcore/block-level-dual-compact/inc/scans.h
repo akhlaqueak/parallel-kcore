@@ -1,6 +1,8 @@
 #ifndef SCANS_H
 #define SCANS_H
 
+#define BELLOCH 0
+
 #include "./common.h"
 #include "./buffer.h"
 
@@ -12,7 +14,6 @@ __device__ void scanWarpHillis(unsigned int* addresses);
 
 __device__ void scanWarpBelloch(unsigned int* addresses);
 
-#define BELLOCH 0
 
 __device__ inline void scanBlock(unsigned int* addresses){
     if(BELLOCH)
