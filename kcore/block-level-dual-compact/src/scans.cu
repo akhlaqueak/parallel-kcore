@@ -11,13 +11,14 @@ __device__ void scanBlockHillis(unsigned int* addresses){
         unsigned int newVal = addresses[THID];   
         if (int(THID - d) >= 0)  
             newVal += addresses[THID-d];  
-        __syncthreads();  
+        __syncthreads();
         addresses[THID] = newVal;
+        __syncthreads();  
     }
         //Hillis-Steele Scan gives inclusive scan.
         //to get exclusive scan, subtract the initial values.
     addresses[THID] -= initVal;
-    __syncthreads();
+    __syncthreads();  
 }
 
 __device__ void scanBlockBelloch(unsigned int* addresses){
@@ -52,6 +53,7 @@ __device__ void scanWarpHillis(unsigned int* addresses){
             newVal += addresses[THID-d];  
         __syncwarp();  
         addresses[THID] = newVal;
+        __syncwarp();  
     }
         //Hillis-Steele Scan gives inclusive scan.
         //to get exclusive scan, subtract the initial values.
