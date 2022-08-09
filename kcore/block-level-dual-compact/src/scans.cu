@@ -102,17 +102,17 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
         addresses[THID] = predicate[THID];
 
         scanBlock(addresses);
-        printf("%d ", addresses[THID]);
         
         if(THID == BLK_DIM - 1){            
             bTail = atomicAdd(bufTailPtr, addresses[THID] + predicate[THID]);
         }
         
         bTail = __shfl_sync(0xFFFFFFFF, bTail, BLK_DIM-1);
-
+        
         __syncthreads();
         
         addresses[THID] += bTail;
+        printf("%d ", addresses[THID]);
 
 
         if(allocationRequired(glBufferPtr[0], addresses[THID], BLK_DIM))
