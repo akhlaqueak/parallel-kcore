@@ -134,7 +134,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 
     unsigned int lane_id = THID%WARP_SIZE;
 
-    unsigned int bTail = 0;
+    unsigned int bTail;
     
     addresses[lane_id] = predicate[lane_id];
 
@@ -151,6 +151,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     }
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
+    __syncwarp();  
     
     addresses[lane_id] += bTail;
 
