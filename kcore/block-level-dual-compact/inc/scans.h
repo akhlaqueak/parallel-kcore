@@ -13,13 +13,13 @@ __device__ void scanWarpHillis(unsigned int* addresses);
 __device__ void scanWarpBelloch(unsigned int* addresses);
 
 __device__ inline void scanBlock(unsigned int* addresses){
-    // scanBlockBelloch(addresses);
-    scanBlockHillis(addresses);
+    scanBlockBelloch(addresses);
+    // scanBlockHillis(addresses);
 }
 
 __device__ inline void scanWarp(unsigned int* addresses){
-    // scanWarpBelloch(addresses);
-    scanWarpHillis(addresses);
+    scanWarpBelloch(addresses);
+    // scanWarpHillis(addresses);
 }
 
 // __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  
