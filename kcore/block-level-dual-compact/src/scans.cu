@@ -109,6 +109,8 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
         }
         
         bTail = __shfl_sync(0xFFFFFFFF, bTail, BLK_DIM-1);
+
+        __syncthreads();
         
         addresses[THID] += bTail;
 
