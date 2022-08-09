@@ -22,8 +22,9 @@ __device__ inline void scanWarp(unsigned int* addresses){
     scanWarpHillis(addresses);
 }
 
-__device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  
-     unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level);
+// __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  
+//      unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level);
+__device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,   unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level);
 
 __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigned int* predicate, 
     unsigned int* shBuffer,  unsigned int** glBufferPtr, unsigned int* bufTail_p, volatile unsigned int* lock);
