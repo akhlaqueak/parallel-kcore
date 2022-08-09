@@ -12,10 +12,7 @@ __device__ void syncBlocks(volatile unsigned int* blockCounter){
             // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
             // printf("%d ", blockCounter[0]);
         };// busy wait until all blocks increment
-    }
-    
-
-    
+    }   
     __syncthreads();
 }
 
@@ -43,7 +40,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     allocLock = 0;
     readLock = 0;
 
-    compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
+    // compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
     __syncthreads();
