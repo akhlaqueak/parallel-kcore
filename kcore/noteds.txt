@@ -1,0 +1,2 @@
+gowalla degree 1 nodes	49452
+Enron degree 1 nodes 11211

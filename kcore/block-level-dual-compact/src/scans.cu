@@ -102,10 +102,13 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
         addresses[THID] = predicate[THID];
 
         scanBlock(addresses);
+
         
-        if(THID == BLK_DIM - 1){   
-            bTail = atomicAdd(bufTailPtr, addresses[THID] + predicate[THID]);
-            if(allocationRequired(glBufferPtr[0], addresses[THID], BLK_DIM))
+        if(THID == BLK_DIM - 1){  
+            int nv =  addresses[THID] + predicate[THID];            
+            bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
+            
+            if(allocationRequired(glBufferPtr[0], bTail+nv))
                 allocateMemory(glBufferPtr);
         }
 
@@ -128,7 +131,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     
     unsigned int lane_id = THID%WARP_SIZE;
 
-    unsigned int bTail;
+    unsigned int bTail = 0;
     
     addresses[lane_id] = predicate[lane_id];
 
@@ -136,19 +139,17 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
-        bTail = atomicAdd(bufTailPtr, addresses[lane_id]+predicate[lane_id]);
+        int nv = addresses[lane_id]+predicate[lane_id];
+        bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
+        if(allocationRequired(glBufferPtr[0], bTail+nv)){
+            // printf("trying allocation at: %d %d \n", blockIdx.x, THID);
+            allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
+        }
     }
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
     
-    addresses[lane_id]+=bTail;
-
-
-    if(allocationRequired(glBufferPtr[0], addresses[lane_id], WARP_SIZE)){
-        // printf("trying allocation at: %d %d \n", blockIdx.x, THID);
-        allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
-    }
-    __syncwarp();
+    addresses[lane_id] += bTail;
 
     if(predicate[lane_id])
         writeToBuffer(shBuffer, glBufferPtr[0], addresses[lane_id], temp[lane_id]);

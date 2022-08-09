@@ -21,11 +21,9 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer,   unsigned int* g
 
 
 
-__device__ bool allocationRequired( unsigned int* glBuffer, unsigned int loc, unsigned int dim){
-    return (THID%dim == dim-1 && // last thread of warp or block
-        glBuffer == NULL && // global buffer is not allocated before
-        loc >= MAX_NV
-    );
+__device__ bool allocationRequired( unsigned int* glBuffer, unsigned int loc){
+    return (glBuffer == NULL && // global buffer is not allocated before
+            loc >= MAX_NV); //shBuffer is exhausted
 }
 __device__ void allocateMemory( unsigned int** glBufferPtr){
         glBufferPtr[0] = ( unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
@@ -38,7 +36,7 @@ __device__ void allocateMemoryMutex( unsigned int** glBufferPtr, unsigned int lo
         // printf("mutex %d %d\n", blockIdx.x, THID);
         allocateMemory(glBufferPtr);
         lock[0] = 2; // not necessary to do it atomically, since it's the only thread in critical section
-        __threadfence_block(); // it ensures the writes done by this thread are visible by all other threads in the block
+        __threadfence_block(); // it ensures the writes done to shared/global mem
     }
     while(lock[0]!=2);
 }    
