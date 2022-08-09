@@ -111,7 +111,7 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
         
         addresses[THID] += bTail;
 
-        printf("%d ", addresses[THID]);
+        printf("%d ", bTail);
 
         if(allocationRequired(glBufferPtr[0], addresses[THID], BLK_DIM))
             allocateMemory(glBufferPtr);
