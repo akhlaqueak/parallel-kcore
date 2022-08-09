@@ -7,9 +7,9 @@ __device__ void scanBlockHillis(unsigned int* addresses){
     
     int initVal = addresses[THID];
 
-    for (int d = 1; d < BLK_DIM; d = d*2) {
-        int newVal = addresses[THID];   
-        if (THID - d >= 0)  
+    for (unsigned int d = 1; d < BLK_DIM; d = d*2) {
+        unsigned int newVal = addresses[THID];   
+        if (int(THID - d) >= 0)  
             newVal += addresses[THID-d];  
         __syncthreads();  
         addresses[THID] = newVal;
@@ -46,9 +46,9 @@ __device__ void scanBlockBelloch(unsigned int* addresses){
 __device__ void scanWarpHillis(unsigned int* addresses){
     int initVal = addresses[THID];
     
-    for (int d = 1; d < WARP_SIZE; d = d*2) {
-        int newVal = addresses[THID];   
-        if (THID - d >= 0)  
+    for (unsigned int d = 1; d < WARP_SIZE; d = d*2) {
+        unsigned int newVal = addresses[THID];   
+        if (int(THID - d) >= 0)  
             newVal += addresses[THID-d];  
         __syncwarp();  
         addresses[THID] = newVal;

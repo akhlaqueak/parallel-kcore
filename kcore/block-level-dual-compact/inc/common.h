@@ -10,6 +10,8 @@
 #define GLBUFFER_SIZE 1000000
 #define THID threadIdx.x
 #define WARP_SIZE 32
+#define UINT unsigned int
+
 #include <iostream>
 #include <vector>
 #include <set>
