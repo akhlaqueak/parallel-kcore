@@ -8,9 +8,9 @@
 #include "stdio.h"
 
 
-__device__ void scanBlock(unsigned int* addresses);
+__device__ inline void scanBlock(unsigned int* addresses);
 
-__device__ void scanWarp(unsigned int* addresses);
+__device__ inline void scanWarp(unsigned int* addresses);
 
 __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,  
      unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level);

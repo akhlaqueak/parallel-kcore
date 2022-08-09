@@ -1,62 +1,26 @@
 
 #include "../inc/device_funcs.h"
+#include "../inc/scans.h"
 #include "stdio.h"
 
-
-__device__ void scanBlock(unsigned int* addresses){
-
-    for (int d = 2; d <= BLK_DIM; d = d*2) {   
-        __syncthreads();  
-        if (THID % d == d-1)  
-            addresses[THID] += addresses[THID-d/2];  
-    }
-
-    if(THID == (BLK_DIM-1)) {
-        addresses[THID] = 0;
-    }
-
-    for(int d=BLK_DIM; d > 1; d/=2){
-        __syncthreads();
-        if(THID % d == d-1){
-            unsigned int val = addresses[THID-d/2];
-            addresses[THID-d/2] = addresses[THID];
-            addresses[THID] += val;
-        }
-    }
+__device__ inline void scanBlock(unsigned int* addresses){
+    // scanBlockBelloch(addresses);
+    scanBlockHillis(addresses);
 }
 
-__device__ void scanWarp(unsigned int* addresses){
-    unsigned int lane_id = THID%WARP_SIZE;
-    for (int d = 2; d <= WARP_SIZE; d = d*2) {   
-        __syncwarp();  
-        if (lane_id % d == d-1)  
-            addresses[lane_id] += addresses[lane_id-d/2];  
-    }
-
-    if(lane_id == (WARP_SIZE-1)) {
-        addresses[lane_id] = 0;
-    }
-
-    for(int d=WARP_SIZE; d > 1; d/=2){
-        __syncwarp();
-        if(lane_id % d == d-1){
-            unsigned int val = addresses[lane_id-d/2];
-            addresses[lane_id-d/2] = addresses[lane_id];
-            addresses[lane_id] += val;
-        }
-    }
-    __syncwarp();
+__device__ inline void scanWarp(unsigned int* addresses){
+    // scanWarpBelloch(addresses);
+    scanWarpHillis(addresses);
 }
-
 __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,   unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level){
 
-    unsigned int global_threadIdx = blockIdx.x * BLK_DIM + THID; 
+    unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
-        unsigned int v = base + global_threadIdx; 
+        unsigned int v = base + glThreadIdx; 
 
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
@@ -87,7 +51,8 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
 }
 
 __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigned int* predicate, 
-    unsigned int* shBuffer,  unsigned int** glBufferPtr, unsigned int* bufTailPtr, volatile unsigned int* lock){
+                            unsigned int* shBuffer,  unsigned int** glBufferPtr, unsigned int* bufTailPtr, 
+                            volatile unsigned int* lock){
     
     unsigned int lane_id = THID%WARP_SIZE;
 
@@ -169,7 +134,7 @@ __device__ void syncBlocks(volatile unsigned int* blockCounter){
         atomicAdd((unsigned int*)blockCounter, 1);
         __threadfence();
         while(blockCounter[0]<BLK_NUMS){
-            
+            // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
             // printf("%d ", blockCounter[0]);
         };// busy wait until all blocks increment
     }
@@ -266,6 +231,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     // node degree became less than the level after decrementing... 
                     atomicAdd(d_p.degrees+u, 1);
                 }
+                __threadfence();
             }
         }        
     }

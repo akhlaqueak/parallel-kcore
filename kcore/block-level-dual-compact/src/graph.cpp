@@ -19,8 +19,8 @@ Graph::Graph(std::string input_file){
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
 
-    bufTail = neighbors_offset[V];
-    neighbors = new unsigned int[bufTail];
+    E = neighbors_offset[V];
+    neighbors = new unsigned int[E];
 
     #pragma omp parallel for
     for(int i=0;i<V;i++){
@@ -28,7 +28,7 @@ Graph::Graph(std::string input_file){
         for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
             neighbors[j] = *it;
     }
-    // AVG_degrees = bufTail/V + 2;
+    // AVG_degrees = E/V + 2;
 
     // unsigned int j = 0;
     // for(unsigned int i=0;i<V;++i){
