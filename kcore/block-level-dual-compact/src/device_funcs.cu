@@ -76,7 +76,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         // the for loop may leave some of the threads inactive in its last iteration
         // following while loop will keep all threads active until the continue condition
         while(true){
-            __syncwarp();
+            // __syncwarp();
             compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &allocLock);
             
             if(b1 >= end) break;

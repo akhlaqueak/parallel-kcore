@@ -130,7 +130,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
                             unsigned int* shBuffer,  unsigned int** glBufferPtr, unsigned int* bufTailPtr, 
                             volatile unsigned int* lock){
     
-    // __syncwarp();
+    __syncwarp();
 
     unsigned int lane_id = THID%WARP_SIZE;
 
