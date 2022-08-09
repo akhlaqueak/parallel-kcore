@@ -44,14 +44,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
-    return;
     // bufTail is being incremented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose base is introduced, is incremented whenever a warp takes a job.
     
     // todo: busy waiting on several blocks
 
-    // syncBlocks(blockCounter);
+    syncBlocks(blockCounter);
     // bufTail = 10;
     // for(unsigned int i = warp_id; i<bufTail ; i += WARPS_EACH_BLK){
     // this for loop is a wrong choice, as many threads might exit from the loop checking the condition     
