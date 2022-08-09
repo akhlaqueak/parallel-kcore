@@ -2,6 +2,7 @@
 #define SCANS_H
 
 #include "./common.h"
+#include "buffer.h"
 
 __device__ void scanBlockHillis(unsigned int* addresses);
 
