@@ -23,9 +23,9 @@ __device__ inline void scanBlock(unsigned int* addresses){
 }
 
 __device__ inline void scanWarp(unsigned int* addresses){
-    if(BELLOCH)
-        scanWarpBelloch(addresses);
-    else
+    // if(BELLOCH)
+    //     scanWarpBelloch(addresses);
+    // else
         scanWarpHillis(addresses);
 }
 
