@@ -46,18 +46,19 @@ __device__ void scanBlockBelloch(unsigned int* addresses){
 
 __device__ void scanWarpHillis(unsigned int* addresses){
     int initVal = addresses[THID];
-    
+    int lane_id = THID%32;
+
     for (unsigned int d = 1; d < WARP_SIZE; d = d*2) {
-        unsigned int newVal = addresses[THID];   
-        if (int(THID - d) >= 0)  
-            newVal += addresses[THID-d];  
+        unsigned int newVal = addresses[lane_id];   
+        if (int(lane_id - d) >= 0)  
+            newVal += addresses[lane_id-d];  
         __syncwarp();  
-        addresses[THID] = newVal;
+        addresses[lane_id] = newVal;
         __syncwarp();  
     }
         //Hillis-Steele Scan gives inclusive scan.
         //to get exclusive scan, subtract the initial values.
-    addresses[THID] -= initVal;
+    addresses[lane_id] -= initVal;
     __syncwarp();
 }
 
