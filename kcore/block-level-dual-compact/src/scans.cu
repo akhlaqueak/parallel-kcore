@@ -82,15 +82,6 @@ __device__ void scanWarpBelloch(unsigned int* addresses){
     __syncwarp();
 }
 
-__device__ inline void scanBlock(unsigned int* addresses){
-    // scanBlockBelloch(addresses);
-    scanBlockHillis(addresses);
-}
-
-__device__ inline void scanWarp(unsigned int* addresses){
-    // scanWarpBelloch(addresses);
-    scanWarpHillis(addresses);
-}
 __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer,   unsigned int** glBufferPtr, unsigned int* bufTailPtr, unsigned int level){
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 

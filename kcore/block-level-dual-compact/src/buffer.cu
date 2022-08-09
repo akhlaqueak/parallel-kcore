@@ -21,13 +21,13 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer,   unsigned int* g
 
 
 
-__device__ inline bool allocationRequired( unsigned int* glBuffer, unsigned int loc, unsigned int dim){
+__device__ bool allocationRequired( unsigned int* glBuffer, unsigned int loc, unsigned int dim){
     return (THID%dim == dim-1 && // last thread of warp or block
         glBuffer == NULL && // global buffer is not allocated before
         loc >= MAX_NV
     );
 }
-__device__ inline void allocateMemory( unsigned int** glBufferPtr){
+__device__ void allocateMemory( unsigned int** glBufferPtr){
         glBufferPtr[0] = ( unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE);
         // printf("allocated %d %d\n", blockIdx.x, THID);
         assert(glBufferPtr[0]!=NULL);        
