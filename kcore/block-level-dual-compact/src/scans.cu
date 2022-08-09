@@ -111,8 +111,10 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
         
         addresses[THID] += bTail;
 
-        // if(allocationRequired(glBufferPtr[0], addresses[THID], BLK_DIM))
-        //     allocateMemory(glBufferPtr);
+        printf("%d ", addresses[THID]);
+
+        if(allocationRequired(glBufferPtr[0], addresses[THID], BLK_DIM))
+            allocateMemory(glBufferPtr);
 
         // this sync is necessary so that memory is allocated before writing to buffer
         __syncthreads();
