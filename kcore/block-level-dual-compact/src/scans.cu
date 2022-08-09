@@ -1,5 +1,5 @@
 #include "../inc/scans.h"
-#include "../inc/common.h"
+
 
 __device__ void scanBlockHillis(unsigned int* addresses){
     // Hillis Steele Scan

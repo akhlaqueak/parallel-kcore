@@ -1,7 +1,7 @@
 #ifndef SCANS_H
 #define SCANS_H
 
-#include "../inc/common.h"
+#include "./common.h"
 
 __device__ void scanBlockHillis(unsigned int* addresses);
 
