@@ -160,5 +160,5 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     // reset for next iteration
     predicate[lane_id] = 0;
 
-    __syncwarp();
+    // __syncwarp();
 }
