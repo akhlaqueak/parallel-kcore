@@ -90,7 +90,7 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
-    int bTail;
+    __shared__ unsigned int bTail;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
@@ -104,21 +104,15 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
         scanBlock(addresses);
         
         if(THID == BLK_DIM - 1){   
-
             bTail = atomicAdd(bufTailPtr, addresses[THID] + predicate[THID]);
-            printf("%d ", bTail);
+            if(allocationRequired(glBufferPtr[0], addresses[THID], BLK_DIM))
+                allocateMemory(glBufferPtr);
         }
-        
-        bTail = __shfl_sync(0xFFFFFFFF, bTail, BLK_DIM-1);
-        
-        addresses[THID] += bTail;
-
-
-        if(allocationRequired(glBufferPtr[0], addresses[THID], BLK_DIM))
-            allocateMemory(glBufferPtr);
 
         // this sync is necessary so that memory is allocated before writing to buffer
         __syncthreads();
+        
+        addresses[THID] += bTail;
         
         if(predicate[THID])
             writeToBuffer(shBuffer, glBufferPtr[0], addresses[THID], v);
