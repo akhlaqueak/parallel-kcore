@@ -4,7 +4,7 @@
 __device__ void scanBlockHillis(unsigned int* addresses){
     // Hillis Steele Scan
     // todo check this code is working
-    
+    __syncthreads();
     int initVal = addresses[THID];
 
     for (unsigned int d = 1; d < BLK_DIM; d = d*2) {
