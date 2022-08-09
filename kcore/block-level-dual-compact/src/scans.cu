@@ -151,14 +151,14 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     }
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
-    __syncwarp();  
     
     addresses[lane_id] += bTail;
 
     if(predicate[lane_id])
         writeToBuffer(shBuffer, glBufferPtr[0], addresses[lane_id], temp[lane_id]);
 
+    // reset for next iteration
     predicate[lane_id] = 0;
 
-    __syncwarp();
+    // __syncwarp();
 }
