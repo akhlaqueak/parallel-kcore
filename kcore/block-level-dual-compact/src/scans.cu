@@ -104,7 +104,7 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
         scanBlock(addresses);
         
         if(THID == BLK_DIM - 1){            
-            bTail = atomicAdd(bufTailPtr, addresses[THID] + predicate[THID]));
+            bTail = atomicAdd(bufTailPtr, addresses[THID] + predicate[THID]);
         }
         
         bTail = __shfl_sync(0xFFFFFFFF, bTail, BLK_DIM-1);
