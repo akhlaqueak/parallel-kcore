@@ -45,8 +45,8 @@ __device__ void scanBlockBelloch(unsigned int* addresses){
 }
 
 __device__ void scanWarpHillis(unsigned int* addresses){
-    int initVal = addresses[THID];
     int lane_id = THID%32;
+    int initVal = addresses[lane_id];
 
     for (unsigned int d = 1; d < WARP_SIZE; d = d*2) {
         unsigned int newVal = addresses[lane_id];   
