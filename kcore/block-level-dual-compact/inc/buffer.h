@@ -11,7 +11,7 @@ __device__ bool allocationRequired( unsigned int* glBuffer, unsigned int loc);
 
 __device__ void allocateMemory( unsigned int** glBufferPtr);
 
-__device__ void allocateMemoryMutex( unsigned int** glBufferPtr, unsigned int loc, volatile unsigned int* lock);
+__device__ void allocateMemoryMutex( unsigned int** glBufferPtr, volatile unsigned int* lock);
 
 
 #endif //BUFFER_H

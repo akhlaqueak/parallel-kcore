@@ -129,6 +129,8 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
                             unsigned int* shBuffer,  unsigned int** glBufferPtr, unsigned int* bufTailPtr, 
                             volatile unsigned int* lock){
     
+    __syncwarp();
+
     unsigned int lane_id = THID%WARP_SIZE;
 
     unsigned int bTail = 0;
@@ -143,7 +145,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
         if(allocationRequired(glBufferPtr[0], bTail+nv)){
             // printf("trying allocation at: %d %d \n", blockIdx.x, THID);
-            allocateMemoryMutex(glBufferPtr, addresses[lane_id], lock);    
+            allocateMemoryMutex(glBufferPtr, lock);    
         }
     }
     
@@ -155,4 +157,6 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
         writeToBuffer(shBuffer, glBufferPtr[0], addresses[lane_id], temp[lane_id]);
 
     predicate[lane_id] = 0;
+
+    __syncwarp();
 }
