@@ -6,10 +6,10 @@ __device__ unsigned int getWriteLoc(unsigned int** glBuffer, unsigned int* bufTa
     unsigned int loc = atomicAdd(bufTail, 1);
     assert(loc < GLBUFFER_SIZE + MAX_NV);
 
-    if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
-        glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
-        assert(glBuffer[0] != NULL); 
-    }
+    // if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
+    //     glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
+    //     assert(glBuffer[0] != NULL); 
+    // }
     return loc;
 }
 
@@ -57,6 +57,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         bufTail = 0;
         glBuffer = NULL;
         base = 0;
+        glBuffer = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
     }
 
     __syncthreads();
@@ -126,7 +127,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
-    if(THID == 0 && bufTail!=0){
+    if(THID == 0 ){
         atomicAdd(global_count, bufTail); // atomic since contention among blocks
         if(glBuffer!=NULL) free(glBuffer);
     }
