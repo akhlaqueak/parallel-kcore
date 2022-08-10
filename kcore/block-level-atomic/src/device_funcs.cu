@@ -91,10 +91,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         
         unsigned int v, start, end;
 
-        // only first lane reads shBuffer, start and end
-        // it is then broadcasted to all lanes in the warp
-        // it's done to reduce multiple accesses to global memory... 
-
         v = readFromBuffer(shBuffer, &glBuffer, i);
         start = d_p.neighbors_offset[v];
         end = d_p.neighbors_offset[v+1];
@@ -106,7 +102,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    
                     unsigned int loc = getWriteLoc(&glBuffer, &bufTail);
                     writeToBuffer(shBuffer, &glBuffer, loc, u);
                 }
