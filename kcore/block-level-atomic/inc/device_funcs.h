@@ -11,7 +11,7 @@ __device__ unsigned int getWriteLoc(unsigned int** glBuffer, unsigned int* bufTa
 
 __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int loc, unsigned int v);
  
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V);
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned int* blockCounter);
 
 __device__ unsigned int readFromBuffer(unsigned int* w_buffer, unsigned int** w_helper, unsigned int loc);
 

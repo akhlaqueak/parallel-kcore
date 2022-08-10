@@ -42,7 +42,21 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int** gl
     return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[0][loc-MAX_NV]; 
 }
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
+__device__ void syncBlocks(volatile unsigned int* blockCounter){
+    
+    if (THID==0)
+    {
+        atomicAdd((unsigned int*)blockCounter, 1);
+        __threadfence();
+        while(blockCounter[0]<BLK_NUMS){
+            // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
+            // printf("%d ", blockCounter[0]);
+        };// busy wait until all blocks increment
+    }   
+    __syncthreads();
+}
+
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned int* blockCounter){
 
 
     __shared__ unsigned int shBuffer[MAX_NV];
@@ -64,7 +78,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
 
-    
+    syncBlocks(blockCounter);
 
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
