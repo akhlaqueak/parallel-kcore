@@ -95,15 +95,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         // it is then broadcasted to all lanes in the warp
         // it's done to reduce multiple accesses to global memory... 
 
-        if(lane_id == 0){ 
-            v = readFromBuffer(shBuffer, &glBuffer, i);
-            start = d_p.neighbors_offset[v];
-            end = d_p.neighbors_offset[v+1];
-        }
+        v = readFromBuffer(shBuffer, &glBuffer, i);
+        start = d_p.neighbors_offset[v];
+        end = d_p.neighbors_offset[v+1];
 
-        v = __shfl_sync(0xFFFFFFFF, v, 0);
-        start = __shfl_sync(0xFFFFFFFF, start, 0);
-        end = __shfl_sync(0xFFFFFFFF, end, 0);
 
         for(int j = start + lane_id; j<end ; j+=32){
             unsigned int u = d_p.neighbors[j];
@@ -125,7 +120,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     }
 
-    __syncthreads();
 
     if(THID == 0 ){
         atomicAdd(global_count, bufTail); // atomic since contention among blocks
