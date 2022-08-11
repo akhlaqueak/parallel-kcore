@@ -3,7 +3,7 @@
 unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns){
     double load_start = omp_get_wtime();
     ifstream infile;
-    infile.open(input_file);
+    infile.open("../data_set/data/ours_format/" + input_file);
     if(!infile){
         cout<<"load graph file failed "<<endl;
         exit(-1);
@@ -36,7 +36,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
 void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::string file){
     // writing in json dictionary format
-    std::ofstream out(file);
+    std::ofstream out("../output/" + file + "-pkc-kcore");
     out<<"{ ";
 
     for(unsigned long long int i=0;i<V;++i){
