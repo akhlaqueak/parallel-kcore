@@ -15,7 +15,7 @@ __device__ void syncBlocks(volatile unsigned int* blockCounter){
     __syncthreads();
 }
 
-__device__ int ldg (const unsigned int * p)
+__device__ unsigned int ldg (const unsigned int * p)
 {
     unsigned int out;
     asm volatile("ld.global.cg.s32 %0, [%1];" : "=r"(out) : "l"(p));
@@ -110,7 +110,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     atomicAdd(d_p.degrees+u, 1);
                 }
             }
-            __threadfence();
         }        
     }
     
