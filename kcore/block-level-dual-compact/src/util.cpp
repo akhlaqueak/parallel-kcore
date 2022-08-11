@@ -8,24 +8,26 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
         cout<<"load graph file failed "<<endl;
         exit(-1);
     }
-    unsigned int V  = 0;
-    string line;
-    const std::string delimter = "\t";
-    unsigned int line_index = 0;
-    getline(infile,line);
-    V = stoi(line);
-    for(unsigned int i=0;i<V;++i){
-        set<unsigned int> temp_set;
-        ns.push_back(temp_set);
-    }
+    unsigned int V;
 
-    while(getline(infile,line)){
-        auto pos = line.find(delimter);
-        if(pos == std::string::npos){
-            continue;
-        }
-        int s = stoi(line.substr(0, pos));
-        int t = stoi(line.substr(pos + 1, line.size() - pos - 1));
+    infile>>V;
+    // string line;
+    // const std::string delimter = "\t";
+    // unsigned int line_index = 0;
+    // getline(infile,line);
+    // V = stoi(line);
+    // for(unsigned int i=0;i<V;++i){
+    //     set<unsigned int> temp_set;
+    //     ns.push_back(temp_set);
+    // }
+
+    while(infile>>s>>t){
+        // auto pos = line.find(delimter);
+        // if(pos == std::string::npos){
+        //     continue;
+        // }
+        // int s = stoi(line.substr(0, pos));
+        // int t = stoi(line.substr(pos + 1, line.size() - pos - 1));
         ns[s].insert(t);
         ns[t].insert(s);
     }
@@ -38,10 +40,15 @@ void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::s
     // writing in json dictionary format
     std::ofstream out("../output/" + file + "-pkc-kcore");
     out<<"{ ";
+    bool first = true;
 
     for(unsigned long long int i=0;i<V;++i){
-        if(degrees[i]!=0)
-           out<<'"'<<i<<'"'<<": "<<degrees[i]<<", ";
+        if(degrees[i]!=0){
+            
+            if(first) first = false;
+            else cout<<", ";
+           out<<'"'<<i<<'"'<<": "<<degrees[i];
+        }
     }
 
     out<<" }";
