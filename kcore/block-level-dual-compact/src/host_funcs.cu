@@ -82,7 +82,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file + "-kcore.txt" );
+        write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file + "-pkc-kcore.txt" );
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 
