@@ -16,10 +16,10 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
     // unsigned int line_index = 0;
     // getline(infile,line);
     // V = stoi(line);
-    // for(unsigned int i=0;i<V;++i){
-    //     set<unsigned int> temp_set;
-    //     ns.push_back(temp_set);
-    // }
+    for(unsigned int i=0;i<V;++i){
+        set<unsigned int> temp_set;
+        ns.push_back(temp_set);
+    }
 
     while(infile>>s>>t){
         // auto pos = line.find(delimter);
