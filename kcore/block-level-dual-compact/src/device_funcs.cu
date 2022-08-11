@@ -97,6 +97,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             unsigned int u = d_p.neighbors[j];
             if(ldg(d_p.degrees+u) > level){
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
+                __threadfence();
             
                 if(a == level+1){
                     temp[THID] = u;
@@ -109,7 +110,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     // node degree became less than the level after decrementing... 
                     atomicAdd(d_p.degrees+u, 1);
                 }
-                // __threadfence();
             }
         }        
     }
