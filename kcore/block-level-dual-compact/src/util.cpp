@@ -13,9 +13,6 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
     infile>>V;
 
     ns = vector<set<unsigned int>>(V);
-    // for(unsigned int i=0;i<V;++i){
-    //     ns.push_back(set<unsigned int>());
-    // }
 
     while(infile>>s>>t){
         ns[s].insert(t);
@@ -30,14 +27,12 @@ void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::s
     // writing in json dictionary format
     std::ofstream out("../output/" + file + "-pkc-kcore");
     out<<"{ ";
-    bool first = true;
-
+    out<<'"'<<V<<'"'<<": "<<0; // first entry is read as zero degree node by networkx, to make it compatible just insert this dummy entry
     for(unsigned long long int i=0;i<V;++i){
         if(degrees[i]!=0){
+            
             // not writing zero degree nodes, because certain nodes in dataset are not present... 
-        if(first) first = false;
-        else out<<", ";
-           out<<'"'<<i<<'"'<<": "<<degrees[i];
+           out<<', "'<<i<<'"'<<": "<<degrees[i];
         }
     }
 
