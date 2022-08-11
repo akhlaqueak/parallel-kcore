@@ -7,7 +7,7 @@
 #define WORK_UNITS (BLK_NUMS*WARPS_EACH_BLK)
 #define MAX_NV 6000
 #define N_THREADS (BLK_DIM*BLK_NUMS)
-#define GLBUFFER_SIZE 100000000
+#define GLBUFFER_SIZE 10000000
 #define THID threadIdx.x
 #define WARP_SIZE 32
 #define UINT unsigned int
