@@ -11,14 +11,10 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
     unsigned int V, s, t;
 
     infile>>V;
-    // string line;
-    // const std::string delimter = "\t";
-    // unsigned int line_index = 0;
-    // getline(infile,line);
-    // V = stoi(line);
+
     for(unsigned int i=0;i<V;++i){
         set<unsigned int> temp_set;
-        ns.push_back(temp_set);
+        ns.push_back(set<unsigned int>());
     }
 
     while(infile>>s>>t){
