@@ -29,12 +29,12 @@ LDFLAGS := -lgomp
 
 # The final build step.
 $(TARGET_EXEC): $(OBJS)
-	nvcc $(OBJS) -o $@ $(LDFLAGS)
+	nvcc  $(OBJS) -o $@ $(LDFLAGS)
 
 # Build step for C source
 $(BUILD_DIR)/%.cu.o: %.cu
 	mkdir -p $(dir $@)
-	$(NVCC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	$(NVCC) -rdc=true $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 # Build step for C++ source
 $(BUILD_DIR)/%.cpp.o: %.cpp

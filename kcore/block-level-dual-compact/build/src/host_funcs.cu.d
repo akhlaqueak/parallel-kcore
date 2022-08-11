@@ -59,6 +59,10 @@ build/./src/host_funcs.cu.o : src/host_funcs.cu \
     /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda.h \
     src/../inc/./device_funcs.h \
     src/../inc/././common.h \
+    src/../inc/././buffer.h \
+    src/../inc/./././common.h \
+    src/../inc/././scans.h \
+    src/../inc/./././buffer.h \
     src/../inc/gpu_memory_allocation.h
 
 /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda_runtime.h:
@@ -180,5 +184,13 @@ src/../inc/././././common.h:
 src/../inc/./device_funcs.h:
 
 src/../inc/././common.h:
+
+src/../inc/././buffer.h:
+
+src/../inc/./././common.h:
+
+src/../inc/././scans.h:
+
+src/../inc/./././buffer.h:
 
 src/../inc/gpu_memory_allocation.h:

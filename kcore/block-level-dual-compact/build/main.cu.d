@@ -58,7 +58,11 @@ build/main.cu.o : main.cu \
     ./inc/././././common.h \
     /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda.h \
     ./inc/./device_funcs.h \
-    ./inc/././common.h
+    ./inc/././common.h \
+    ./inc/././buffer.h \
+    ./inc/./././common.h \
+    ./inc/././scans.h \
+    ./inc/./././buffer.h
 
 /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda_runtime.h:
 
@@ -179,3 +183,11 @@ build/main.cu.o : main.cu \
 ./inc/./device_funcs.h:
 
 ./inc/././common.h:
+
+./inc/././buffer.h:
+
+./inc/./././common.h:
+
+./inc/././scans.h:
+
+./inc/./././buffer.h:
