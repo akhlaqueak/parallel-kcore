@@ -12,10 +12,10 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
     infile>>V;
 
-    // ns = vector<set<unsigned int>>(V);
-    for(unsigned int i=0;i<V;++i){
-        ns.push_back(set<unsigned int>());
-    }
+    ns = vector<set<unsigned int>>(V);
+    // for(unsigned int i=0;i<V;++i){
+    //     ns.push_back(set<unsigned int>());
+    // }
 
     while(infile>>s>>t){
         ns[s].insert(t);
