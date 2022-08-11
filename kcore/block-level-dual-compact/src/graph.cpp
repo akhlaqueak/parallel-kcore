@@ -28,16 +28,7 @@ Graph::Graph(std::string input_file){
         for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
             neighbors[j] = *it;
     }
-    // AVG_degrees = E/V + 2;
 
-    // unsigned int j = 0;
-    // for(unsigned int i=0;i<V;++i){
-    //     std::set<unsigned int> s = ns[i];
-    //     for(std::set<unsigned int>::iterator p = s.begin();p!=s.end();p++){
-    //         neighbors[j] = *p;
-    //         j++;
-    //     }
-    // }
 }
 
 Graph::~Graph(){

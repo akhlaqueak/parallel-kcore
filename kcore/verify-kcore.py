@@ -10,6 +10,6 @@ if nx_kcore == pkc_kcore:
     print("Test Passed!")
 else:
     print("Test Failed!")
-    diff = set(nx_kcore.items()) - set(pkc_kcore.items())
+    diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
     print (diff)
 
