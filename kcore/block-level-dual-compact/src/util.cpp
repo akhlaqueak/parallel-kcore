@@ -41,7 +41,7 @@ void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::s
 
     for(unsigned long long int i=0;i<V;++i){
         if(degrees[i]!=0)
-           out<<to_string(i)<<": "<<degrees[i]<<",";
+           out<<'"'<<i<<'"'<<": "<<degrees[i]<<", ";
     }
 
     out<<" }";

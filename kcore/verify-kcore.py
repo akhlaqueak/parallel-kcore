@@ -1,4 +1,6 @@
 import networkx as nx
+import json
+
 dataset = "Enron.g"
 
 nx_kcore = json.load(open("output/" + dataset + "-nx-kcore", 'r'))
