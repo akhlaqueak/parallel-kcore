@@ -12,18 +12,12 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
     infile>>V;
 
-    for(unsigned int i=0;i<V;++i){
-        set<unsigned int> temp_set;
-        ns.push_back(set<unsigned int>());
-    }
+    ns = vector<set<unsigned int>>(V);
+    // for(unsigned int i=0;i<V;++i){
+    //     ns.push_back(set<unsigned int>());
+    // }
 
     while(infile>>s>>t){
-        // auto pos = line.find(delimter);
-        // if(pos == std::string::npos){
-        //     continue;
-        // }
-        // int s = stoi(line.substr(0, pos));
-        // int t = stoi(line.substr(pos + 1, line.size() - pos - 1));
         ns[s].insert(t);
         ns[t].insert(s);
     }
@@ -40,9 +34,9 @@ void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::s
 
     for(unsigned long long int i=0;i<V;++i){
         if(degrees[i]!=0){
-            
-            if(first) first = false;
-            else out<<", ";
+            // not writing zero degree nodes, because certain nodes in dataset are not present... 
+        if(first) first = false;
+        else out<<", ";
            out<<'"'<<i<<'"'<<": "<<degrees[i];
         }
     }

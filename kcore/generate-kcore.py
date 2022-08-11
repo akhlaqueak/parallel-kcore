@@ -1,7 +1,7 @@
 import networkx as nx
 import json
-# ds = ['Enron.g','gowalla.g','roadNetCa.g','roadNetPa.g','roadNetTx.g','wikiTalk.g']
-ds = ['33.g']
+ds = ['Enron.g','gowalla.g','roadNetCa.g','roadNetPa.g','roadNetTx.g','wikiTalk.g']
+# ds = ['33.g']
 
 for dataset in ds:
     G = nx.read_adjlist("./data_set/data/ours_format/" + dataset)
