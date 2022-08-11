@@ -1,6 +1,6 @@
 import networkx as nx
-dataset = "wikiTalk.g"
-G = nx.read_adjlist("../data_set/data/ours_format/" + dataset)
+dataset = "gowalla.g"
+G = nx.read_adjlist("./data_set/data/ours_format/" + dataset)
 nxkcore = nx.core_number(G)
 d = {}
 with open("../data_set/data/ours_format/" + dataset + "-kcore.txt") as f:
