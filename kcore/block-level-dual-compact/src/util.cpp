@@ -8,7 +8,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
         cout<<"load graph file failed "<<endl;
         exit(-1);
     }
-    unsigned int V;
+    unsigned int V, s, t;
 
     infile>>V;
     // string line;
