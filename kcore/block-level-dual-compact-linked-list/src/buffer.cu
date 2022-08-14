@@ -26,7 +26,7 @@ __device__ unsigned int readFromBuffer(Node* head, unsigned int loc){
     if(loc < head->limit)
         v = head->data[loc%BUFF_SIZE];
     else
-        v = head->next[loc%BUFF_SIZE];
+        v = head->next->data[loc%BUFF_SIZE];
     return v;
 }
 
