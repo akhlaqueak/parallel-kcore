@@ -23,11 +23,11 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaEvent_t event_start;
     cudaEvent_t event_stop;
     
-    if(write_to_disk){
-        cout<<"Writing degrees to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V, "degrees.txt");
-        cout<<"Writing degrees to disk completed... "<<endl;
-    }
+    // if(write_to_disk){
+    //     cout<<"Writing degrees to disk started... "<<endl;
+    //     write_kcore_to_disk(data_graph.degrees, data_graph.V, "degrees.txt");
+    //     cout<<"Writing degrees to disk completed... "<<endl;
+    // }
     
     cudaEventCreate(&event_start);
     cudaEventCreate(&event_stop);
@@ -38,9 +38,9 @@ void find_kcore(string data_file,bool write_to_disk){
 
     unsigned int level = 0;
     unsigned int *global_count;
-    volatile unsigned int* counter;
+    volatile unsigned int* blockCounter;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
-    cudaMallocManaged(&counter,sizeof(unsigned int));
+    cudaMallocManaged(&blockCounter,sizeof(unsigned int));
 
     cudaMemset(global_count,0,sizeof(unsigned int));
 
@@ -53,20 +53,20 @@ void find_kcore(string data_file,bool write_to_disk){
 
     limit = 1024*1024*1024ULL;
     chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
-
+    limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
 
     cout<<"new limit is: "<<limit<<endl;
 
 
 	cout<<"Entering in while"<<endl;
-	while(global_count[0] < data_graph.V && level<200){
-        *counter = 0;
-        PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, counter);
+	while(global_count[0] < data_graph.V && level< 200){
+        PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         chkerr(cudaDeviceSynchronize());
         cout<<"*********Completed level: "<<level<<", global_count: "<<global_count[0]<<" *********"<<endl;
         level += 1;
+        blockCounter[0] = 0;
     }
 
 	get_results_from_gpu(data_graph, data_pointers);
@@ -82,7 +82,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V,data_file + "k-core.txt");
+        write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file);
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 
