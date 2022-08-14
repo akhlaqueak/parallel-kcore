@@ -27,6 +27,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     __shared__ Node* tail;
     __shared__ Node* head;
+    __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
     __shared__ unsigned int predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
@@ -38,12 +39,11 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int i;
 
     bufTail = 0;
-    glBuffer = NULL;
     base = 0;
     predicate[THID] = 0;
-    allocLock = 0;
+    lock = 0;
 
-    compactBlock(d_p.degrees, V, tail, head, &bufTail, level);
+    compactBlock(d_p.degrees, V, &tail, &head, &bufTail, level);
     if(level == 1 && THID == 0) printf("%d ", bufTail);
 
     __syncthreads();
@@ -66,7 +66,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         if(THID == 0){
             assert(head!=NULL);
             if(base >= head->limit){
-                advanceNode(head);
+                advanceNode(&head);
             }
             base += WARPS_EACH_BLK;
             if(bufTail < base )
@@ -86,7 +86,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             __syncwarp();
 
-            compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &glBuffer, &bufTail, &allocLock);
+            compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), &tail, &head, &bufTail, &allocLock);
             __syncwarp();
 
             if(b1 >= end) break;
