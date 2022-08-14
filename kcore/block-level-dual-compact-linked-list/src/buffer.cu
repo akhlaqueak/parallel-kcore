@@ -68,7 +68,7 @@ __device__ void allocateMemoryMutex(Node** tail, Node** head, volatile unsigned 
         // memcpy(tail[0]->data, shBuff, BUFF_SIZE);
         // for(int i=0;i<BUFF_SIZE;i++)
         //     tail[0]->data[i] = shBuff[i];
-        printf("allocte mutex... %d\n", tail->limit);
+        printf("allocte mutex... %d\n", tail[0]->limit);
         lock[0] = 2; // not necessary to do it atomically, since it's the only thread in critical section
         __threadfence_block(); // it ensures the writes are realized to shared/global mem
     }
