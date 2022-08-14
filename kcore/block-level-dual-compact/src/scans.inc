@@ -104,6 +104,7 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
 
         scanBlock(addresses);
 
+        if(addresses[BLK_DIM-1]+predicate[BLK_DIM-1] == 0) return;
         
         if(THID == BLK_DIM - 1){  
             int nv =  addresses[THID] + predicate[THID];            
@@ -140,7 +141,9 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 
     scanWarp(addresses);
 
-    // if(addresses[WARP_SIZE-1] + predicate[WARP_SIZE-1] == 0) return;
+    // this warp don't have any thing to add in buffer... 
+    // can save up to 10 ms 
+    if(addresses[WARP_SIZE-1] + predicate[WARP_SIZE-1] == 0) return;
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
