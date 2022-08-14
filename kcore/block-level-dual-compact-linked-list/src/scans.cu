@@ -146,8 +146,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
         if(allocationRequired(tail[0], bTail+nv)) // adding nv since bTail is old value of bufTail
             allocateMemoryMutex(tail, head, lock);   
-        }
-    }   
+    }  
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
     
