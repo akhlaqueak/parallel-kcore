@@ -145,7 +145,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
         int nv = addresses[lane_id]+predicate[lane_id];
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
         if(allocationRequired(tail[0], bTail+nv)) // adding nv since bTail is old value of bufTail
-            allocateMemory(tail, head, lock);   
+            allocateMemoryMutex(tail, head, lock);   
         }
     }   
     
