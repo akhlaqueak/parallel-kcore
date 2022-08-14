@@ -61,6 +61,7 @@ build/./src/host_funcs.cu.o : src/host_funcs.cu \
     src/../inc/././common.h \
     src/../inc/././buffer.h \
     src/../inc/./././common.h \
+    src/../inc/././../inc/buffer.h \
     src/../inc/././scans.h \
     src/../inc/./././buffer.h \
     src/../inc/gpu_memory_allocation.h
@@ -188,6 +189,8 @@ src/../inc/././common.h:
 src/../inc/././buffer.h:
 
 src/../inc/./././common.h:
+
+src/../inc/././../inc/buffer.h:
 
 src/../inc/././scans.h:
 

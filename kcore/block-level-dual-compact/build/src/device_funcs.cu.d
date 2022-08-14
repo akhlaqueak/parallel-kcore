@@ -51,13 +51,17 @@ build/./src/device_funcs.cu.o : src/device_funcs.cu \
     /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/texture_indirect_functions.h \
     /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/surface_indirect_functions.h \
     /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/device_launch_parameters.h \
-    ./src/../inc/device_funcs.h \
-    ./src/../inc/./common.h \
+    src/../inc/device_funcs.h \
+    src/../inc/./common.h \
     /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda.h \
-    ./src/../inc/./buffer.h \
-    ./src/../inc/././common.h \
-    ./src/../inc/./scans.h \
-    ./src/../inc/././buffer.h
+    src/../inc/./buffer.h \
+    src/../inc/././common.h \
+    src/../inc/./scans.h \
+    src/../inc/././buffer.h \
+    src/./buffer.inc \
+    src/./../inc/buffer.h \
+    src/./scans.inc \
+    src/./../inc/scans.h
 
 /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda_runtime.h:
 
@@ -163,16 +167,24 @@ build/./src/device_funcs.cu.o : src/device_funcs.cu \
 
 /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/device_launch_parameters.h:
 
-./src/../inc/device_funcs.h:
+src/../inc/device_funcs.h:
 
-./src/../inc/./common.h:
+src/../inc/./common.h:
 
 /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda.h:
 
-./src/../inc/./buffer.h:
+src/../inc/./buffer.h:
 
-./src/../inc/././common.h:
+src/../inc/././common.h:
 
-./src/../inc/./scans.h:
+src/../inc/./scans.h:
 
-./src/../inc/././buffer.h:
+src/../inc/././buffer.h:
+
+src/./buffer.inc:
+
+src/./../inc/buffer.h:
+
+src/./scans.inc:
+
+src/./../inc/scans.h:
