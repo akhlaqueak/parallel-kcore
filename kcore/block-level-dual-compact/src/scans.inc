@@ -104,12 +104,11 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
 
         scanBlock(addresses);
 
-        if(addresses[BLK_DIM-1]+predicate[BLK_DIM-1] == 0) return;
+        unsigned int nv = addresses[BLK_DIM-1]+predicate[BLK_DIM-1];
+        if(nv == 0) continue;
         
         if(THID == BLK_DIM - 1){  
-            int nv =  addresses[THID] + predicate[THID];            
-            bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
-            
+            bTail = atomicAdd(bufTailPtr, nv);            
             if(allocationRequired(glBufferPtr[0], bTail+nv))
                 allocateMemory(glBufferPtr);
         }
