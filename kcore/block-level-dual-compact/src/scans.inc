@@ -139,6 +139,8 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     addresses[lane_id] = predicate[lane_id];
 
     scanWarp(addresses);
+
+    if(addresses[WARP_SIZE-1] == 0) return;
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
