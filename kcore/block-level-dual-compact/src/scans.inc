@@ -140,7 +140,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 
     scanWarp(addresses);
 
-    if(addresses[WARP_SIZE-1] == 0) return;
+    if(addresses[WARP_SIZE-1] + predicate[WARP_SIZE-1] == 0) return;
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
