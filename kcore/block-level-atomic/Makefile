@@ -29,7 +29,7 @@ LDFLAGS := -lgomp
 
 # The final build step.
 $(TARGET_EXEC): $(OBJS)
-	nvcc $(OBJS) -o $@ $(LDFLAGS)
+	$(NVCC) $(OBJS) -o $@ $(LDFLAGS)
 
 # Build step for C source
 $(BUILD_DIR)/%.cu.o: %.cu
