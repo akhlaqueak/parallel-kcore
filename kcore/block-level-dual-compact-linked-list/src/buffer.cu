@@ -34,9 +34,9 @@ __device__ unsigned int readFromBuffer(Node* head, unsigned int loc){
 
 __device__ bool allocationRequired( Node* tail, unsigned int loc){
     if(tail==NULL)
-        return (true); //shBuff is exhausted
+        return (true); // first node is going to create.
     else
-        return loc >= (tail->limit); //current limit + sharef buffer size
+        return loc >= (tail->limit); //current limit exceed the requirement now
 }
 
 __device__ void allocateMemory(Node** tail, Node** head){

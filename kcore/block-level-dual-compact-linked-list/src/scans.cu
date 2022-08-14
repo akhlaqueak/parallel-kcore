@@ -142,7 +142,7 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
-        int nv = addresses[lane_id]+predicate[lane_id];
+        unsigned int nv = addresses[lane_id]+predicate[lane_id]; // nv can be zero if no vertex was found in this warp
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
         if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
             printf("Req %d", THID);
