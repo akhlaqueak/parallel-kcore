@@ -142,12 +142,12 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
 
     // this warp don't have any thing to add in buffer... 
     // can save up to 10 ms 
-    if(addresses[WARP_SIZE-1] + predicate[WARP_SIZE-1] == 0) return;
+    unsigned int nv = addresses[WARP_SIZE-1] + predicate[WARP_SIZE-1];
+    if( nv == 0 ) return;
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
-        int nv = addresses[lane_id]+predicate[lane_id];
-        bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
+        bTail = atomicAdd(bufTailPtr, nv);
         if(allocationRequired(glBufferPtr[0], bTail+nv)){
             // printf("trying allocation at: %d %d \n", blockIdx.x, THID);
             allocateMemoryMutex(glBufferPtr, lock);    
