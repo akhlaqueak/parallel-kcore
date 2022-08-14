@@ -144,8 +144,11 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     if(lane_id == WARP_SIZE-1){
         int nv = addresses[lane_id]+predicate[lane_id];
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
-        if(allocationRequired(tail[0], bTail+nv)) // adding nv since bTail is old value of bufTail
-            allocateMemoryMutex(tail, head, lock);   
+        if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
+            atomicCAS((unsigned int*)&lock, 2, 0); // resets the lock in case a memory was allocated before
+            __threadfence_block();
+            allocateMemoryMutex(tail, head, lock);
+        }   
     }  
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
