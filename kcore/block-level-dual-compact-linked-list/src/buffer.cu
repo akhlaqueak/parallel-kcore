@@ -44,8 +44,8 @@ __device__ void allocateMemory(Node** tail, Node** head){
     assert(newNode!=NULL);
     newNode->next = NULL;
     newNode->prev = NULL;
-    if(tail[0]==NULL){ // in that case head is also null, this is the first node in linked list
-        newNode -> limit = BUFF_SIZE;
+    if(tail[0]==NULL){ // in that case head is also NULL, this is the first node in linked list
+        newNode -> limit = BUFF_SIZE; 
     }
     else{
         newNode -> limit = (tail[0]->limit+BUFF_SIZE);
