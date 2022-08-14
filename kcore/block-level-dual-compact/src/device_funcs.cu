@@ -43,10 +43,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     predicate[THID] = 0;
     allocLock = 0;
     readLock = 0;
-
-    if(THID==0)
-    glBuffer = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
-
+    
 
     compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);

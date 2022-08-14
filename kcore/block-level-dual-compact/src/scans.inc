@@ -109,8 +109,8 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int
         
         if(THID == BLK_DIM - 1){  
             bTail = atomicAdd(bufTailPtr, nv);            
-            // if(allocationRequired(glBufferPtr[0], bTail+nv))
-            //     allocateMemory(glBufferPtr);
+            if(allocationRequired(glBufferPtr[0], bTail+nv))
+                allocateMemory(glBufferPtr);
         }
 
         // this sync is necessary so that memory is allocated before writing to buffer
@@ -148,10 +148,10 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     
     if(lane_id == WARP_SIZE-1){
         bTail = atomicAdd(bufTailPtr, nv);
-        // if(allocationRequired(glBufferPtr[0], bTail+nv)){
-        //     // printf("trying allocation at: %d %d \n", blockIdx.x, THID);
-        //     allocateMemoryMutex(glBufferPtr, lock);    
-        // }
+        if(allocationRequired(glBufferPtr[0], bTail+nv)){
+            // printf("trying allocation at: %d %d \n", blockIdx.x, THID);
+            allocateMemoryMutex(glBufferPtr, lock);    
+        }
     }
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
