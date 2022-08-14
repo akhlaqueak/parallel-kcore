@@ -146,8 +146,6 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
         if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
             printf("Req %d", THID);
-            // atomicCAS((unsigned int*)&lock, 2, 0); // resets the lock in case a memory was allocated before
-            __threadfence_block();
             allocateMemoryMutex(tail, head, lock);
         }   
     }  
@@ -155,12 +153,14 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
     
     addresses[lane_id] += bTail;
-
+    
     if(predicate[lane_id])
         writeToBuffer(tail[0], addresses[lane_id], temp[lane_id]);
-
-    // reset for next iteration
+        
+        // reset for next iteration
     predicate[lane_id] = 0;
-
+    atomicCAS((unsigned int*)&lock, 2, 0); // resets the lock in case a memory was allocated before
+    __threadfence_block();
+        
     // __syncwarp();
 }
