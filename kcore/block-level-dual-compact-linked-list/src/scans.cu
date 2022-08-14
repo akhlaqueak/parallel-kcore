@@ -159,8 +159,10 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
         
         // reset for next iteration
     predicate[lane_id] = 0;
-    atomicCAS((unsigned int*)&lock, 2, 0); // resets the lock in case a memory was allocated before
+    atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
+    // atomicExch((unsigned int*))
     __threadfence_block();
+
         
     // __syncwarp();
 }
