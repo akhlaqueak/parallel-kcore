@@ -43,8 +43,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     predicate[THID] = 0;
     lock = 0;
 
-    compactBlock(d_p.degrees, V, &tail, &head, &bufTail, level);
-    if(level == 1 && THID == 0) printf("%d ", bufTail);
+    // compactBlock(d_p.degrees, V, &tail, &head, &bufTail, level);
+    // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
     __syncthreads();
 
