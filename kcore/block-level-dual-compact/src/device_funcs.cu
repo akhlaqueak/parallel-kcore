@@ -1,8 +1,8 @@
 
 #include "../inc/device_funcs.h"
 
-#include "./buffer.inc"
-#include "./scans.inc"
+#include "./buffer.cc"
+#include "./scans.cc"
 
 __device__ void syncBlocks(volatile unsigned int* blockCounter){
     
