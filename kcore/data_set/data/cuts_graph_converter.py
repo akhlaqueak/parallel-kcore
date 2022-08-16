@@ -4,7 +4,7 @@ import time
 import sys
 def convert_format(arg):
     snap_graphs = arg[1]
-    cuts_graphs = snap_graphs.split()[0] + ".g"
+    cuts_graphs = snap_graphs.split('.')[0] + ".g"
     comment_ch = '#@%!'
     st = time.time()
     for i, graph in enumerate(snap_graphs):
