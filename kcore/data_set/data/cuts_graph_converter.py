@@ -4,7 +4,8 @@ import time
 import sys
 def convert_format(arg):
     in_file = arg[1]
-    graph = snap_graphs.split('.')[0] + ".g"
+    graph = in_file.split('.')[0] + ".g"
+    
     comment_ch = '#@%!'
     st = time.time()
     lines = []
@@ -13,7 +14,7 @@ def convert_format(arg):
 
     with open(in_file,'r') as reader:
         lines = reader.readlines()
-        
+
     for line in lines:
         if line[0] in comment_ch:
             continue
