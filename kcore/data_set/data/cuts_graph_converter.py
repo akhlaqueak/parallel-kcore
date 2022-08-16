@@ -24,7 +24,7 @@ def convert_format(arg):
         out_lines.append(line)
         max_node = max(max_node, int(s), int(e))
 
-    with open(graph, 'w') as writer:
+    with codecs.open(graph, 'w', 'utf-8') as writer:
         writer.write(str(max_node+1)+'\n')
         writer.writelines(out_lines)
 
