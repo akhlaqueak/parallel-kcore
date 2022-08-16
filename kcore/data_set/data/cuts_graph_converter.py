@@ -11,7 +11,7 @@ def convert_format(arg):
     out_lines = []
     max_node = 0
 
-    with open(in_file,'r', 'utf-8') as reader:
+    with open(in_file,'r') as reader:
         lines = reader.readlines()
 
     for line in lines:
@@ -23,7 +23,7 @@ def convert_format(arg):
         out_lines.append(line)
         max_node = max(max_node, int(s), int(e))
 
-    with open(graph, 'w', 'utf-8') as writer:
+    with open(graph, 'w') as writer:
         writer.write(str(max_node+1)+'\n')
         writer.writelines(out_lines)
 
