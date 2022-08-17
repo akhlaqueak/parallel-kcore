@@ -1,7 +1,7 @@
 #ifndef SCANS_H
 #define SCANS_H
 
-#define BELLOCH true
+#define BELLOCH false
 
 #include "./common.h"
 #include "./buffer.h"
