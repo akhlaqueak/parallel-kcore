@@ -32,6 +32,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
     infile.close();
     double load_end = omp_get_wtime();
+    cout<<"File opened in : "<<load_start-load_end<<endl;
     return V;
 }
 
