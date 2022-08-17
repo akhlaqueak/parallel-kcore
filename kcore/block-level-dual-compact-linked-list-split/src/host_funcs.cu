@@ -39,8 +39,8 @@ void find_kcore(string data_file,bool write_to_disk){
     unsigned int level = 0;
     unsigned int *global_count;
     unsigned int *bufTails;
-    Node* heads;
-    Node* tails;
+    Node** heads;
+    Node** tails;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
     cudaMallocManaged(&bufTails,sizeof(unsigned int)*BLK_NUMS);
     cudaMallocManaged(&heads,sizeof(Node*)*BLK_NUMS);
