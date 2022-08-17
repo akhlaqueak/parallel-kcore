@@ -73,6 +73,7 @@ void find_kcore(string data_file,bool write_to_disk){
             tails[i] = NULL;
             bufTails[i] = 0;
         }
+        chkerr(cudaDeviceSynchronize());
 
         initialScan<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, bufTails, tails, heads);
         
