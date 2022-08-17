@@ -29,6 +29,8 @@ __device__ void scanBlockBelloch(unsigned int* addresses){
             addresses[THID] += addresses[THID-d/2];  
     }
 
+    __syncthreads();
+    
     if(THID == (BLK_DIM-1)) {
         addresses[THID] = 0;
     }
@@ -163,5 +165,5 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     predicate[lane_id] = 0;
 
         
-    // __syncwarp();
+    __syncwarp();
 }
