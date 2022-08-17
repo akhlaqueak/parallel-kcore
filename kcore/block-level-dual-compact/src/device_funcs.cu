@@ -4,12 +4,14 @@
 #include "./buffer.cc"
 #include "./scans.cc"
 
+__device__ uint64_t blk;
+
 __device__ void syncBlocks(volatile unsigned int* blockCounter){
     
-
+    
     const auto SollMask = (1 << gridDim.x) - 1;
     if (THID == 0) {
-        while ((atomicOr((unsigned int*)blockCounter, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
+        while ((atomicOr(&blk, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
     }
     // if (ThreadId() == 0 && 0 == blockIdx.x) {
     //     printf("Print a single line for the entire process")
@@ -21,7 +23,6 @@ __device__ void syncBlocks(volatile unsigned int* blockCounter){
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned int* blockCounter){
     
-    
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__  unsigned int* glBuffer;
@@ -31,7 +32,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int addresses[BLK_DIM];
     __shared__ volatile unsigned int allocLock;
     __shared__ volatile unsigned int readLock;
-
+    
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
@@ -42,8 +43,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     predicate[THID] = 0;
     allocLock = 0;
     readLock = 0;
+    atomicAnd(&blk, 0);
     
-
+    
     compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
