@@ -8,6 +8,7 @@ Graph::Graph(std::string input_file){
     V = file_reader(input_file, ns);
     degrees = new unsigned int[V];
 
+    double start = omp_get_wtime();
 
     
     #pragma omp parallel for
@@ -28,7 +29,8 @@ Graph::Graph(std::string input_file){
         for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
             neighbors[j] = *it;
     }
-
+    double end = omp_get_wtime();
+    cout<<"processing file time: "<<endl;
 }
 
 Graph::~Graph(){
