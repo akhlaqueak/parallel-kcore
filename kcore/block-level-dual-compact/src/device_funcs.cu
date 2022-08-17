@@ -4,14 +4,14 @@
 #include "./buffer.cc"
 #include "./scans.cc"
 
-__device__ unsigned long long int blk;
+// __device__ unsigned long long int blk;
 
-__device__ void syncBlocks(volatile unsigned int* blockCounter){
+__device__ void syncBlocks(volatile unsigned long long int* blockCounter){
     
     
     const auto SollMask = (1 << gridDim.x) - 1;
     if (THID == 0) {
-        while ((atomicOr(&blk, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
+        while ((atomicOr((unsigned long long int*) blockCounter, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
     }
     // if (ThreadId() == 0 && 0 == blockIdx.x) {
     //     printf("Print a single line for the entire process")
@@ -43,7 +43,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     predicate[THID] = 0;
     allocLock = 0;
     readLock = 0;
-    atomicAnd(&blk, 0);
+    // atomicAnd(&blk, 0);
     
     
     compactBlock(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
