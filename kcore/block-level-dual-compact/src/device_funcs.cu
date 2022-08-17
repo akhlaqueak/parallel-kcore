@@ -21,7 +21,7 @@ __device__ void syncBlocks(volatile unsigned long long int* blockCounter){
 
 
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned int* blockCounter){
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned long long int* blockCounter){
     
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
