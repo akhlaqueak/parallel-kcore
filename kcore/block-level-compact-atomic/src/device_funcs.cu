@@ -93,6 +93,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 }    
             }
 
+            __syncwarp();
+
             if(b1 >= end) break;
 
             unsigned int j = b1 + lane_id;
