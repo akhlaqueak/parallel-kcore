@@ -4,7 +4,7 @@
 #include "./buffer.cc"
 #include "./scans.cc"
 
-__device__ uint64_t blk;
+__device__ unsigned long long int blk;
 
 __device__ void syncBlocks(volatile unsigned int* blockCounter){
     
