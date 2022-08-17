@@ -30,7 +30,7 @@ Graph::Graph(std::string input_file){
             neighbors[j] = *it;
     }
     double end = omp_get_wtime();
-    cout<<"processing file time: "<<endl;
+    cout<<"processing file time: "<<end-start<<endl;
 }
 
 Graph::~Graph(){
