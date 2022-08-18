@@ -1,5 +1,5 @@
 # Thanks to Job Vranish (https://spin.atomicobject.com/2016/08/26/makefile-c-projects/)
-TARGET_EXEC := gpu_bk
+TARGET_EXEC := kcore
 
 BUILD_DIR := ./build
 SRC_DIRS := ./src
@@ -29,7 +29,7 @@ LDFLAGS := -lgomp
 
 # The final build step.
 $(TARGET_EXEC): $(OBJS)
-	nvcc $(OBJS) -o $@ $(LDFLAGS)
+	$(NVCC) $(OBJS) -o $@ $(LDFLAGS)
 
 # Build step for C source
 $(BUILD_DIR)/%.cu.o: %.cu
