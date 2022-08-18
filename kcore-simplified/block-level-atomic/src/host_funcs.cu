@@ -37,15 +37,15 @@ void find_kcore(string data_file,bool write_to_disk){
     cout<<"end copying graph to gpu..."<<endl;
 
     unsigned int level = 0;
-    unsigned int *global_count;
-    unsigned int* blockCounter;
-    unsigned int* glBuffers=NULL;
+    unsigned int *global_count  = NULL;
+    unsigned int* blockCounter  = NULL;
+    unsigned int* glBuffers     = NULL;
 
     cudaMallocManaged(&global_count,sizeof(unsigned int));
     cudaMallocManaged(&blockCounter,sizeof(unsigned int));
     
-    chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
-    cout<<"allocations are requested for: "<< sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE ;
+    chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*100*GLBUFFER_SIZE));
+
     cudaMemset(global_count,0,sizeof(unsigned int));
 
     cudaEventRecord(event_start);
