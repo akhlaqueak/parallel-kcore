@@ -5,7 +5,7 @@
 #define BLK_DIM 512
 #define WARPS_EACH_BLK (BLK_DIM/32)
 #define WORK_UNITS (BLK_NUMS*WARPS_EACH_BLK)
-#define MAX_NV 12000
+#define MAX_NV 11000
 #define N_THREADS (BLK_DIM*BLK_NUMS)
 #define GLBUFFER_SIZE 1000000
 #define THID threadIdx.x
