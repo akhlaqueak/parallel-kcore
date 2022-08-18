@@ -45,7 +45,6 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaMallocManaged(&blockCounter,sizeof(unsigned int));
     
 
-    cout<<"memory code: "<<code<<endl;
     cudaMemset(global_count,0,sizeof(unsigned int));
 
     cudaEventRecord(event_start);
@@ -60,6 +59,7 @@ void find_kcore(string data_file,bool write_to_disk){
     limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
     int code = (cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE*10));
+    cout<<"memory code: "<<code<<endl;
 
     cout<<"new limit is: "<<limit<<endl;
 
