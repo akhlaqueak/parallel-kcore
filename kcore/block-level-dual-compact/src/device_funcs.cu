@@ -8,15 +8,16 @@
 
 __device__ void syncBlocks(unsigned long long int* blockCounter){
     
-    
-    const auto SollMask = (1 << gridDim.x) - 1;
-    if (THID == 0) {
-        while ((atomicOr( blockCounter, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
-    }
-    // if (ThreadId() == 0 && 0 == blockIdx.x) {
-    //     printf("Print a single line for the entire process")
-    // }
-    
+    if (THID==0)
+    {
+        atomicAdd(blockCounter, 1);
+        __threadfence();
+        while(ldg(blockCounter)<BLK_NUMS){
+            // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
+            // printf("%d ", blockCounter[0]);
+        };// busy wait until all blocks increment
+    }   
+    __syncthreads();
 }
 
 
