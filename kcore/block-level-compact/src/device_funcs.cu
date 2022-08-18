@@ -1,7 +1,12 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
-
+__device__ unsigned int ldg (const unsigned int * p)
+{
+    unsigned int out;
+    asm volatile("ld.global.cg.s32 %0, [%1];" : "=r"(out) : "l"(p));
+    return out;
+}
 
 __device__ void syncBlocks(unsigned int* blockCounter){
     
@@ -198,7 +203,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         for(int j = start + lane_id; j<end ; j+=32){
 
             unsigned int u = d_p.neighbors[j];
-            if(d_p.degrees[u] > level){
+            if(ldg(d_p.degrees+u) > level){
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
