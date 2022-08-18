@@ -1,6 +1,7 @@
-git add -A
 
+git add -A
 git commit -am $1
 
-git push
+git pus
+
 
