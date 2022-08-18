@@ -53,14 +53,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int lane_id = THID % 32;
     unsigned int i;
 
-    if(THID == 0){
-        bufTail = 0;
-        glBuffer = NULL;
-        base = 0;
-        lock = 0;
-        glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
+    bufTail = 0;
+    glBuffer = NULL;
+    base = 0;
+    lock = 0;
+    glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
+
     assert(glBuffer!=NULL);
-    }
     __syncthreads();
 
     selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
