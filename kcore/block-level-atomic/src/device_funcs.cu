@@ -110,7 +110,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         
         unsigned int v, start, end;
 
-        v = readFromBuffer(shBuffer, &glBuffer, i);
+        v = readFromBuffer(shBuffer, glBuffer, i);
         start = d_p.neighbors_offset[v];
         end = d_p.neighbors_offset[v+1];
 
