@@ -18,16 +18,16 @@ __device__ unsigned int getWriteLoc(unsigned int** glBuffer, unsigned int* bufTa
     return loc;
 }
 
-__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int** glBuffer, unsigned int loc, unsigned int v){
-    // todo: make it single pointer, glBuffer
+__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int* glBuffer, unsigned int loc, unsigned int v){
+    // done: make it single pointer, glBuffer
     assert(loc < GLBUFFER_SIZE + MAX_NV);
 
     if(loc < MAX_NV){
         shBuffer[loc] = v;
     }
     else{
-        assert(glBuffer[0]!=NULL);
-        glBuffer[0][loc-MAX_NV] = v; 
+        assert(glBuffer!=NULL);
+        glBuffer[loc-MAX_NV] = v; 
     }
 }
 
@@ -36,15 +36,15 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS){
         if(degrees[i] == level){
             unsigned int loc = getWriteLoc(glBuffer, bufTail);
-            writeToBuffer(shBuffer, glBuffer, loc, i);
+            writeToBuffer(shBuffer, glBuffer[0], loc, i);
         }
     }
     __syncthreads();
 }
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int** glBuffer, unsigned int loc){
+__device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int loc){
     assert(loc < MAX_NV + GLBUFFER_SIZE);
-    return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[0][loc-MAX_NV]; 
+    return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
 }
 
 __device__ void syncBlocks(volatile unsigned int* blockCounter){
