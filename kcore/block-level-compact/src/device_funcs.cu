@@ -2,9 +2,8 @@
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 
-__device__ unsigned long long int blockCounter;
 
-__device__ void syncBlocks(){
+__device__ void syncBlocks(unsigned long long int blockCounter){
     
     
     const auto SollMask = (1 << gridDim.x) - 1;
@@ -127,7 +126,7 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer,  unsigned int* gl
     return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
 }
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V){
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned long long int blockCounter){
     
     
     __shared__ unsigned int shBuffer[MAX_NV];
@@ -152,7 +151,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level, &lock);
 
-    syncBlocks();
+    syncBlocks(blockCounter);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
     
     // bufTail is being incremented within the loop, 

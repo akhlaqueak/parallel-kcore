@@ -38,7 +38,9 @@ void find_kcore(string data_file,bool write_to_disk){
 
     unsigned int level = 0;
     unsigned int *global_count;
+    unsigned long long int* blockCounter;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
+    cudaMallocManaged(&blockCounter,sizeof(unsigned int));
 
     cudaMemset(global_count,0,sizeof(unsigned int));
 
@@ -58,12 +60,13 @@ void find_kcore(string data_file,bool write_to_disk){
 
 
 	cout<<"Entering in while"<<endl;
-	while(global_count[0] < data_graph.V && level< 200){
-        PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V);
+	while(global_count[0] < data_graph.V ){
+        PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         chkerr(cudaDeviceSynchronize());
         cout<<"*********Completed level: "<<level<<", global_count: "<<global_count[0]<<" *********"<<endl;
         level += 1;
+        blockCounter[0] = 0;
     }
 
 	get_results_from_gpu(data_graph, data_pointers);
@@ -79,7 +82,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file + "-kcore.txt" );
+        write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file);
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 

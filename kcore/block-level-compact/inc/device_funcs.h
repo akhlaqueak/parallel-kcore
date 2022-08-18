@@ -15,5 +15,5 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer,  unsigned int* gl
 
 __device__ void exclusiveScan(unsigned int* addresses);
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V);
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned long long int);
 #endif //CUTS_DEVICE_FUNCS_H
