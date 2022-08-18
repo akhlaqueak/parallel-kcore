@@ -96,7 +96,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     glBuffer = NULL;
     base = 0;
     lock = 0;
-    glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
+    glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
 
     assert(glBuffer!=NULL);
     __syncthreads();
