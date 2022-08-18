@@ -55,9 +55,9 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cout<<"default limit is: "<<limit<<endl;
 
-    limit = 8*1024*1024*1024ULL;
-    chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
-    limit = 0;
+    // // limit = 1024*1024*1024ULL;
+    // chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
+    // limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
 
     cout<<"new limit is: "<<limit<<endl;
