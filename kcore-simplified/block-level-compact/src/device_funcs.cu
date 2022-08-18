@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-__device__ void scanBlockHillis(unsigned int* addresses){
+__device__ void scanBlock(unsigned int* addresses){
     // Hillis Steele Scan
     // todo check this code is working
     __syncthreads();
