@@ -96,12 +96,12 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     glBuffer = NULL;
     base = 0;
     lock = 0;
-    glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
+    // glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
 
     assert(glBuffer!=NULL);
     __syncthreads();
 
-    selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
+    selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffers + blockIdx.x * GLBUFFER_SIZE, &bufTail, level);
 
     syncBlocks(blockCounter);
 
@@ -130,7 +130,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         
         unsigned int v, start, end;
 
-        v = readFromBuffer(shBuffer, glBuffer, i);
+        v = readFromBuffer(shBuffer, glBuffers + blockIdx.x * GLBUFFER_SIZE, i);
         start = d_p.neighbors_offset[v];
         end = d_p.neighbors_offset[v+1];
 
@@ -150,7 +150,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(shBuffer, glBuffer, loc, u);
+                    writeToBuffer(shBuffer, glBuffers + blockIdx.x * GLBUFFER_SIZE, loc, u);
                 }
 
                 if(a <= level){
