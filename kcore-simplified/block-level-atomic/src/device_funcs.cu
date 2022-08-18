@@ -4,7 +4,7 @@
 #include "buffer.cc"
 
 
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
@@ -20,7 +20,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         if(degrees[v] == level){
             unsigned int loc = atomicAdd(bufTail, 1);
-            writeToBuffer(shBuffer, glBuffer[0], loc, v);
+            writeToBuffer(shBuffer, glBuffer, loc, v);
         }
     }
 }
@@ -62,7 +62,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     assert(glBuffer!=NULL);
     __syncthreads();
 
-    selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
+    selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
 
     syncBlocks(blockCounter);
 
