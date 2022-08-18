@@ -85,7 +85,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
-    __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
     __shared__ unsigned int lock;
     unsigned int warp_id = THID / 32;
