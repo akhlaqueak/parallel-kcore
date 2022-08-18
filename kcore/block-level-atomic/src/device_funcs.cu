@@ -76,7 +76,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         bufTail = 0;
         glBuffer = NULL;
         base = 0;
-        glBuffer = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
+        // glBuffer = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
     }
 
     __syncthreads();
