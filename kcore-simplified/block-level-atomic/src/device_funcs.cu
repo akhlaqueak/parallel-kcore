@@ -13,12 +13,6 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
 
         // only the last thread in warp is responsible to alloate memory
-        // adding blk_dim to anticipate allocation
-        if(THID==BLK_DIM-1){
-            if(allocationRequired(glBuffer[0], bufTail[0]+BLK_DIM)){
-                allocateMemory(glBuffer);
-            }
-        }
 
         __syncthreads();
 
@@ -33,13 +27,13 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 
 
-__device__ void syncBlocks(volatile unsigned int* blockCounter){
+__device__ void syncBlocks(unsigned int* blockCounter){
     
     if (THID==0)
     {
-        atomicAdd((unsigned int*)blockCounter, 1);
+        atomicAdd(blockCounter, 1);
         __threadfence();
-        while(blockCounter[0]<BLK_NUMS){
+        while(ldg(blockCounter)<BLK_NUMS){
             // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
             // printf("%d ", blockCounter[0]);
         };// busy wait until all blocks increment
