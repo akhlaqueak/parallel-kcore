@@ -6,7 +6,7 @@
 
 // __device__ unsigned long long int blk;
 
-__device__ void syncBlocks(unsigned long long int* blockCounter){
+__device__ void syncBlocks(unsigned int* blockCounter){
     
     if (THID==0)
     {
@@ -22,7 +22,7 @@ __device__ void syncBlocks(unsigned long long int* blockCounter){
 
 
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V,  unsigned long long int* blockCounter){
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V,  unsigned int* blockCounter){
     
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;

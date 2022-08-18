@@ -6,7 +6,7 @@
 #include "./buffer.h"
 #include "./scans.h"
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned long long int* blockCounter);
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned int* blockCounter);
 
 __device__ void syncBlocks(unsigned long long int* blockCounter);
 
