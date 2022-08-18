@@ -7,7 +7,7 @@ __device__ unsigned int ldg (const unsigned int * p)
     asm volatile("ld.global.cg.s32 %0, [%1];" : "=r"(out) : "l"(p));
     return out;
 }
-__device__ unsigned int getWriteLoc(unsigned int** glBuffer, unsigned int* bufTail){
+__device__ unsigned int getWriteLoc(unsigned int* glBuffer, unsigned int* bufTail){
     unsigned int loc = atomicAdd(bufTail, 1);
     assert(loc < GLBUFFER_SIZE + MAX_NV);
 
@@ -31,12 +31,12 @@ __device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int* glBuffer, u
     }
 }
 
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS){
         if(degrees[i] == level){
             unsigned int loc = getWriteLoc(glBuffer, bufTail);
-            writeToBuffer(shBuffer, glBuffer[0], loc, i);
+            writeToBuffer(shBuffer, glBuffer, loc, i);
         }
     }
     __syncthreads();
@@ -81,7 +81,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
-    selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
+    selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
 
     syncBlocks(blockCounter);
 
@@ -121,8 +121,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    unsigned int loc = getWriteLoc(&glBuffer, &bufTail);
-                    writeToBuffer(shBuffer, &glBuffer, loc, u);
+                    unsigned int loc = getWriteLoc(glBuffer, &bufTail);
+                    writeToBuffer(shBuffer, glBuffer, loc, u);
                 }
 
                 if(a <= level){
