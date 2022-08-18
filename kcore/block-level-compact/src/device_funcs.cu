@@ -2,6 +2,20 @@
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 
+__device__ unsigned long long int blockCounter;
+
+__device__ void syncBlocks(){
+    
+    
+    const auto SollMask = (1 << gridDim.x) - 1;
+    if (THID == 0) {
+        while ((atomicOr( blockCounter, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
+    }
+    // if (ThreadId() == 0 && 0 == blockIdx.x) {
+    //     printf("Print a single line for the entire process")
+    // }
+    
+}
 __device__ void exclusiveScan(unsigned int* addresses){
 
     for (int d = 2; d <= BLK_DIM; d = d*2) {   
@@ -131,12 +145,14 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         base = 0;
         lock = 0;
         glBuffer = (unsigned int*)malloc(sizeof(unsigned int)*GLBUFFER_SIZE);
+        atomicAnd(&blockCounter, 0);
     }
 
     __syncthreads();
 
     selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level, &lock);
 
+    syncBlocks();
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
     
     // bufTail is being incremented within the loop, 
