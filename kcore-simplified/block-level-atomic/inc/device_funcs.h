@@ -4,7 +4,7 @@
 #define CUTS_DEVICE_FUNCS_H
 #include "./common.h"
 
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int** glBuffer, unsigned int* bufTail, unsigned int level);
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level);
 
 __device__ void syncBlocks(volatile unsigned int* blockCounter);
 
