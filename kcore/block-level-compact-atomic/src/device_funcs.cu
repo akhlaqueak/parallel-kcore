@@ -87,8 +87,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             if(lane_id==WARP_SIZE-1){
                 // adding warpsize so that this warp anticipate about allocation
                 if(allocationRequired(tail, bufTail+WARP_SIZE)){ 
-                    atomicCAS((unsigned int*)&lock, 2, 0); // resets the lock in case a memory was allocated before
-                    __threadfence_block();
+
                     allocateMemoryMutex(&tail, &head, &lock);
                 }    
             }

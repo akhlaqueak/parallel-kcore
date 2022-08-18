@@ -1,8 +1,5 @@
 #include "../inc/scans.h"
 
-    __shared__ bool predicate[BLK_DIM];
-    __shared__ unsigned int addresses[BLK_DIM];
-    __shared__ unsigned int bTail;
     
 __device__ void scanBlockHillis(unsigned int* addresses){
     // Hillis Steele Scan
@@ -93,6 +90,9 @@ __device__ void compactBlock(unsigned int *degrees, unsigned int V, Node** tail,
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
+    __shared__ bool predicate[BLK_DIM];
+    __shared__ unsigned int addresses[BLK_DIM];
+    __shared__ unsigned int bTail;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
