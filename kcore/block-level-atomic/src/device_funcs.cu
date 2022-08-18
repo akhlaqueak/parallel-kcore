@@ -1,51 +1,42 @@
 
 #include "../inc/device_funcs.h"
 #include "stdio.h"
+#include "buffer.cc"
+
 __device__ unsigned int ldg (const unsigned int * p)
 {
     unsigned int out;
     asm volatile("ld.global.cg.s32 %0, [%1];" : "=r"(out) : "l"(p));
     return out;
 }
-__device__ unsigned int getWriteLoc(unsigned int* glBuffer, unsigned int* bufTail){
-    unsigned int loc = atomicAdd(bufTail, 1);
-    assert(loc < GLBUFFER_SIZE + MAX_NV);
-
-    // if(loc == MAX_NV){ // checking equal so that only one thread in a warp should allocate glBuffer
-    //     glBuffer[0] = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
-    //     assert(glBuffer[0] != NULL); 
-    // }
-    return loc;
-}
-
-__device__ void writeToBuffer(unsigned int* shBuffer,  unsigned int* glBuffer, unsigned int loc, unsigned int v){
-    // done: make it single pointer, glBuffer
-    assert(loc < GLBUFFER_SIZE + MAX_NV);
-
-    if(loc < MAX_NV){
-        shBuffer[loc] = v;
-    }
-    else{
-        assert(glBuffer!=NULL);
-        glBuffer[loc-MAX_NV] = v; 
-    }
-}
-
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
-    for(unsigned int i=global_threadIdx; i<V; i+= N_THREADS){
-        if(degrees[i] == level){
-            unsigned int loc = getWriteLoc(glBuffer, bufTail);
-            writeToBuffer(shBuffer, glBuffer, loc, i);
+    for(unsigned int base = 0; base < V; base += N_THREADS){
+        
+        unsigned int v = base + global_threadIdx; 
+
+        // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
+
+        // only the last thread in warp is responsible to alloate memory
+        // adding blk_dim to anticipate allocation
+        if(THID==BLK_DIM-1){
+            if(allocationRequired(glBuffer, bufTail[0]+BLK_DIM)){
+                allocateMemory(glBuffer);
+            }
+        }
+
+        __syncthreads();
+
+        if(v >= V) continue;
+
+        if(degrees[v] == level){
+            unsigned int loc = atomicAdd(bufTail, 1);
+            writeToBuffer(shBuffer, glBuffer[0], loc, v);
         }
     }
-    __syncthreads();
 }
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int loc){
-    assert(loc < MAX_NV + GLBUFFER_SIZE);
-    return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
-}
+
 
 __device__ void syncBlocks(volatile unsigned int* blockCounter){
     
@@ -68,6 +59,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
+    __shared__ unsigned int lock;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
@@ -76,12 +68,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         bufTail = 0;
         glBuffer = NULL;
         base = 0;
+        lock = 0;
         // glBuffer = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
     }
 
     __syncthreads();
 
-    selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
+    selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level);
 
     syncBlocks(blockCounter);
 
@@ -115,14 +108,26 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         end = d_p.neighbors_offset[v+1];
 
 
-        for(int j = start + lane_id; j<end ; j+=32){
+        while(true){
+            __syncwarp();
+
+            if(start >= end) break;
+
+            unsigned int j = start + lane_id;
+            start += WARP_SIZE;
+            if(j >= end) continue;
+            if(lane_id==WARP_SIZE-1 && 
+                allocationRequired(glBuffer, bufTail+WARP_SIZE)){
+                allocateMemoryMutex(&glBuffer, &lock);
+            }
+
             unsigned int u = d_p.neighbors[j];
-            if(*(d_p.degrees+u) > level){
+            if(ldg(d_p.degrees+u) > level){
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    unsigned int loc = getWriteLoc(glBuffer, &bufTail);
-                    writeToBuffer(shBuffer, glBuffer, loc, u);
+                    unsigned int loc = atomicAdd(&bufTail, 1);
+                    writeToBuffer(shBuffer, &glBuffer, loc, u);
                 }
 
                 if(a <= level){
