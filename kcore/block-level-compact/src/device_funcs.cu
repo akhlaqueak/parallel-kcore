@@ -3,12 +3,12 @@
 #include "stdio.h"
 
 
-__device__ void syncBlocks(unsigned long long int blockCounter){
+__device__ void syncBlocks(unsigned long long int* blockCounter){
     
     
     const auto SollMask = (1 << gridDim.x) - 1;
     if (THID == 0) {
-        while ((atomicOr( &blockCounter, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
+        while ((atomicOr( blockCounter, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
     }
     // if (ThreadId() == 0 && 0 == blockIdx.x) {
     //     printf("Print a single line for the entire process")
@@ -126,7 +126,7 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer,  unsigned int* gl
     return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
 }
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned long long int blockCounter){
+__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned long long int *blockCounter){
     
     
     __shared__ unsigned int shBuffer[MAX_NV];
@@ -144,7 +144,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         base = 0;
         lock = 0;
         glBuffer = (unsigned int*)malloc(sizeof(unsigned int)*GLBUFFER_SIZE);
-        atomicAnd(&blockCounter, 0);
+        atomicAnd(blockCounter, 0);
     }
 
     __syncthreads();
