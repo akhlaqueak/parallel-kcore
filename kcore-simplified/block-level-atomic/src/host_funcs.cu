@@ -44,7 +44,7 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaMallocManaged(&global_count,sizeof(unsigned int));
     cudaMallocManaged(&blockCounter,sizeof(unsigned int));
     
-    chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE ULL));
+    chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
     cout<<"allocations are requested for: "<< sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE ;
     cudaMemset(global_count,0,sizeof(unsigned int));
 
