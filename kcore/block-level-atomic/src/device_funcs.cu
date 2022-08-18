@@ -3,12 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-__device__ unsigned int ldg (const unsigned int * p)
-{
-    unsigned int out;
-    asm volatile("ld.global.cg.s32 %0, [%1];" : "=r"(out) : "l"(p));
-    return out;
-}
+
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int** glBuffer, unsigned int* bufTail, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
     for(unsigned int base = 0; base < V; base += N_THREADS){
@@ -20,7 +15,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         // only the last thread in warp is responsible to alloate memory
         // adding blk_dim to anticipate allocation
         if(THID==BLK_DIM-1){
-            if(allocationRequired(glBuffer, bufTail[0]+BLK_DIM)){
+            if(allocationRequired(glBuffer[0], bufTail[0]+BLK_DIM)){
                 allocateMemory(glBuffer);
             }
         }
@@ -127,7 +122,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(shBuffer, &glBuffer, loc, u);
+                    writeToBuffer(shBuffer, glBuffer, loc, u);
                 }
 
                 if(a <= level){
