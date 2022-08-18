@@ -9,7 +9,7 @@ __device__ void syncBlocks(){
     
     const auto SollMask = (1 << gridDim.x) - 1;
     if (THID == 0) {
-        while ((atomicOr( blockCounter, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
+        while ((atomicOr( &blockCounter, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
     }
     // if (ThreadId() == 0 && 0 == blockIdx.x) {
     //     printf("Print a single line for the entire process")
