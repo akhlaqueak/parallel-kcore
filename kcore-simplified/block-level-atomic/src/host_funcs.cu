@@ -39,11 +39,12 @@ void find_kcore(string data_file,bool write_to_disk){
     unsigned int level = 0;
     unsigned int *global_count;
     unsigned int* blockCounter;
-    unsigned int* glBuffers;
+    unsigned int* glBuffers=NULL;
 
     cudaMallocManaged(&global_count,sizeof(unsigned int));
     cudaMallocManaged(&blockCounter,sizeof(unsigned int));
-    cudaMallocManaged(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE);
+    
+    chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
 
     cudaMemset(global_count,0,sizeof(unsigned int));
 
