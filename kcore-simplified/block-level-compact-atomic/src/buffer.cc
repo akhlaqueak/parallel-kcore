@@ -20,11 +20,6 @@ __device__ void writeToBuffer(Node* tail, unsigned int loc, unsigned int v){
     }
 }
 
-__device__ void advanceNode(Node** head){
-    Node* temp = head[0];
-    head[0] = head[0]->next;
-    free(temp);
-}
 
 __device__ unsigned int readFromBuffer(Node* head, unsigned int loc){
     assert(head!=NULL); 
