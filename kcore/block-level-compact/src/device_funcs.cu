@@ -149,7 +149,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
 
-    selectNodesAtLevel(d_p.degrees, V, shBuffer, &glBuffer, &bufTail, level, &lock);
+    selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level, &lock);
 
     // syncBlocks(blockCounter);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
