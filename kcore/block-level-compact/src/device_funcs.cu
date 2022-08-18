@@ -97,11 +97,11 @@ __device__ void writeToBuffer(unsigned int* shBuffer,   unsigned int** glBuffer_
         // //  printf("1");
         //  ; // busy wait until glBuffer is allocated 
         
-        while(lock[0]!=2)
-            if(atomicExch(lock, 1) == 0){
-                glBuffer_p[0] = ( unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
-                atomicExch(lock, 2);
-            }
+        // while(lock[0]!=2)
+        //     if(atomicExch(lock, 1) == 0){
+        //         glBuffer_p[0] = ( unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
+        //         atomicExch(lock, 2);
+        //     }
         assert(glBuffer_p[0]!=NULL);
         glBuffer_p[0][loc-MAX_NV] = v; 
     }
@@ -130,6 +130,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         glBuffer = NULL;
         base = 0;
         lock = 0;
+        glBuffer = (unsigned int*)malloc(sizeof(unsigned int)*GLBUFFER_SIZE);
     }
 
     __syncthreads();
