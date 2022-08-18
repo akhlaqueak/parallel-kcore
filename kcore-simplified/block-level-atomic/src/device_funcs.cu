@@ -127,7 +127,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     if(THID == 0 ){
         if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
-        if(glBuffer!=NULL) free(glBuffer);
+        // if(glBuffer!=NULL) free(glBuffer);
     }
 
 }
