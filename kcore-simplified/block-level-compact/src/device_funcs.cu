@@ -7,10 +7,9 @@
 #define LOG_MEM_BANKS 5
 #define CONFLICT_FREE_OFFSET(n) ((n) >> LOG_MEM_BANKS)
 
-__global__ void scanBlock(unsigned int *input, unsigned int *output)
+__device__ void scanBlock(unsigned int *input, unsigned int *output)
 {
 	__shared__ unsigned int temp[BLK_DIM*2];// allocated on invocation
-	unsigned int THID = THIDx.x;
 
 	unsigned int ai = THID;
 	unsigned int bi = THID + (BLK_DIM / 2);
