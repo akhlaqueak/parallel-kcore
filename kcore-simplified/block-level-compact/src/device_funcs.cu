@@ -16,10 +16,15 @@ __device__ void scanBlock(unsigned int *input, unsigned int *output)
 	unsigned int bankOffsetA = CONFLICT_FREE_OFFSET(ai);
 	unsigned int bankOffsetB = CONFLICT_FREE_OFFSET(bi);
 
+    if(THID<BLK_DIM){
 
-    temp[ai + bankOffsetA] = input[ai];
-    temp[bi + bankOffsetB] = input[bi];
-
+        temp[ai + bankOffsetA] = input[ai];
+        temp[bi + bankOffsetB] = input[bi];
+    }
+    else{
+        temp[ai + bankOffsetA] = 0;
+        temp[bi + bankOffsetB] = 0;    
+    }
 
 	unsigned int offset = 1;
 	for (unsigned int d = BLK_DIM >> 1; d > 0; d >>= 1) // build sum in place up the tree
