@@ -3,24 +3,66 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-__device__ void scanBlock(unsigned int* addresses){
-    // Hillis Steele Scan
-    // todo check this code is working
-    __syncthreads();
-    int initVal = addresses[THID];
+#define SHARED_MEMORY_BANKS 32
+#define LOG_MEM_BANKS 5
+#define CONFLICT_FREE_OFFSET(n) ((n) >> LOG_MEM_BANKS)
 
-    for (unsigned int d = 1; d < BLK_DIM; d = d*2) {
-        unsigned int newVal = addresses[THID];   
-        if (int(THID - d) >= 0)  
-            newVal += addresses[THID-d];  
-        __syncthreads();
-        addresses[THID] = newVal;
-        __syncthreads();  
-    }
-        //Hillis-Steele Scan gives inclusive scan.
-        //to get exclusive scan, subtract the initial values.
-    addresses[THID] -= initVal;
-    __syncthreads();  
+__global__ void scanBlock(unsigned int *input, unsigned int *output)
+{
+	__shared__ unsigned int temp[BLK_DIM*2];// allocated on invocation
+	unsigned int THID = THIDx.x;
+
+	unsigned int ai = THID;
+	unsigned int bi = THID + (BLK_DIM / 2);
+	unsigned int bankOffsetA = CONFLICT_FREE_OFFSET(ai);
+	unsigned int bankOffsetB = CONFLICT_FREE_OFFSET(bi);
+
+
+    temp[ai + bankOffsetA] = input[ai];
+    temp[bi + bankOffsetB] = input[bi];
+
+
+	unsigned int offset = 1;
+	for (unsigned int d = BLK_DIM >> 1; d > 0; d >>= 1) // build sum in place up the tree
+	{
+		__syncthreads();
+		if (THID < d)
+		{
+			unsigned int ai = offset * (2 * THID + 1) - 1;
+			unsigned int bi = offset * (2 * THID + 2) - 1;
+			ai += CONFLICT_FREE_OFFSET(ai);
+			bi += CONFLICT_FREE_OFFSET(bi);
+
+			temp[bi] += temp[ai];
+		}
+		offset *= 2;
+	}
+
+	if (THID == BLK_DIM-1) {
+		temp[THID-1 + CONFLICT_FREE_OFFSET(THID - 1)] = 0; // clear the last element
+	}
+
+	for (unsigned int d = 1; d < BLK_DIM; d *= 2) // traverse down tree & build scan
+	{
+		offset >>= 1;
+		__syncthreads();
+		if (THID < d)
+		{
+			unsigned int ai = offset * (2 * THID + 1) - 1;
+			unsigned int bi = offset * (2 * THID + 2) - 1;
+			ai += CONFLICT_FREE_OFFSET(ai);
+			bi += CONFLICT_FREE_OFFSET(bi);
+
+			unsigned int t = temp[ai];
+			temp[ai] = temp[bi];
+			temp[bi] += t;
+		}
+	}
+	__syncthreads();
+
+    output[ai] = temp[ai + bankOffsetA];
+    output[bi] = temp[bi + bankOffsetB];
+
 }
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
@@ -29,6 +71,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
+    __shared__ unsigned int scannedAddresses[BLK_DIM];
     __shared__ unsigned int bTail;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
@@ -40,11 +83,11 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         addresses[THID] = predicate[THID];
 
-        scanBlock(addresses);
+        scanBlock(addresses, scannedAddresses);
 
         
         if(THID == BLK_DIM - 1){  
-            int nv =  addresses[THID] + predicate[THID];            
+            int nv =  scannedAddresses[THID] + predicate[THID];            
             bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
             
         }
@@ -52,10 +95,10 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         // this sync is necessary so that memory is allocated before writing to buffer
         __syncthreads();
         
-        addresses[THID] += bTail;
+        scannedAddresses[THID] += bTail;
         
         if(predicate[THID])
-            writeToBuffer(shBuffer, glBuffer, addresses[THID], v);
+            writeToBuffer(shBuffer, glBuffer, scannedAddresses[THID], v);
         
         __syncthreads();
             
