@@ -44,27 +44,30 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 }
 
 
+// __shared__ volatile unsigned int addresses[BLK_DIM];
+// __shared__ bool predicate[BLK_DIM];
+// __shared__ unsigned int temp[BLK_DIM];
+
+// __device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
+//     const unsigned int lane_id = THID & 31;
+//     addresses[THID] = predicate[THID];
+//     scanWarp(addresses, EXCLUSIVE);
+//     unsigned int bTail;
+//     if(lane_id==WARP_SIZE-1){
+//         bTail = atomicAdd(bufTail, addresses[THID] + predicate[THID]);
+//     }
+//     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
+
+//     addresses[THID] += bTail;
+//     if(predicate[THID])
+//         writeToBuffer(shBuffer, glBuffer, addresses[THID], temp[THID]);
+//     predicate[THID] = 0;
+// }
+
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
 __shared__ volatile unsigned int addresses[BLK_DIM];
 __shared__ bool predicate[BLK_DIM];
 __shared__ unsigned int temp[BLK_DIM];
-
-__device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
-    const unsigned int lane_id = THID & 31;
-    addresses[THID] = predicate[THID];
-    scanWarp(addresses, EXCLUSIVE);
-    unsigned int bTail;
-    if(lane_id==WARP_SIZE-1){
-        bTail = atomicAdd(bufTail, addresses[THID] + predicate[THID]);
-    }
-    bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
-
-    addresses[THID] += bTail;
-    if(predicate[THID])
-        writeToBuffer(shBuffer, glBuffer, addresses[THID], temp[THID]);
-    predicate[THID] = 0;
-}
-
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
