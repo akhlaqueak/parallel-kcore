@@ -10,17 +10,12 @@ __shared__ unsigned int temp[BLK_DIM];
 
 __device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID % 32;
-    const unsigned int old = addresses[THID];
 
     for(int i=1; i<WARP_SIZE; i*=2){
         if(lane_id >= i)
             addresses[THID] += addresses[THID-i];
     }
 
-    // if(type == EXCLUSIVE)
-    //     addresses[THID] -= old;
-        
-    // return addresses[THID];
     if(type == INCLUSIVE)
         return addresses[THID];
     else{
@@ -139,11 +134,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
-
-    bufTail = 0;
-    base = 0;
-    unsigned int* glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
     
+    if(THID==0){
+        bufTail = 0;
+        base = 0;
+        unsigned int* glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
+    }
+
     __syncthreads();
     
     selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
