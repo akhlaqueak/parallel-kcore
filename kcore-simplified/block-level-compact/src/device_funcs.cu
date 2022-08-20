@@ -5,25 +5,25 @@
 
 enum{INCLUSIVE, EXCLUSIVE};
 
-__device__ void scanWarp(volatile unsigned int* addresses, unsigned int type){
+__device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID % 32;
-    const unsigned int old = addresses[THID];
 
     for(int i=1; i<WARP_SIZE; i*=2){
         if(lane_id >= i)
             addresses[THID] += addresses[THID-i];
     }
 
-    if(type == EXCLUSIVE)
-        addresses[THID] -= old;
+    if(type == INCLUSIVE)
+        return addresses[THID];
+    else
+        return (lane_id>0)? addresses[THID-1]:0;
 }
 
 __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     const unsigned int warp_id = THID >> 5;
-    __syncthreads();    
-    scanWarp(addresses, type);
-    unsigned int val = addresses[THID];
+    
+    unsigned int val = scanWarp(addresses, type);
     __syncthreads();
 
     if(lane_id==31)
@@ -42,6 +42,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     __syncthreads();
     
 }
+
 
 
 // __shared__ volatile unsigned int addresses[BLK_DIM];
