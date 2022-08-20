@@ -49,21 +49,21 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 // __shared__ bool predicate[BLK_DIM];
 // __shared__ unsigned int temp[BLK_DIM];
 
-// __device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
-//     const unsigned int lane_id = THID & 31;
-//     addresses[THID] = predicate[THID];
-//     scanWarp(addresses, EXCLUSIVE);
-//     unsigned int bTail;
-//     if(lane_id==WARP_SIZE-1){
-//         bTail = atomicAdd(bufTail, addresses[THID] + predicate[THID]);
-//     }
-//     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
+__device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
+    const unsigned int lane_id = THID & 31;
+    addresses[THID] = predicate[THID];
+    unsigned int address = scanWarp(addresses, EXCLUSIVE);
+    unsigned int bTail;
+    if(lane_id==WARP_SIZE-1){
+        bTail = atomicAdd(bufTail, address + predicate[THID]);
+    }
+    bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
 
-//     addresses[THID] += bTail;
-//     if(predicate[THID])
-//         writeToBuffer(shBuffer, glBuffer, addresses[THID], temp[THID]);
-//     predicate[THID] = 0;
-// }
+    address += bTail;
+    if(predicate[THID])
+        writeToBuffer(shBuffer, glBuffer, address, temp[THID]);
+    predicate[THID] = 0;
+}
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
 __shared__ volatile unsigned int addresses[BLK_DIM];
@@ -176,7 +176,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             __syncwarp();
 
-            // compactWarp(shBuffer, glBuffer, &bufTail);
+            compactWarp(shBuffer, glBuffer, &bufTail);
             if(start >= end) break;
 
             unsigned int j = start + lane_id;
@@ -188,10 +188,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    // temp[THID] = u;
-                    // predicate[THID] = 1;
-                    unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(shBuffer, glBuffer, loc, u);
+                    temp[THID] = u;
+                    predicate[THID] = 1;
+                    // unsigned int loc = atomicAdd(&bufTail, 1);
+                    // writeToBuffer(shBuffer, glBuffer, loc, u);
                 }
 
                 if(a <= level){
