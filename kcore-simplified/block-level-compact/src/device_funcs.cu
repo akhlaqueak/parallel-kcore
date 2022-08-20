@@ -10,6 +10,7 @@ __device__ unsigned int scanWarp(unsigned int* addresses, unsigned int type){
     for(int i=1;i<WARP_SIZE;i*=2){
         if(lane_id >= i)
             addresses[THID] += addresses[THID-i];
+        __syncwarp();
     }
 
     // if(lane_id>=1)
