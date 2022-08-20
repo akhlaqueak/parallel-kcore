@@ -54,7 +54,7 @@ __device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsi
     scanWarp(addresses, EXCLUSIVE);
     unsigned int bTail;
     if(lane_id==WARP_SIZE-1){
-        bTail = atomicAdd(bufTail, bTail + predicate[THID]);
+        bTail = atomicAdd(bufTail, addresses[THID] + predicate[THID]);
     }
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
 
