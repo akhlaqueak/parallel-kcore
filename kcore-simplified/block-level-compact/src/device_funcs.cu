@@ -44,13 +44,13 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 }
 
 
+__shared__ volatile unsigned int addresses[BLK_DIM];
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
     __shared__ bool predicate[BLK_DIM];
-    __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ unsigned int bTail;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
