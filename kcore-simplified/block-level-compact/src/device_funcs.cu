@@ -3,79 +3,49 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-#define SHARED_MEMORY_BANKS 32
-#define LOG_MEM_BANKS 5
-#define CONFLICT_FREE_OFFSET(n) ((n) >> LOG_MEM_BANKS)
+enum{INCLUSIVE, EXCLUSIVE};
 
-__device__ void scanBlock(unsigned int *input, unsigned int *output)
-{
-	__shared__ unsigned int temp[BLK_DIM*2];// allocated on invocation
-
-	unsigned int ai = THID;
-	unsigned int bi = THID + (BLK_DIM / 2);
-	unsigned int bankOffsetA = CONFLICT_FREE_OFFSET(ai);
-	unsigned int bankOffsetB = CONFLICT_FREE_OFFSET(bi);
-
-    if(THID<BLK_DIM){
-
-        temp[ai + bankOffsetA] = input[ai];
-        temp[bi + bankOffsetB] = input[bi];
+__device__ unsigned int scanWarp(unsigned int* addresses, unsigned int type){
+    const unsigned int lane_id = THID & 31;
+    for(int i=1;i<WARP_SIZE;i*=2){
+        if(lane_id >= i)
+            addresses[lane_id] += addresses[lane_id-i];
     }
-    else{
-        temp[ai + bankOffsetA] = 0;
-        temp[bi + bankOffsetB] = 0;    
-    }
-
-	unsigned int offset = 1;
-	for (unsigned int d = BLK_DIM >> 1; d > 0; d >>= 1) // build sum in place up the tree
-	{
-		__syncthreads();
-		if (THID < d)
-		{
-			unsigned int ai = offset * (2 * THID + 1) - 1;
-			unsigned int bi = offset * (2 * THID + 2) - 1;
-			ai += CONFLICT_FREE_OFFSET(ai);
-			bi += CONFLICT_FREE_OFFSET(bi);
-
-			temp[bi] += temp[ai];
-		}
-		offset *= 2;
-	}
-
-	if (THID == BLK_DIM-1) {
-		temp[THID-1 + CONFLICT_FREE_OFFSET(THID - 1)] = 0; // clear the last element
-	}
-
-	for (unsigned int d = 1; d < BLK_DIM; d *= 2) // traverse down tree & build scan
-	{
-		offset >>= 1;
-		__syncthreads();
-		if (THID < d)
-		{
-			unsigned int ai = offset * (2 * THID + 1) - 1;
-			unsigned int bi = offset * (2 * THID + 2) - 1;
-			ai += CONFLICT_FREE_OFFSET(ai);
-			bi += CONFLICT_FREE_OFFSET(bi);
-
-			unsigned int t = temp[ai];
-			temp[ai] = temp[bi];
-			temp[bi] += t;
-		}
-	}
-	__syncthreads();
-
-    output[ai] = temp[ai + bankOffsetA];
-    output[bi] = temp[bi + bankOffsetB];
-
+    if(type == INCLUSIVE)
+        return addresses[lane_id];
+    else
+        return (lane_id>0)? addresses[lane_id-1]:0;
 }
 
+__device__ void scanBlock(unsigned int* addresses, unsigned int type){
+    const unsigned int lane_id = THID & 31;
+    const unsigned int warp_id = THID >> 5;
+    
+    unsigned int val = scanWarp(addresses, EXCLUSIVE);
+    __syncthreads();
+
+    if(lane_id==31)
+        addresses[warp_id] = addresses[THID];
+    __syncthreads();
+
+    if(warp_id==0)
+        scanWarp(addresses, INCLUSIVE);
+    __syncthreads();
+
+    if(warp_id>0)
+        val += addresses[warp_id-1];
+    __syncthreads();
+
+    addresses[THID] = val;
+    __syncthreads();
+    
+}
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
-    __shared__ unsigned int scannedAddresses[BLK_DIM];
     __shared__ unsigned int bTail;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
@@ -87,11 +57,11 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         addresses[THID] = predicate[THID];
 
-        scanBlock(addresses, scannedAddresses);
+        scanBlock(addresses, EXCLUSIVE);
 
         
         if(THID == BLK_DIM - 1){  
-            int nv =  scannedAddresses[THID] + predicate[THID];            
+            int nv =  addresses[THID] + predicate[THID];            
             bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
             
         }
@@ -99,7 +69,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         // this sync is necessary so that memory is allocated before writing to buffer
         __syncthreads();
         
-        scannedAddresses[THID] += bTail;
+        addresses[THID] += bTail;
         
         if(predicate[THID])
             writeToBuffer(shBuffer, glBuffer, scannedAddresses[THID], v);
