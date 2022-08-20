@@ -21,9 +21,8 @@ __device__ void scanWarp(volatile unsigned int* addresses, unsigned int type){
 __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     const unsigned int warp_id = THID >> 5;
-    
+    __syncthreads();    
     scanWarp(addresses, type);
-    __syncthreads();
     unsigned int val = addresses[THID];
     __syncthreads();
 
