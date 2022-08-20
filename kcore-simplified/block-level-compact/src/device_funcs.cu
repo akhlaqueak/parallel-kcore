@@ -17,15 +17,15 @@ __device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int 
             addresses[THID] += addresses[THID-i];
     }
 
-    if(type == EXCLUSIVE)
-        addresses[THID] -= old;
+    // if(type == EXCLUSIVE)
+    //     addresses[THID] -= old;
         
-    return addresses[THID];
-    // if(type == INCLUSIVE)
-    //     return addresses[THID];
-    // else{
-    //     return (lane_id>0)? addresses[THID-1]:0;
-    // }
+    // return addresses[THID];
+    if(type == INCLUSIVE)
+        return addresses[THID];
+    else{
+        return (lane_id>0)? addresses[THID-1]:0;
+    }
 }
 
 __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
