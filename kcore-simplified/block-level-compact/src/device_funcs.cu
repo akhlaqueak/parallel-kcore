@@ -4,6 +4,9 @@
 #include "buffer.cc"
 
 enum{INCLUSIVE, EXCLUSIVE};
+__shared__ volatile unsigned int addresses[BLK_DIM];
+__shared__ bool predicate[BLK_DIM];
+__shared__ unsigned int temp[BLK_DIM];
 
 __device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID % 32;
@@ -66,9 +69,7 @@ __device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsi
 }
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
-__shared__ volatile unsigned int addresses[BLK_DIM];
-__shared__ bool predicate[BLK_DIM];
-__shared__ unsigned int temp[BLK_DIM];
+
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
