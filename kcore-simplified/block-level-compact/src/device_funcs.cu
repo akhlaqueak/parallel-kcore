@@ -5,24 +5,13 @@
 
 enum{INCLUSIVE, EXCLUSIVE};
 
-__device__ unsigned int scanWarp(unsigned int* addresses, unsigned int type){
-    const unsigned int lane_id = THID & 31;
-    for(int i=1;i<WARP_SIZE;i*=2){
+__device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
+    const unsigned int lane_id = THID % 32;
+
+    for(int i=1; i<WARP_SIZE; i*=2){
         if(lane_id >= i)
             addresses[THID] += addresses[THID-i];
-        __syncwarp();
     }
-
-    // if(lane_id>=1)
-    //     addresses[THID] += addresses[THID-1];
-    // if(lane_id>=2)
-    //     addresses[lane_id] += addresses[lane_id-2];
-    // if(lane_id>=4)
-    //     addresses[lane_id] += addresses[lane_id-4];    
-    // if(lane_id>=8)
-    //     addresses[lane_id] += addresses[lane_id-8];
-    // if(lane_id>=16)
-    //     addresses[lane_id] += addresses[lane_id-16];
 
     if(type == INCLUSIVE)
         return addresses[THID];
@@ -30,7 +19,7 @@ __device__ unsigned int scanWarp(unsigned int* addresses, unsigned int type){
         return (lane_id>0)? addresses[THID-1]:0;
 }
 
-__device__ void scanBlock(unsigned int* addresses, unsigned int type){
+__device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     const unsigned int warp_id = THID >> 5;
     
@@ -53,12 +42,15 @@ __device__ void scanBlock(unsigned int* addresses, unsigned int type){
     __syncthreads();
     
 }
+
+
+
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
     __shared__ bool predicate[BLK_DIM];
-    __shared__ unsigned int addresses[BLK_DIM];
+    __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ unsigned int bTail;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
