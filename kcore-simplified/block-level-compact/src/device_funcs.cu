@@ -7,7 +7,7 @@ enum{INCLUSIVE, EXCLUSIVE};
 
 __device__ void scanWarp(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID % 32;
-    const unsigned int old = addresses[THID]
+    const unsigned int old = addresses[THID];
 
     for(int i=1; i<WARP_SIZE; i*=2){
         if(lane_id >= i)
