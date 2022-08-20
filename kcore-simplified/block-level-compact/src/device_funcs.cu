@@ -9,19 +9,32 @@ __shared__ bool predicate[BLK_DIM];
 __shared__ unsigned int temp[BLK_DIM];
 
 __device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
-    const unsigned int lane_id = THID % 32;
+    // const unsigned int lane_id = THID % 32;
 
-    for(int i=1; i<WARP_SIZE; i*=2){
-        if(lane_id >= i)
-            addresses[THID] += addresses[THID-i];
-    }
+    // for(int i=1; i<WARP_SIZE; i*=2){
+    //     if(lane_id >= i)
+    //         addresses[THID] += addresses[THID-i];
+    // }
+
+    // if(type == INCLUSIVE)
+    //     return addresses[THID];
+    // else{
+    //     return (lane_id>0)? addresses[THID-1]:0;
+    // }
+
+    const unsigned int lane_id = THID & 31;
+    const unsigned int old = addresses[THID];
+    unsigned int val = old;
+    for(int i=1;i<WARP_SIZE;i*=2)
+        val = __shfl_up_sync(0xFFFFFFFF, val, i);
 
     if(type == INCLUSIVE)
-        return addresses[THID];
-    else{
-        return (lane_id>0)? addresses[THID-1]:0;
-    }
+        return val;
+    else
+        return val-old;
 }
+
+
 
 __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
