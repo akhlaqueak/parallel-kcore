@@ -10,6 +10,7 @@ __device__ unsigned int scanWarp(unsigned int* addresses, unsigned int type){
     for(int i=1;i<WARP_SIZE;i*=2){
         if(lane_id >= i)
             addresses[lane_id] += addresses[lane_id-i];
+        __syncwarp();
     }
     if(type == INCLUSIVE)
         return addresses[lane_id];
@@ -21,7 +22,7 @@ __device__ void scanBlock(unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     const unsigned int warp_id = THID >> 5;
     
-    unsigned int val = scanWarp(addresses, EXCLUSIVE);
+    unsigned int val = scanWarp(addresses, type);
     __syncthreads();
 
     if(lane_id==31)
