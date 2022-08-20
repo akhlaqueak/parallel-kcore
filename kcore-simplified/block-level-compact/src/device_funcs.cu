@@ -5,25 +5,25 @@
 
 enum{INCLUSIVE, EXCLUSIVE};
 
-__device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
+__device__ void scanWarp(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID % 32;
+    const unsigned int old = addresses[THID]
 
     for(int i=1; i<WARP_SIZE; i*=2){
         if(lane_id >= i)
             addresses[THID] += addresses[THID-i];
     }
 
-    if(type == INCLUSIVE)
-        return addresses[THID];
-    else
-        return (lane_id>0)? addresses[THID-1]:0;
+    if(type == EXCLUSIVE)
+        addresses[THID] -= old;
 }
 
 __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     const unsigned int warp_id = THID >> 5;
     
-    unsigned int val = scanWarp(addresses, type);
+    scanWarp(addresses, type);
+    unsigned int val = addresses[THID];
     __syncthreads();
 
     if(lane_id==31)
@@ -45,12 +45,21 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 
 
 __shared__ volatile unsigned int addresses[BLK_DIM];
+__shared__ bool predicate[BLK_DIM];
+
+// __device__ void compactWarp(){
+//     unsigned int v = scanWarp(addresses, EXCLUSIVE);
+//     if(lane_id==31){
+//         v = atomicAdd(bufTail, v+predicate[THID]);
+//     }
+//     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
+
+// }
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
-    __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int bTail;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
@@ -154,7 +163,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
         while(true){
             __syncwarp();
-
+            // compactWarp();
             if(start >= end) break;
 
             unsigned int j = start + lane_id;
@@ -166,6 +175,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
+                    // temp[THID] = u;
+                    // predicate[THID] = 1;
                     unsigned int loc = atomicAdd(&bufTail, 1);
                     writeToBuffer(shBuffer, glBuffer, loc, u);
                 }
