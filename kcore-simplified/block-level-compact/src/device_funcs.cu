@@ -131,6 +131,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
+    __shared__ unsigned int* glBuffer;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
@@ -138,7 +139,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     if(THID==0){
         bufTail = 0;
         base = 0;
-        unsigned int* glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
+        glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
     }
 
     __syncthreads();
