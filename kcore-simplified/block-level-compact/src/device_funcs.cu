@@ -48,7 +48,8 @@ __shared__ volatile unsigned int addresses[BLK_DIM];
 __shared__ bool predicate[BLK_DIM];
 __shared__ unsigned int temp[BLK_DIM];
 
-__device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer){
+__device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
+    const unsigned int lane_id = THID & 31;
     addresses[THID] = predicate[THID];
     scanWarp(addresses, EXCLUSIVE);
     unsigned int bTail;
@@ -171,7 +172,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             __syncwarp();
 
-            compactWarp(shBuffer, glBuffer);
+            compactWarp(shBuffer, glBuffer, &bufTail);
             if(start >= end) break;
 
             unsigned int j = start + lane_id;
