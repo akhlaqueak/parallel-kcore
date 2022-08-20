@@ -9,13 +9,24 @@ __device__ unsigned int scanWarp(unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     for(int i=1;i<WARP_SIZE;i*=2){
         if(lane_id >= i)
-            addresses[lane_id] += addresses[lane_id-i];
-        __syncwarp();
+            addresses[THID] += addresses[THID-i];
     }
+
+    // if(lane_id>=1)
+    //     addresses[THID] += addresses[THID-1];
+    // if(lane_id>=2)
+    //     addresses[lane_id] += addresses[lane_id-2];
+    // if(lane_id>=4)
+    //     addresses[lane_id] += addresses[lane_id-4];    
+    // if(lane_id>=8)
+    //     addresses[lane_id] += addresses[lane_id-8];
+    // if(lane_id>=16)
+    //     addresses[lane_id] += addresses[lane_id-16];
+
     if(type == INCLUSIVE)
-        return addresses[lane_id];
+        return addresses[THID];
     else
-        return (lane_id>0)? addresses[lane_id-1]:0;
+        return (lane_id>0)? addresses[THID-1]:0;
 }
 
 __device__ void scanBlock(unsigned int* addresses, unsigned int type){
