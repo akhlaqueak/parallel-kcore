@@ -5,21 +5,27 @@
 
 enum{INCLUSIVE, EXCLUSIVE};
 __shared__ volatile unsigned int addresses[BLK_DIM];
-__shared__ volatile bool predicate[BLK_DIM];
+__shared__ bool predicate[BLK_DIM];
 __shared__ unsigned int temp[BLK_DIM];
 
 __device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID % 32;
+    const unsigned int old = addresses[THID];
 
     for(int i=1; i<WARP_SIZE; i*=2){
         if(lane_id >= i)
             addresses[THID] += addresses[THID-i];
     }
 
-    if(type == INCLUSIVE)
-        return addresses[THID];
-    else
-        return (lane_id>0)? addresses[THID-1]:0;
+    if(type == EXCLUSIVE)
+        addresses[THID] -= old;
+        
+    return addresses[THID];
+    // if(type == INCLUSIVE)
+    //     return addresses[THID];
+    // else{
+    //     return (lane_id>0)? addresses[THID-1]:0;
+    // }
 }
 
 __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
