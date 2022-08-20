@@ -23,6 +23,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int warp_id = THID >> 5;
     
     scanWarp(addresses, type);
+    __syncthreads();
     unsigned int val = addresses[THID];
     __syncthreads();
 
