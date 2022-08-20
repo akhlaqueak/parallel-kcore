@@ -136,15 +136,15 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     bufTail = 0;
     base = 0;
-    predicate[THID] = 0;
     unsigned int* glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
-
+    
     __syncthreads();
-
+    
     selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
-
+    
     syncBlocks(blockCounter);
-
+    
+    predicate[THID] = 0;
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
