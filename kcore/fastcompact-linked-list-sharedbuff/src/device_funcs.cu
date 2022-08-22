@@ -65,10 +65,12 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         if(base == bufTail) break;
         i = base + warp_id;
         
-        if(THID == 0 && head!=NULL){
+        if(THID==0 && head!=NULL)
             if(base >= head->limit){
                 advanceNode(&head);
             }
+
+        if(THID == 0){
             base += WARPS_EACH_BLK;
             if(bufTail < base )
                 base = bufTail;
@@ -80,20 +82,20 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         unsigned int v = readFromBuffer(shBuffer, head, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
-        unsigned int b1 = start;
         // for(int j = start + lane_id; j<end ; j+=32){
         // the for loop may leave some of the threads inactive in its last iteration
         // following while loop will keep all threads active until the continue condition
         while(true){
             __syncwarp();
 
-            compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), shBuffer, &tail, &head, &bufTail, &lock);
+            compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), 
+                        shBuffer, &tail, &head, &bufTail, &lock);
             __syncwarp();
 
-            if(b1 >= end) break;
+            if(start >= end) break;
 
-            unsigned int j = b1 + lane_id;
-            b1 += WARP_SIZE;
+            unsigned int j = start + lane_id;
+            start += WARP_SIZE;
             if(j >= end) continue;
 
             unsigned int u = d_p.neighbors[j];
