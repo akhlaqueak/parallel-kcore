@@ -2,8 +2,8 @@
 #include "../inc/device_funcs.h"
 // including these cuda files as inc files, so that to create a single compilation unit
 
-#include "./buffer.inc"
-#include "./scans.inc"
+#include "./buffer.cc"
+#include "./scans.cc"
 
 __device__ void syncBlocks(volatile unsigned int* blockCounter){
     
@@ -35,14 +35,15 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
-
-    tail = NULL;
-    head = NULL;
-    bufTail = 0;
-    base = 0;
+    if(THID==0){
+        tail = NULL;
+        head = NULL;
+        bufTail = 0;
+        base = 0;
+        lock = 0;
+    }
     predicate[THID] = 0;
-    lock = 0;
-
+    
     compactBlock(d_p.degrees, V, &tail, &head, &bufTail, level);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
