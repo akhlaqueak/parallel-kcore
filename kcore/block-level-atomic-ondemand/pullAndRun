@@ -7,7 +7,9 @@ if [[ $1 == "" ]]; then
 	./kcore Enron.g
 elif [[ $1 == "all" ]]; then
 	for ds in ${datasets[@]}; do
+		echo "####### starting $ds ########"
 		./kcore ds
+		echo "####### ended $ds ########"
 	done
 else
 	./kcore ${datasets[$1]}
