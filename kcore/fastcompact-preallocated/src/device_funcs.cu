@@ -17,13 +17,6 @@ __device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int 
     }
 
     
-    // const unsigned int lane_id = THID & 31;
-    // const unsigned int old = addresses[THID];
-    // unsigned int val = old;
-    // for(int i=1;i<WARP_SIZE;i*=2)
-    //     val = __shfl_up_sync(0xFFFFFFFF, val, i);
-    // addresses[THID] = val;
-    
     if(type == INCLUSIVE)
         return addresses[THID];
     else{
@@ -59,9 +52,6 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 
 
 
-// __shared__ volatile unsigned int addresses[BLK_DIM];
-// __shared__ bool predicate[BLK_DIM];
-// __shared__ unsigned int temp[BLK_DIM];
 
 __device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
     const unsigned int lane_id = THID & 31;
