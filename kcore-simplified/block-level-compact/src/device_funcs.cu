@@ -9,20 +9,20 @@ __shared__ bool predicate[BLK_DIM];
 __shared__ unsigned int temp[BLK_DIM];
 
 __device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
-    // const unsigned int lane_id = THID % 32;
+    const unsigned int lane_id = THID & 31;
 
-    // for(int i=1; i<WARP_SIZE; i*=2){
-    //     if(lane_id >= i)
-    //         addresses[THID] += addresses[THID-i];
-    // }
+    for(int i=1; i<WARP_SIZE; i*=2){
+        if(lane_id >= i)
+            addresses[THID] += addresses[THID-i];
+    }
 
     
-    const unsigned int lane_id = THID & 31;
-    const unsigned int old = addresses[THID];
-    unsigned int val = old;
-    for(int i=1;i<WARP_SIZE;i*=2)
-        val = __shfl_up_sync(0xFFFFFFFF, val, i);
-    addresses[THID] = val;
+    // const unsigned int lane_id = THID & 31;
+    // const unsigned int old = addresses[THID];
+    // unsigned int val = old;
+    // for(int i=1;i<WARP_SIZE;i*=2)
+    //     val = __shfl_up_sync(0xFFFFFFFF, val, i);
+    // addresses[THID] = val;
     
     if(type == INCLUSIVE)
         return addresses[THID];
