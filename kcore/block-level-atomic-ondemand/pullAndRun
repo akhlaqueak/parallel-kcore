@@ -1,11 +1,11 @@
 #!/bin/bash
 git pull
 make
-datasets=("wikipedia-link-de.g" "trackers.g" "soc-Journal.g" "dblp-author.g" "patentcite.g" "soc-pokec-relationships.g")
+datasets=("wikipedia-link-de.g" "trackers.g" "soc-Journal.g" "dblp-author.g" "patentcite.g" "soc-pokec-relationships.g" "wikiTalk.g")
 
 if [[ $1 == "" ]]; then
 	./kcore Enron.g
-elif [[$1 == "all" ]]; then
+elif [[ $1 == "all" ]]; then
 	for ds in ${datasets[@]}; do
 		./kcore ds
 	done
