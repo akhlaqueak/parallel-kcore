@@ -1,10 +1,12 @@
 #!/bin/bash
 git pull
 make
-datasets=("wikipedia-link-de.g" "trackers.g" "soc-Journal.g" "dblp-author.g" "patentcite.g" "soc-pokec-relationships.g" "wikiTalk.g")
+datasets=("Enron.g" "wikipedia-link-de.g" "trackers.g" "soc-Journal.g" "dblp-author.g" "patentcite.g" "soc-pokec-relationships.g" "wikiTalk.g")
 
 if [[ $1 == "" ]]; then
+	echo "####### starting Enron.g ########"
 	./kcore Enron.g
+	echo "####### ended Enron.g ########"
 elif [[ $1 == "all" ]]; then
 	for ds in ${datasets[@]}; do
 		echo "####### starting $ds ########"
@@ -12,5 +14,8 @@ elif [[ $1 == "all" ]]; then
 		echo "####### ended $ds ########"
 	done
 else
-	./kcore ${datasets[$1]}
+	$ds=${datasets[$1]}
+	echo "####### starting $ds ########"
+	./kcore $ds
+	echo "####### ended $ds ########"
 fi
