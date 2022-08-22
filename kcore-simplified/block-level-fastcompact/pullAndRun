@@ -1,8 +1,0 @@
-#!/bin/bash
-git pull
-make
-if [[ $1 == "" ]]; then
-	./kcore Enron.g
-else
-	./kcore $1
-fi
