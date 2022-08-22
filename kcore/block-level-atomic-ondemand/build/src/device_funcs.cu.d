@@ -53,7 +53,9 @@ build/./src/device_funcs.cu.o : src/device_funcs.cu \
     /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/device_launch_parameters.h \
     src/../inc/device_funcs.h \
     src/../inc/./common.h \
-    /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda.h
+    /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda.h \
+    src/buffer.cc \
+    src/../inc/buffer.h
 
 /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda_runtime.h:
 
@@ -164,3 +166,7 @@ src/../inc/device_funcs.h:
 src/../inc/./common.h:
 
 /cm/shared/apps/cuda11.4/toolkit/11.4.2/bin/../targets/x86_64-linux/include/cuda.h:
+
+src/buffer.cc:
+
+src/../inc/buffer.h:
