@@ -1,7 +1,7 @@
 #!/bin/bash
 git pull
 make
-datasets = ("wikipedia-link-de.g" "trackers.g" "soc-Journal.g" "dblp-author.g" "patentcite.g" "soc-pokec-relationships.g")
+datasets=("wikipedia-link-de.g" "trackers.g" "soc-Journal.g" "dblp-author.g" "patentcite.g" "soc-pokec-relationships.g")
 
 if [[ $1 == "" ]]; then
 	./kcore Enron.g
