@@ -12,8 +12,8 @@ public:
     unsigned int * neighbors_offset;
     unsigned int * degrees;
     Graph(std::string input_file);
-    readSerialized(string input_file);
-    writeSerialized(string input_file);
+    bool readSerialized(string input_file);
+    void writeSerialized(string input_file);
     ~Graph();
 };
 #endif //CUTS_GRAPH_H
