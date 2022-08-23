@@ -2,7 +2,8 @@
 #include "../inc/graph.h"
 bool Graph::readSerialized(string input_file){
     ifstream file;
-    if(file.open(string(DS_LOC) + string("serialized-") + input_file)){
+    file.open(string(DS_LOC) + string("serialized-") + input_file);
+    if(file){
         file>>V;
         file>>E;
         degrees = new unsigned int[V];
@@ -14,9 +15,9 @@ bool Graph::readSerialized(string input_file){
             file>>neighbors_offset[i];
         for(int i=0;i<E;i++)
             file>>neighbors[i];
+        file.close();
         return true;
     }
-    file.close();
 
     return false;
 }
@@ -47,7 +48,8 @@ void Graph::writeSerialized(string input_file){
             neighbors[j] = *it;
     }
     ofstream file;
-    if(file.open(string(DS_LOC) + string("serialized-") + input_file)){
+    file.open(string(DS_LOC) + string("serialized-") + input_file);
+    if(file){
         file<<V;
         file<<E;
         for(int i=0;i<V;i++)
@@ -56,8 +58,8 @@ void Graph::writeSerialized(string input_file){
             file<<neighbors_offset[i]<<' ';
         for(int i=0;i<E;i++)
             file<<neighbors[i]<<' ';
+        file.close();
     }
-    file.close();
 }
 
 Graph::Graph(std::string input_file){
