@@ -2,7 +2,7 @@
 #include "../inc/graph.h"
 bool Graph::readSerialized(string input_file){
     ifstream file;
-    if(file.open(DS_LOC + "serialized-" + input_file, 'r')){
+    if(file.open(string(DS_LOC) + string("serialized-") + input_file, 'r')){
         file>>V;
         file>>E;
         degrees = new unsigned int[V];
@@ -47,7 +47,7 @@ void Graph::writeSerialized(string input_file){
             neighbors[j] = *it;
     }
     ofstream file;
-    if(file.open(DS_LOC + "serialized-" + input_file, 'w')){
+    if(file.open(string(DS_LOC) + string("serialized-") + input_file, 'w')){
         file<<V;
         file<<E;
         for(int i=0;i<V;i++)
