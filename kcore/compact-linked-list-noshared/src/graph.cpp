@@ -50,10 +50,10 @@ void Graph::writeSerialized(string input_file){
     ofstream file;
     file.open(string(DS_LOC) + string("serialized-") + input_file);
     if(file){
-        file<<V;
-        file<<E;
+        file<<V<<endl;
+        file<<E<<endl;
         for(int i=0;i<V;i++)
-            file<<degrees[i]<<' ';
+            file<<degrees[i]<<endl;
         for(int i=0;i<V+1;i++)
             file<<neighbors_offset[i]<<' ';
         for(int i=0;i<E;i++)
