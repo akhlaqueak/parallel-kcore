@@ -12,7 +12,7 @@ inline void chkerr(cudaError_t code)
 void copy_graph_to_gpu(Graph data_graph, G_pointers &data_pointers){
     malloc_graph_gpu_memory(data_graph,data_pointers);
 }
-void find_kcore(string data_file,bool write_to_disk){
+void find_kcore(string data_file, bool write_to_disk){
     cout<<"start loading graph file from disk to memory..."<<endl;
     
     Graph data_graph(data_file);

@@ -14,6 +14,7 @@ public:
     Graph(std::string input_file);
     bool readSerialized(string input_file);
     void writeSerialized(string input_file);
+    void readFile(string input_file);
     ~Graph();
 };
 #endif //CUTS_GRAPH_H

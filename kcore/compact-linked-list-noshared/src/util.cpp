@@ -37,7 +37,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
 void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::string file){
     // writing in json dictionary format
-    std::ofstream out(OUTPUT_LOC + file);
+    std::ofstream out(OUTPUT_LOC + string("pkc-kcore-") + file);
     // first entry is read as zero degree node by networkx, 
     // to make it compatible just insert this dummy entry
     out<<"{ ";

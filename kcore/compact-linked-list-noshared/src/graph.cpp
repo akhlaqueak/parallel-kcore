@@ -17,12 +17,34 @@ bool Graph::readSerialized(string input_file){
             file>>neighbors[i];
         file.close();
         return true;
+    }else{
+        cout<<"readSerialized: File couldn't open"<<endl;
     }
 
     return false;
 }
 
 void Graph::writeSerialized(string input_file){
+
+    ofstream file;
+    file.open(string(DS_LOC) + string("serialized-") + input_file);
+    if(file){
+        file<<V<<endl;
+        file<<E<<endl;
+        for(int i=0;i<V;i++)
+            file<<degrees[i]<<endl;
+        for(int i=0;i<V+1;i++)
+            file<<neighbors_offset[i]<<' ';
+        for(int i=0;i<E;i++)
+            file<<neighbors[i]<<' ';
+        file.close();
+    }
+    else{
+        cout<<"writeSerialized: File couldn't open"<<endl;
+    }
+}
+
+void Graph::readFile(string input_file){
     vector< set<unsigned int> > ns;
     V = file_reader(input_file, ns);
     degrees = new unsigned int[V];
@@ -47,29 +69,16 @@ void Graph::writeSerialized(string input_file){
         for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
             neighbors[j] = *it;
     }
-    ofstream file;
-    file.open(string(DS_LOC) + string("serialized-") + input_file);
-    if(file){
-        file<<V<<endl;
-        file<<E<<endl;
-        for(int i=0;i<V;i++)
-            file<<degrees[i]<<endl;
-        for(int i=0;i<V+1;i++)
-            file<<neighbors_offset[i]<<' ';
-        for(int i=0;i<E;i++)
-            file<<neighbors[i]<<' ';
-        file.close();
-    }
 }
 
 Graph::Graph(std::string input_file){
     if(readSerialized(input_file)) return;
-    
+    readFile(input_file);
     writeSerialized(input_file);
 }
 
 Graph::~Graph(){
-    // delete [] neighbors;
-    // delete [] neighbors_offset;
-    // delete [] degrees;
+    delete [] neighbors;
+    delete [] neighbors_offset;
+    delete [] degrees;
 }
