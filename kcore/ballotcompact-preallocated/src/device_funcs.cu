@@ -86,6 +86,8 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
     unsigned int bTail;
+
+    uint lane_id = THID & 31;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
@@ -99,7 +101,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         scanWarp(addresses, EXCLUSIVE);
 
         
-        if(THID == WARP_SIZE - 1){  
+        if(lane_id == WARP_SIZE - 1){  
             int nv =  addresses[THID] + predicate[THID];            
             bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;            
         }
