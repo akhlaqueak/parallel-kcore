@@ -105,7 +105,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         }
 
         // this sync is necessary so that memory is allocated before writing to buffer
-        bTaill = __shfl_sync(0xffffffff, bTail, WARP_SIZE-1);
+        bTail = __shfl_sync(0xffffffff, bTail, WARP_SIZE-1);
 
         if(bTail==0) continue; // nothing to be added by this warp.
         
