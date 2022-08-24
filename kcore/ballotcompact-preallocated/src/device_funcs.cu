@@ -85,7 +85,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
-    __shared__ unsigned int bTail;
+    unsigned int bTail;
     
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
@@ -96,17 +96,18 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         addresses[THID] = predicate[THID];
 
-        scanBlock(addresses, EXCLUSIVE);
+        scanWarp(addresses, EXCLUSIVE);
 
         
-        if(THID == BLK_DIM - 1){  
+        if(THID == WARP_SIZE - 1){  
             int nv =  addresses[THID] + predicate[THID];            
-            bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
-            
+            bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;            
         }
 
         // this sync is necessary so that memory is allocated before writing to buffer
-        __syncthreads();
+        __shfl_sync(0xffffffff, bTail, WARP_SIZE-1);
+
+        if(bTail==0) continue; // nothing to be added by this warp.
         
         addresses[THID] += bTail;
         
