@@ -98,11 +98,11 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         addresses[THID] = predicate[THID];
 
-        scanWarp(addresses, EXCLUSIVE);
+        uint address = scanWarp(addresses, EXCLUSIVE);
 
         
         if(lane_id == WARP_SIZE - 1){  
-            int nv =  addresses[THID] + predicate[THID];            
+            int nv =  address + predicate[THID];            
             bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;            
         }
 
@@ -111,10 +111,10 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         if(bTail==0) continue; // nothing to be added by this warp.
         
-        addresses[THID] += bTail;
+        address += bTail;
         
         if(predicate[THID])
-            writeToBuffer(shBuffer, glBuffer, addresses[THID], v);
+            writeToBuffer(shBuffer, glBuffer, address, v);
         
         __syncthreads();
             
