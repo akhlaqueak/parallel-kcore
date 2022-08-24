@@ -85,29 +85,13 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
-    unsigned int bTail;
-
-    uint lane_id = THID & 31;
-    
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
         unsigned int v = base + glThreadIdx; 
 
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
-        addresses[THID] = predicate[THID];
-        unsigned int address = scanWarp(addresses, EXCLUSIVE);
-        unsigned int bTail;
-        if(lane_id==WARP_SIZE-1){
-            bTail = atomicAdd(bufTail, address + predicate[THID]);
-        }
-        bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
-    
-        address += bTail;
-        if(predicate[THID])
-            writeToBuffer(shBuffer, glBuffer, address, temp[THID]);
-        predicate[THID] = 0;
-        
+        compactWarp(shBuffer, glBuffer, bufTail);        
         __syncthreads();
             
     }
