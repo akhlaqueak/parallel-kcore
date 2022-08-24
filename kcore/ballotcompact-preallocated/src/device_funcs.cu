@@ -91,6 +91,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
+        if(predicate[THID]) temp[THID] = v;
         compactWarp(shBuffer, glBuffer, bufTail);        
         __syncthreads();
             
