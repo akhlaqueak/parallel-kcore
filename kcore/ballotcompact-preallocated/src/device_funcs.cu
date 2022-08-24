@@ -80,7 +80,7 @@ __device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsi
     predicate[THID] = 0;
 }
 
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTailPtr, unsigned int level){
+__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
 
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
