@@ -2,7 +2,7 @@
 #include "../inc/graph.h"
 bool Graph::readSerialized(string input_file){
     ifstream file;
-    file.open(string(DS_LOC) + string("serialized-") + input_file);
+    file.open(string(OUTPUT_LOC) + string("serialized-") + input_file);
     if(file){
         file>>V;
         file>>E;
@@ -27,7 +27,7 @@ bool Graph::readSerialized(string input_file){
 void Graph::writeSerialized(string input_file){
 
     ofstream file;
-    file.open(string(DS_LOC) + string("serialized-") + input_file);
+    file.open(string(OUTPUT_LOC) + string("serialized-") + input_file);
     if(file){
         file<<V<<endl;
         file<<E<<endl;
