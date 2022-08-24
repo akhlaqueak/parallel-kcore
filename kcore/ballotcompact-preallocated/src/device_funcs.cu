@@ -95,26 +95,18 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
-
         addresses[THID] = predicate[THID];
-
-        uint address = scanWarp(addresses, EXCLUSIVE);
-
-        
-        if(lane_id == WARP_SIZE - 1){  
-            int nv =  address + predicate[THID];            
-            bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;            
+        unsigned int address = scanWarp(addresses, EXCLUSIVE);
+        unsigned int bTail;
+        if(lane_id==WARP_SIZE-1){
+            bTail = atomicAdd(bufTail, address + predicate[THID]);
         }
-
-        // this sync is necessary so that memory is allocated before writing to buffer
-        bTail = __shfl_sync(0xffffffff, bTail, WARP_SIZE-1);
-
-        if(bTail==0) continue; // nothing to be added by this warp.
-        
+        bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
+    
         address += bTail;
-        
         if(predicate[THID])
-            writeToBuffer(shBuffer, glBuffer, address, v);
+            writeToBuffer(shBuffer, glBuffer, address, temp[THID]);
+        predicate[THID] = 0;
         
         __syncthreads();
             
