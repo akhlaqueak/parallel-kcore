@@ -10,7 +10,7 @@ __shared__ unsigned int temp[BLK_DIM];
 
 __device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
     uint lane_id = THID & 31;
-    uint bits = __ballot_sync(0xffffffff, addresses[i]);
+    uint bits = __ballot_sync(0xffffffff, addresses[THID]);
     uint mask = 0xffffffff >> (31-lane_id);
     addresses[THID] = __popc(mask & bits);
     if(type == INCLUSIVE)
