@@ -10,6 +10,7 @@ def parseResult(output):
 
 def parse(args):
     datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g")
+    print(len(args), args)
     arg = "" if len(args)<2 else args[1]
 
     if(len(args)<1):
