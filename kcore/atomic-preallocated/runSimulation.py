@@ -46,5 +46,5 @@ if __name__ == "__main__":
     sp.run(["make"])
     datasets = parse(sys.argv)
     results = runSim(datasets)
-    for ds, time in results.items():
+    for ds, time in results:
         print(ds, time)
