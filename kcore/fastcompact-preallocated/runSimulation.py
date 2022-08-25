@@ -66,7 +66,8 @@ def runSim(datasets):
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         time = parseResult(output.stdout.decode()) # decode is converting byte string to regular
         results.append((ds, time),)
-        verify(ds)
+        if(VERIFY):
+            verify(ds)
         print("Completed ", ds)
     return results
 
