@@ -38,8 +38,8 @@ def runSim(datasets):
 
 
 if __name__ == "__main__":
-    sp.run("git", "pull")
-    sp.run("make")
+    sp.run(["git", "pull"])
+    sp.run(["make"])
     datasets = parse(sys.argv[1])
     results = runSim(datasets)
     for ds, time in results.items():
