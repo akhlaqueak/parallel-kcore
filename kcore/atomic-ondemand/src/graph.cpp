@@ -53,7 +53,7 @@ void Graph::readFile(string input_file){
     
     #pragma omp parallel for
     for(int i=0;i<V;++i){
-        degrees[i] = ns[i].size();
+        degrees[i] = ns[i].size( );
     }
 
     neighbors_offset = new unsigned int[V+1];
