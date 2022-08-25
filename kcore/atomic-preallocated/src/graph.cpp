@@ -4,6 +4,7 @@ bool Graph::readSerialized(string input_file){
     ifstream file;
     file.open(string(OUTPUT_LOC) + string("serialized-") + input_file);
     if(file){
+        cout<<"Reading serialized file... "<<endl;
         file>>V;
         file>>E;
         degrees = new unsigned int[V];
@@ -73,6 +74,8 @@ void Graph::readFile(string input_file){
 
 Graph::Graph(std::string input_file){
     if(readSerialized(input_file)) return;
+    cout<<"Reading normal file... "<<endl;
+
     readFile(input_file);
     writeSerialized(input_file);
 }
