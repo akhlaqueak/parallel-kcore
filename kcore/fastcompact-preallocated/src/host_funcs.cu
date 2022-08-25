@@ -47,8 +47,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaMemset(global_count,0,sizeof(unsigned int));
 
-    cudaEventRecord(event_start);
-
+    
     size_t limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
 
@@ -59,9 +58,10 @@ void find_kcore(string data_file,bool write_to_disk){
     limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
-
+    
     cout<<"new limit is: "<<limit<<endl;
-
+    
+    cudaEventRecord(event_start);
 
 	cout<<"Entering in while"<<endl;
 	while(global_count[0] < data_graph.V){
