@@ -7,7 +7,7 @@ from subprocess import PIPE
 
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
-VERIFY = True
+VERIFY = False
 
 def verify(dataset):
     nx_kcore = {}
