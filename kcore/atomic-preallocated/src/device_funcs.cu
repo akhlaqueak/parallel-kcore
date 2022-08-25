@@ -53,13 +53,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
-
-    bufTail = 0;
-    glBuffer = NULL;
-    base = 0;
-    lock = 0;
-    glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
-
+    if(THID==0)
+        bufTail = 0;
+        base = 0;
+        lock = 0;
+        glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
+    }
+    
     assert(glBuffer!=NULL);
     __syncthreads();
 
