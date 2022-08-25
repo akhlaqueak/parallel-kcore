@@ -11,18 +11,16 @@ def parseResult(output):
 def parse(args):
     datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g")
     print(len(args), args)
-    arg = "" if len(args)<2 else args[1]
+    arg = "" if len(args)<2 else args[2]
 
-    if(len(args)<1):
-        arg = ""
-    # if arg == "":
-    #     ds.append("Enron.g")
-    if arg.isnumeric():
+    if arg == "":
+        ds.append("Enron.g")
+    elif arg.isnumeric():
         ind = int(arg)
         if(ind<len(datasets)):
             ds.append(datasets[int(arg)])
         else:
-            print("Please provide valid dataset: ", enumerate(datasets))
+            print("Please provide valid dataset: ", [(x, y) for x, y in enumerate(datasets)])
     elif arg == "all":
         ds = datasets
     elif arg in datasets:
