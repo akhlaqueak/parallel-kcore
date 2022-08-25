@@ -1,6 +1,7 @@
 import os
 import subprocess as sp
 import sys
+from subprocess import PIPE
 
 def parseResult(output):
     # One of the line in output has this format
@@ -34,7 +35,7 @@ def parse(args):
 def runSim(datasets):
     results = []
     for ds in datasets:
-        output = sp.run(["./kcore", ds], capture_output=True)
+        output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         print(output)
         # time = parseResult(output.stdout)
         # results.append(tuple(ds, time))
