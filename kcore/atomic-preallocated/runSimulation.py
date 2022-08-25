@@ -1,7 +1,35 @@
 import os
 import subprocess as sp
 import sys
+import json
+import networkx as nx
 from subprocess import PIPE
+
+OUTPUT = "../output/"
+DATASET = "../data_set/data/ours_format/"
+VERIFY = True
+
+def verify(dataset):
+    nx_kcore = {}
+    try:
+        file = open(OUTPUT + "nx-kcore-" + dataset, 'r')
+        nx_kcore = json.load(file)
+        file.close()
+    except IOError:
+        G = nx.read_adjlist(DATASET + dataset)
+        nx_kcore = nx.core_number(G)
+        # save the file for future use... 
+        json.dump(nx_kcore, open(OUTPUT + "nx-kcore-" + dataset, 'w'))
+
+    pkc_kcore = json.load(open(OUTPUT + "pkc-kcore-" + dataset, 'r'))
+
+    if nx_kcore == pkc_kcore:
+        print("Test Passed!")
+    else:
+        print("Test Failed!")
+        print("The difference is: ")
+        diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
+        print (diff)
 
 def parseResult(output):
     # One of the line in output has this format
@@ -38,6 +66,7 @@ def runSim(datasets):
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         time = parseResult(output.stdout.decode()) # decode is converting byte string to regular
         results.append((ds, time),)
+        verify(ds)
         print("Completed ", ds)
     return results
 
