@@ -37,7 +37,7 @@ def runSim(datasets):
     results = []
     for ds in datasets:
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
-        time = parseResult(str(output.stdout))
+        time = parseResult(output.stdout.decode())
         results.append((ds, time),)
     return results
 
