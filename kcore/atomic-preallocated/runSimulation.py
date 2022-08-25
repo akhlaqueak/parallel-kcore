@@ -7,6 +7,7 @@ def parseResult(output):
     # One of the line in output has this format
     # Elapsed Time: 69.8055
     line = [x for x in output.split("\n") if "Elapsed Time" in x]
+    print(line)
     return line[0].split(":")[1]
 
 def parse(args):
@@ -28,7 +29,7 @@ def parse(args):
     elif arg in datasets:
         ds = arg 
     else:
-        print("Please provide valid dataset: ", enumerate(datasets))
+        print("Please provide valid dataset: ", [(x, y) for x, y in enumerate(datasets)])
         exit(0)
     return ds
 
