@@ -25,7 +25,7 @@ def parse(args):
     elif arg == "all":
         ds = datasets
     elif arg in datasets:
-        ds = arg 
+        ds.append(arg) 
     else:
         print("Please provide valid dataset: ", [(x, y) for x, y in enumerate(datasets)])
         exit(0)
