@@ -24,9 +24,9 @@ def verify(dataset):
     pkc_kcore = json.load(open(OUTPUT + "pkc-kcore-" + dataset, 'r'))
 
     if nx_kcore == pkc_kcore:
-        print("Test Passed!")
+        print(dataset, "Verification Test Passed!")
     else:
-        print("Test Failed!")
+        print(dataset, "Verification Test Failed!")
         print("The difference is: ")
         diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
         print (diff)
@@ -66,7 +66,6 @@ def runSim(datasets):
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         time = parseResult(output.stdout.decode()) # decode is converting byte string to regular
         results.append((ds, time),)
-        verify(ds)
         print("Completed ", ds)
     return results
 
@@ -76,5 +75,8 @@ if __name__ == "__main__":
     sp.run(["make"])
     datasets = parse(sys.argv)
     results = runSim(datasets)
+    if VERIFY:
+        for ds in datasets:
+            verify(ds)
     for ds, time in results:
         print(ds, time)
