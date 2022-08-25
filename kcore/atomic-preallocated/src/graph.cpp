@@ -78,6 +78,7 @@ Graph::Graph(std::string input_file){
 }
 
 Graph::~Graph(){
+    cout<<"Deallocated... "<<endl;
     delete [] neighbors;
     delete [] neighbors_offset;
     delete [] degrees;
