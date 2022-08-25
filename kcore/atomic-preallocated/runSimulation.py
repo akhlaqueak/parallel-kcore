@@ -31,7 +31,7 @@ def parse(arg):
 def runSim(datasets):
     results = []
     for ds in datasets:
-        output = sp.run("./kcore", ds)
+        output = sp.run(["./kcore", ds])
         time = parseResult(output.stdout)
         results.append(tuple(ds, time))
     return results
