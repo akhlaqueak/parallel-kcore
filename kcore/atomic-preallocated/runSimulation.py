@@ -27,7 +27,7 @@ def parse(args):
     elif arg in datasets:
         ds = arg 
     else:
-        print("Please provide valid dataset: ", [(x, y) for x, y in enumerate(datasets)])
+        print("Please provide valid dataset: ", [(x, y) for x, y in enumerate(datasets)], sep="\n")
         exit(0)
     return ds
 
