@@ -42,7 +42,7 @@ __device__ void syncBlocks(volatile unsigned int* blockCounter){
         while(blockCounter[0]<BLK_NUMS){
             // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
             // printf("%d ", blockCounter[0]);
-        };// busy wait until all blocks increment
+        }// busy wait until all blocks increment
     }   
     __syncthreads();
 }
@@ -59,13 +59,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int lane_id = THID % 32;
     unsigned int i;
 
-    if(THID == 0){
+    // if(THID == 0){
         bufTail = 0;
         glBuffer = NULL;
         base = 0;
         lock = 0;
         // glBuffer = (unsigned int*) malloc(sizeof(unsigned int) * GLBUFFER_SIZE); 
-    }
+    // }
 
     __syncthreads();
 
