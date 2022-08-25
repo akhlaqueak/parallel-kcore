@@ -7,12 +7,10 @@ def parseResult(output):
     # One of the line in output has this format
     # Elapsed Time: 69.8055
     line = [x for x in output.split("\n") if "Elapsed Time" in x]
-    print(line)
     return line[0].split(":")[1]
 
 def parse(args):
     datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g")
-    print(len(args), args)
     ds = []
     arg = "" if len(args)<2 else args[1]
 
