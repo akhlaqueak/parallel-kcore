@@ -59,7 +59,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 
 
 
-__device__ void compactWarp(unsigned int* predicate, unsigned int* addresses, unsigned int* temp, 
+__device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
                             unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr, 
                             volatile unsigned int* lock){
     
