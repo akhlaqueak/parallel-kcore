@@ -5,7 +5,7 @@
 #include "./buffer.cc"
 #include "./scans.cc"
 __device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
-    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTail, unsigned int level){
+    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTail, unsigned int level, unsigned int* total){
 
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
@@ -18,7 +18,7 @@ __device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addre
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         temp[THID] = v;
 
-        compactBlock(predicate, addresses, temp, shBuffer, tail, head, bufTail);        
+        compactBlock(predicate, addresses, temp, shBuffer, tail, head, bufTail, total);        
         __syncthreads();
             
     }
@@ -63,7 +63,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     }
     predicate[THID] = 0;
     
-    selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, shBuffer, &tail, &head, &bufTail, level);
+    selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, shBuffer, &tail, &head, &bufTail, level, total);
     if(level == 1 && THID == 0) printf("%d ", bufTail);
     predicate[THID] = 0;
 
@@ -108,7 +108,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             __syncwarp();
 
             compactWarp(predicate, addresses, temp, 
-                        shBuffer, &tail, &head, &bufTail, &lock);
+                        shBuffer, &tail, &head, &bufTail, &lock, total);
             predicate[THID] = 0;
             __syncwarp();
 

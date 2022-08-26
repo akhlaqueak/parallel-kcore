@@ -75,9 +75,10 @@ __device__ void allocateMemory(Node** tail, Node** head){
     // printf("allocate... %d \n", newNode->limit);
 }
 
-__device__ void allocateMemoryMutex(Node** tail, Node** head, volatile unsigned int* lock){
+__device__ void allocateMemoryMutex(Node** tail, Node** head, volatile unsigned int* lock, unsigned int* total){
     
     if(atomicExch((unsigned int*)lock, 1) == 0){        
+        atomicAdd(total, 1);
         // printf("mutex %d %d\n", blockIdx.x, THID);
         allocateMemory(tail, head);
         lock[0] = 2; // not necessary to do it atomically, since it's the only thread in critical section

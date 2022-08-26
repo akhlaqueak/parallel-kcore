@@ -38,11 +38,14 @@ void find_kcore(string data_file,bool write_to_disk){
 
     unsigned int level = 0;
     unsigned int *global_count;
+    unsigned int* total;
     volatile unsigned int* blockCounter;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
     cudaMallocManaged(&blockCounter,sizeof(unsigned int));
+    cudaMallocManaged(&total,sizeof(unsigned int));
 
     cudaMemset(global_count,0,sizeof(unsigned int));
+    cudaMemset(total,0,sizeof(unsigned int));
 
     cudaEventRecord(event_start);
 
@@ -61,7 +64,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
 	cout<<"Entering in while"<<endl;
 	while(global_count[0] < data_graph.V ){
-        PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter);
+        PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter, total);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         chkerr(cudaDeviceSynchronize());
         cout<<"*********Completed level: "<<level<<", global_count: "<<global_count[0]<<" *********"<<endl;
@@ -77,7 +80,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     float time_milli_sec = 0;
     cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
-    cout<<"Elapsed Time: "<<time_milli_sec<<endl;
+    cout<<"Elapsed Time: "<<time_milli_sec<<" "<<total[0]<<endl;
 
     
     if(write_to_disk){

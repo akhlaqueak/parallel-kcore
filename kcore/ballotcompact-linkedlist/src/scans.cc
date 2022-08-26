@@ -61,7 +61,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 
 __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
                             unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr, 
-                            volatile unsigned int* lock){
+                            volatile unsigned int* lock, unsigned int* total){
     
     // __syncwarp();
 
@@ -81,7 +81,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
             // printf("Req %d", THID);
             atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
             __threadfence_block();
-            allocateMemoryMutex(tail, head, lock);
+            allocateMemoryMutex(tail, head, lock, total);
         }   
     }  
     
@@ -101,7 +101,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
 
 
 __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
-    unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr){
+    unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr, unsigned int* total){
 
 
     __shared__ unsigned int bTail;
@@ -115,8 +115,10 @@ __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, 
         int nv =  addresses[THID] + predicate[THID];            
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
         
-        if(allocationRequired(tail[0], bTail+nv)) // adding nv since bTail is old value of bufTail
+        if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
             allocateMemory(tail, head);
+            atomicAdd(total, 1);
+        }
     }
 
     // this sync is necessary so that memory is allocated before writing to buffer
