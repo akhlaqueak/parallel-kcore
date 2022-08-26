@@ -75,8 +75,8 @@ if __name__ == "__main__":
     sp.run(["git", "pull"])
     datasets = parse(sys.argv)
     for folder in FOLDERS:
-        sp.run(["make"])
         os.chdir(folder)
+        sp.run(["make"])
         print("Executing in ", folder)
         results = runSim(datasets)
         if VERIFY:
