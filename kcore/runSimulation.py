@@ -73,9 +73,9 @@ def runSim(datasets):
 
 if __name__ == "__main__":
     sp.run(["git", "pull"])
-    sp.run(["make"])
     datasets = parse(sys.argv)
     for folder in FOLDERS:
+        sp.run(["make"])
         os.chdir(folder)
         print("Executing in ", folder)
         results = runSim(datasets)
