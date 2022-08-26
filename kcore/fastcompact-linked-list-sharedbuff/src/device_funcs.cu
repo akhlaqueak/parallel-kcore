@@ -108,6 +108,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
             compactWarp(predicate, addresses, temp, 
                         shBuffer, &tail, &head, &bufTail, &lock);
+            predicate[THID] = 0;
             __syncwarp();
 
             if(start >= end) break;

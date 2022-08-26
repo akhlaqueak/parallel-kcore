@@ -71,7 +71,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
     
     addresses[THID] = predicate[THID];
 
-    unsigned int address = scanWarpBallot(addresses, EXCLUSIVE);
+    unsigned int address = scanWarpHellis(addresses, EXCLUSIVE);
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
