@@ -63,7 +63,7 @@ def parse(args):
 def runSim(datasets):
     results = []
     for ds in datasets:
-        print(ds, ": Started... ", end=" ")
+        print(ds, ": Started... ", end=" ", flush=True)
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         time = parseResult(output.stdout.decode()) # decode is converting byte string to regular
         results.append((ds, time),)
@@ -72,7 +72,6 @@ def runSim(datasets):
 
 
 if __name__ == "__main__":
-    sp.run(["git", "pull"])
     datasets = parse(sys.argv)
     for folder in FOLDERS:
         os.chdir(folder)

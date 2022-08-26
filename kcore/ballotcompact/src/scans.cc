@@ -42,6 +42,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     __syncthreads();
 
     if(warp_id==0)
+        // it must be hellis scan here... as the elements are no more binary
         scanWarpHellis(addresses, INCLUSIVE);
     __syncthreads();
 

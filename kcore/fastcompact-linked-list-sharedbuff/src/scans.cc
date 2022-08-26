@@ -1,149 +1,82 @@
-#include "../inc/scans.h"
+#include "../inc/common.h"
 
+enum{INCLUSIVE, EXCLUSIVE};
+__device__ unsigned int scanWarpHellis(volatile unsigned int* addresses, unsigned int type){
+    const unsigned int lane_id = THID & 31;
 
-__device__ void scanBlockHillis(unsigned int* addresses){
-    // Hillis Steele Scan
-    // todo check this code is working
-    __syncthreads();
-    int initVal = addresses[THID];
-
-    for (unsigned int d = 1; d < BLK_DIM; d = d*2) {
-        unsigned int newVal = addresses[THID];   
-        if (int(THID - d) >= 0)  
-            newVal += addresses[THID-d];  
-        __syncthreads();
-        addresses[THID] = newVal;
-        __syncthreads();  
-    }
-        //Hillis-Steele Scan gives inclusive scan.
-        //to get exclusive scan, subtract the initial values.
-    addresses[THID] -= initVal;
-    __syncthreads();  
-}
-
-__device__ void scanBlockBelloch(unsigned int* addresses){
-
-    for (int d = 2; d <= BLK_DIM; d = d*2) {   
-        __syncthreads();  
-        if (THID % d == d-1)  
-            addresses[THID] += addresses[THID-d/2];  
+    for(int i=1; i<WARP_SIZE; i*=2){
+        if(lane_id >= i)
+            addresses[THID] += addresses[THID-i];
     }
 
-    if(THID == (BLK_DIM-1)) {
-        addresses[THID] = 0;
-    }
-
-    for(int d=BLK_DIM; d > 1; d/=2){
-        __syncthreads();
-        if(THID % d == d-1){
-            unsigned int val = addresses[THID-d/2];
-            addresses[THID-d/2] = addresses[THID];
-            addresses[THID] += val;
-        }
-    }
-    __syncthreads();
-}
-
-__device__ void scanWarpHillis(unsigned int* addresses){
-    __syncwarp();  
-    int lane_id = THID%32;
-    int initVal = addresses[lane_id];
-
-    for (unsigned int d = 1; d < WARP_SIZE; d = d*2) {
-        unsigned int newVal = addresses[lane_id];   
-        if (int(lane_id - d) >= 0)  
-            newVal += addresses[lane_id-d];  
-        __syncwarp();  
-        addresses[lane_id] = newVal;
-        __syncwarp();  
-    }
-        //Hillis-Steele Scan gives inclusive scan.
-        //to get exclusive scan, subtract the initial values.
-    addresses[lane_id] -= initVal;
-    __syncwarp();
-}
-
-__device__ void scanWarpBelloch(unsigned int* addresses){
-    unsigned int lane_id = THID%WARP_SIZE;
-    for (int d = 2; d <= WARP_SIZE; d = d*2) {   
-        __syncwarp();  
-        if (lane_id % d == d-1)  
-            addresses[lane_id] += addresses[lane_id-d/2];  
-    }
-
-    if(lane_id == (WARP_SIZE-1)) {
-        addresses[lane_id] = 0;
-    }
-
-    for(int d=WARP_SIZE; d > 1; d/=2){
-        __syncwarp();
-        if(lane_id % d == d-1){
-            unsigned int val = addresses[lane_id-d/2];
-            addresses[lane_id-d/2] = addresses[lane_id];
-            addresses[lane_id] += val;
-        }
-    }
-    __syncwarp();
-}
-
-__device__ void compactBlock(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr, unsigned int level){
-
-    unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
-    __shared__ bool predicate[BLK_DIM];
-    __shared__ unsigned int addresses[BLK_DIM];
-    __shared__ unsigned int bTail;
     
-    for(unsigned int base = 0; base < V; base += N_THREADS){
-        
-        unsigned int v = base + glThreadIdx; 
-
-        // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
-        predicate[THID] = (v<V)? (degrees[v] == level) : 0;
-
-        addresses[THID] = predicate[THID];
-
-        scanBlock(addresses);
-
-        
-        if(THID == BLK_DIM - 1){  
-            int nv =  addresses[THID] + predicate[THID];            
-            bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
-            
-            if(allocationRequired(tail[0], bTail+nv)) // adding nv since bTail is old value of bufTail
-                allocateMemory(tail, head);
-        }
-
-        // this sync is necessary so that memory is allocated before writing to buffer
-        __syncthreads();
-        
-        addresses[THID] += bTail;
-        
-        if(predicate[THID])
-            writeToBuffer(shBuffer, tail[0], addresses[THID], v);
-        
-        __syncthreads();
-            
-    }
+    if(type == INCLUSIVE)
+        return addresses[THID];
+    else{
+        return (lane_id>0)? addresses[THID-1]:0;
+    }    
 }
 
-__device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigned int* predicate, 
+__device__ unsigned int scanWarpBallot(volatile unsigned int* addresses, unsigned int type){
+    uint lane_id = THID & 31;
+    uint bits = __ballot_sync(0xffffffff, addresses[THID]);
+    uint mask = 0xffffffff >> (31-lane_id);
+    addresses[THID] = __popc(mask & bits);
+    if(type == INCLUSIVE)
+        return addresses[THID];
+    else
+        return lane_id>0? addresses[THID-1] : 0;
+}
+
+
+
+__device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
+    const unsigned int lane_id = THID & 31;
+    const unsigned int warp_id = THID >> 5;
+    
+    unsigned int val = scanWarpBallot(addresses, type);
+    __syncthreads();
+
+    if(lane_id==31)
+        addresses[warp_id] = addresses[THID];
+    __syncthreads();
+
+    if(warp_id==0)
+    // it can't be ballot scan as elements are no more binary
+        scanWarpHellis(addresses, INCLUSIVE);
+    __syncthreads();
+
+    if(warp_id>0)
+        val += addresses[warp_id-1];
+    __syncthreads();
+
+    addresses[THID] = val;
+    __syncthreads();
+    
+}
+
+
+
+
+
+__device__ void compactWarp(unsigned int* predicate, unsigned int* addresses, unsigned int* temp, 
                             unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr, 
                             volatile unsigned int* lock){
     
     // __syncwarp();
 
-    unsigned int lane_id = THID%WARP_SIZE;
+    unsigned int lane_id = THID & 31;
 
     unsigned int bTail;
     
-    addresses[lane_id] = predicate[lane_id];
+    addresses[THID] = predicate[THID];
 
-    scanWarp(addresses);
+    unsigned int address = scanWarpBallot(addresses, EXCLUSIVE);
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
-        unsigned int nv = addresses[lane_id]+predicate[lane_id]; // nv can be zero if no vertex was found in this warp
-        bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
+        unsigned int nv = address + predicate[THID]; // nv can be zero if no vertex was found in this warp
+        bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0; // don't want to do atomicAdd for zero
         if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
             // printf("Req %d", THID);
             atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
@@ -154,14 +87,46 @@ __device__ void compactWarp(unsigned int* temp, unsigned int* addresses, unsigne
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
     
-    addresses[lane_id] += bTail;
+    addresses[THID] += bTail;
     
-    if(predicate[lane_id])
-        writeToBuffer(shBuffer, tail[0], addresses[lane_id], temp[lane_id]);
+    if(predicate[THID])
+        writeToBuffer(shBuffer, tail[0], addresses[THID], temp[THID]);
         
         // reset for next iteration
-    predicate[lane_id] = 0;
+    predicate[THID] = 0;
 
         
     // __syncwarp();
+}
+
+
+__device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
+    unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr){
+
+
+    __shared__ unsigned int bTail;
+    
+    addresses[THID] = predicate[THID];
+
+    scanBlock(addresses, EXCLUSIVE);
+
+    
+    if(THID == BLK_DIM - 1){  
+        int nv =  addresses[THID] + predicate[THID];            
+        bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0;
+        
+        if(allocationRequired(tail[0], bTail+nv)) // adding nv since bTail is old value of bufTail
+            allocateMemory(tail, head);
+    }
+
+    // this sync is necessary so that memory is allocated before writing to buffer
+    __syncthreads();
+    
+    addresses[THID] += bTail;
+    
+    if(predicate[THID])
+        writeToBuffer(shBuffer, tail[0], addresses[THID], v);
+    
+    __syncthreads();
+            
 }

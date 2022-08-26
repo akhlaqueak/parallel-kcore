@@ -1,0 +1,2 @@
+git pull
+python runSimulation.py $1

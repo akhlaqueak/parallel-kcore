@@ -4,7 +4,25 @@
 
 #include "./buffer.cc"
 #include "./scans.cc"
+__device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
+    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTail, unsigned int level){
 
+
+    unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
+
+    for(unsigned int base = 0; base < V; base += N_THREADS){
+        
+        unsigned int v = base + glThreadIdx; 
+
+        // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
+        predicate[THID] = (v<V)? (degrees[v] == level) : 0;
+        temp[THID] = v;
+
+        compactBlock(predicate, addresses, temp, shBuffer, tail, head, bufTail);        
+        __syncthreads();
+            
+    }
+}
 __device__ void syncBlocks(volatile unsigned int* blockCounter){
     
     if (THID==0)
@@ -27,9 +45,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ Node* head;
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
-    __shared__ unsigned int predicate[BLK_DIM];
+    __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
-    __shared__ unsigned int addresses[BLK_DIM];
+    __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ volatile unsigned int lock;
 
@@ -45,7 +63,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     }
     predicate[THID] = 0;
     
-    compactBlock(d_p.degrees, V, shBuffer, &tail, &head, &bufTail, level);
+    selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, shBuffer, &tail, &head, &bufTail, level);
     if(level == 1 && THID == 0) printf("%d ", bufTail);
 
     __syncthreads();
@@ -88,7 +106,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             __syncwarp();
 
-            compactWarp(temp+(warp_id*WARP_SIZE), addresses+(warp_id*WARP_SIZE), predicate+(warp_id*WARP_SIZE), 
+            compactWarp(predicate, addresses, temp, 
                         shBuffer, &tail, &head, &bufTail, &lock);
             __syncwarp();
 
