@@ -13,7 +13,7 @@ __device__ unsigned int scanWarpHellis(volatile unsigned int* addresses, unsigne
     if(type == INCLUSIVE)
         return addresses[THID];
     else{
-        return (lane_id>0)? addresses[THID-1]:0;
+        return (lane_id>0)? addresses[THID-1] : 0;
     }    
 }
 
@@ -71,7 +71,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
     
     addresses[THID] = predicate[THID];
 
-    unsigned int address = scanWarpHellis(addresses, EXCLUSIVE);
+    unsigned int address = scanWarpBallot(addresses, EXCLUSIVE);
     // todo: look for atomic add at warp level.
     
     if(lane_id == WARP_SIZE-1){
