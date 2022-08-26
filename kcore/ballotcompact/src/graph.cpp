@@ -1,9 +1,51 @@
 
 #include "../inc/graph.h"
+bool Graph::readSerialized(string input_file){
+    ifstream file;
+    file.open(string(OUTPUT_LOC) + string("serialized-") + input_file);
+    if(file){
+        cout<<"Reading serialized file... "<<endl;
+        file>>V;
+        file>>E;
+        degrees = new unsigned int[V];
+        neighbors_offset = new unsigned int[V+1];
+        neighbors = new unsigned int[E];
+        for(int i=0;i<V;i++)
+            file>>degrees[i];
+        for(int i=0;i<V+1;i++)
+            file>>neighbors_offset[i];
+        for(int i=0;i<E;i++)
+            file>>neighbors[i];
+        file.close();
+        return true;
+    }else{
+        cout<<"readSerialized: File couldn't open"<<endl;
+    }
 
+    return false;
+}
 
-Graph::Graph(std::string input_file){
-    
+void Graph::writeSerialized(string input_file){
+
+    ofstream file;
+    file.open(string(OUTPUT_LOC) + string("serialized-") + input_file);
+    if(file){
+        file<<V<<endl;
+        file<<E<<endl;
+        for(int i=0;i<V;i++)
+            file<<degrees[i]<<endl;
+        for(int i=0;i<V+1;i++)
+            file<<neighbors_offset[i]<<' ';
+        for(int i=0;i<E;i++)
+            file<<neighbors[i]<<' ';
+        file.close();
+    }
+    else{
+        cout<<"writeSerialized: File couldn't open"<<endl;
+    }
+}
+
+void Graph::readFile(string input_file){
     vector< set<unsigned int> > ns;
     V = file_reader(input_file, ns);
     degrees = new unsigned int[V];
@@ -19,8 +61,8 @@ Graph::Graph(std::string input_file){
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
 
-    bufTail = neighbors_offset[V];
-    neighbors = new unsigned int[bufTail];
+    E = neighbors_offset[V];
+    neighbors = new unsigned int[E];
 
     #pragma omp parallel for
     for(int i=0;i<V;i++){
@@ -28,20 +70,19 @@ Graph::Graph(std::string input_file){
         for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
             neighbors[j] = *it;
     }
-    // AVG_degrees = bufTail/V + 2;
+}
 
-    // unsigned int j = 0;
-    // for(unsigned int i=0;i<V;++i){
-    //     std::set<unsigned int> s = ns[i];
-    //     for(std::set<unsigned int>::iterator p = s.begin();p!=s.end();p++){
-    //         neighbors[j] = *p;
-    //         j++;
-    //     }
-    // }
+Graph::Graph(std::string input_file){
+    if(readSerialized(input_file)) return;
+    cout<<"Reading normal file... "<<endl;
+
+    readFile(input_file);
+    writeSerialized(input_file);
 }
 
 Graph::~Graph(){
-    // delete [] neighbors;
-    // delete [] neighbors_offset;
-    // delete [] degrees;
+    cout<<"Deallocated... "<<endl;
+    delete [] neighbors;
+    delete [] neighbors_offset;
+    delete [] degrees;
 }

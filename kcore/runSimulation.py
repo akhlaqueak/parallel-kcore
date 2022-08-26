@@ -63,7 +63,7 @@ def parse(args):
 def runSim(datasets):
     results = []
     for ds in datasets:
-        print(ds, ": Started... ", sep=" ")
+        print(ds, ": Started... ", end=" ")
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         time = parseResult(output.stdout.decode()) # decode is converting byte string to regular
         results.append((ds, time),)
