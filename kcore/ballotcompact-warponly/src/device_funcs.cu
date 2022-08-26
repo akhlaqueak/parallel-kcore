@@ -2,85 +2,11 @@
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 #include "buffer.cc"
-
-enum{INCLUSIVE, EXCLUSIVE};
-__shared__ volatile unsigned int addresses[BLK_DIM];
-__shared__ bool predicate[BLK_DIM];
-__shared__ unsigned int temp[BLK_DIM];
-
-__device__ unsigned int scanWarp1(volatile unsigned int* addresses, unsigned int type){
-    const unsigned int lane_id = THID & 31;
-
-    for(int i=1; i<WARP_SIZE; i*=2){
-        if(lane_id >= i)
-            addresses[THID] += addresses[THID-i];
-    }
-
-    
-    if(type == INCLUSIVE)
-        return addresses[THID];
-    else{
-        return (lane_id>0)? addresses[THID-1]:0;
-    }    
-}
-
-__device__ unsigned int scanWarp(volatile unsigned int* addresses, unsigned int type){
-    uint lane_id = THID & 31;
-    uint bits = __ballot_sync(0xffffffff, addresses[THID]);
-    uint mask = 0xffffffff >> (31-lane_id);
-    addresses[THID] = __popc(mask & bits);
-    if(type == INCLUSIVE)
-        return addresses[THID];
-    else
-        return lane_id>0? addresses[THID-1] : 0;
-}
+#include "scans.cc"
 
 
-
-__device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
-    const unsigned int lane_id = THID & 31;
-    const unsigned int warp_id = THID >> 5;
-    
-    unsigned int val = scanWarp(addresses, type);
-    __syncthreads();
-
-    if(lane_id==31)
-        addresses[warp_id] = addresses[THID];
-    __syncthreads();
-
-    if(warp_id==0)
-        scanWarp1(addresses, INCLUSIVE);
-    __syncthreads();
-
-    if(warp_id>0)
-        val += addresses[warp_id-1];
-    __syncthreads();
-
-    addresses[THID] = val;
-    __syncthreads();
-    
-}
-
-
-
-
-__device__ void compactWarp(unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
-    const unsigned int lane_id = THID & 31;
-    addresses[THID] = predicate[THID];
-    unsigned int address = scanWarp(addresses, EXCLUSIVE);
-    unsigned int bTail;
-    if(lane_id==WARP_SIZE-1){
-        bTail = atomicAdd(bufTail, address + predicate[THID]);
-    }
-    bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
-
-    address += bTail;
-    if(predicate[THID])
-        writeToBuffer(shBuffer, glBuffer, address, temp[THID]);
-    predicate[THID] = 0;
-}
-
-__device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
+__device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
+    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
 
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
@@ -92,7 +18,9 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         if(predicate[THID]) temp[THID] = v;
-        compactWarp(shBuffer, glBuffer, bufTail);        
+
+        compactWarp(predicate, addresses, temp, shBuffer, glBuffer, bufTail);        
+        
         __syncthreads();
             
     }
@@ -117,8 +45,10 @@ __device__ void syncBlocks(unsigned int* blockCounter){
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
                     unsigned int* blockCounter, unsigned int* glBuffers){
-
-
+    
+    __shared__ volatile unsigned int addresses[BLK_DIM];
+    __shared__ bool predicate[BLK_DIM];
+    __shared__ unsigned int temp[BLK_DIM];
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
@@ -135,7 +65,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
     
-    selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
+    selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
     
     syncBlocks(blockCounter);
     
@@ -173,7 +103,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             __syncwarp();
 
-            compactWarp(shBuffer, glBuffer, &bufTail);
+            compactWarp(predicate, addresses, temp, shBuffer, glBuffer, &bufTail);
             if(start >= end) break;
 
             unsigned int j = start + lane_id;
