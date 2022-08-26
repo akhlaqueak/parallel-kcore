@@ -34,7 +34,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     const unsigned int warp_id = THID >> 5;
     
-    unsigned int val = scanWarpHellis(addresses, type);
+    unsigned int val = scanWarpBallot(addresses, type);
     __syncthreads();
 
     if(lane_id==31)
@@ -61,7 +61,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
         unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
     const unsigned int lane_id = THID & 31;
     addresses[THID] = predicate[THID];
-    unsigned int address = scanWarpHellis(addresses, EXCLUSIVE);
+    unsigned int address = scanWarpBallot(addresses, EXCLUSIVE);
     unsigned int bTail;
     if(lane_id==WARP_SIZE-1){
         bTail = atomicAdd(bufTail, address + predicate[THID]);

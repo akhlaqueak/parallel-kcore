@@ -5,7 +5,7 @@ import json
 import networkx as nx
 from subprocess import PIPE
 
-FOLDERS = ["atomic", "ballotcompact", "ballotcompact-warponly"]
+FOLDERS = ["atomic", "fastcompact", "fastcompact-warponly", "ballotcompact", "ballotcompact-warponly"]
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
 VERIFY = False
@@ -82,6 +82,8 @@ if __name__ == "__main__":
         if VERIFY:
             for ds in datasets:
                 verify(ds)
+        print("### Results for ", folder, " ###")
         for ds, time in results:
             print(ds, time)
+        print("### --------------- ###")
         os.chdir("../")
