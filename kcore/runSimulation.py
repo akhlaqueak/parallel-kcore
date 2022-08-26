@@ -94,6 +94,7 @@ def parseFolder(args):
 if __name__ == "__main__":
     datasets = parseDataSet(sys.argv)
     folders = parseFolder(sys.argv)
+    sp.run(["git", "pull"])
     for folder in folders:
         os.chdir(folder)
         sp.run(["make"])
