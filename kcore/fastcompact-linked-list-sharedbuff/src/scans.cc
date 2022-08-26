@@ -87,7 +87,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
     
     bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
     
-    addresses += bTail;
+    address += bTail;
     
     if(predicate[THID])
         writeToBuffer(shBuffer, tail[0], address, temp[THID]);

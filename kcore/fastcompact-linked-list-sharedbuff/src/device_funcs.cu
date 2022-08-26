@@ -18,7 +18,7 @@ __device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addre
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         temp[THID] = v;
 
-        compactWarp(predicate, addresses, temp, shBuffer, tail, head, bufTail);        
+        compactBlock(predicate, addresses, temp, shBuffer, tail, head, bufTail);        
         __syncthreads();
             
     }
