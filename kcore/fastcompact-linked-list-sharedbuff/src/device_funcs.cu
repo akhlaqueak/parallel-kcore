@@ -18,7 +18,7 @@ __device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addre
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         temp[THID] = v;
 
-        compactBlock(predicate, addresses, temp, shBuffer, tail, head, bufTail);        
+        compactWarp(predicate, addresses, temp, shBuffer, tail, head, bufTail);        
         __syncthreads();
             
     }
@@ -72,7 +72,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // warps should process all the nodes added during the execution of loop
     // for that purpose base is introduced, is incremented whenever a warp takes a job.
     
-    // todo: busy waiting on several blocks
+    // done: busy waiting on several blocks
 
     syncBlocks(blockCounter);
     // bufTail = 10;
