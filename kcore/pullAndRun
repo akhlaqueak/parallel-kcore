@@ -1,2 +1,2 @@
 git pull
-python runSimulation.py $1
+python runSimulation.py $1 $2
