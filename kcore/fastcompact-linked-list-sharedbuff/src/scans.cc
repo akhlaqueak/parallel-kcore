@@ -125,7 +125,7 @@ __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, 
     addresses[THID] += bTail;
     
     if(predicate[THID])
-        writeToBuffer(shBuffer, tail[0], addresses[THID], v);
+        writeToBuffer(shBuffer, tail[0], addresses[THID], temp[THID]);
     
     __syncthreads();
             
