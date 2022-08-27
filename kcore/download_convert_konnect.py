@@ -40,7 +40,7 @@ def convert_format(ds):
 
     if REMOVE:
         os.remove(zipfile)
-        os.rmtree(ds)
+        os.rmdir(ds)
 
     print("Elapsed: ", time.time()-st)
 
