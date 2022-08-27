@@ -39,7 +39,7 @@ def parseResult(output):
     return line[0].split(":")[1]
 
 def parseDataSet(args):
-    datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "twitter_mpi.g", "wikiTalk.g")
+    datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "twitter_mpi.g", "wikiTalk.g", "twitter.g")
     ds = []
     arg = "" if len(args)<2 else args[1]
 
