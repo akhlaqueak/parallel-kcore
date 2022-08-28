@@ -9,7 +9,7 @@ def verify(arg):
         nx_kcore = json.loads(file)
         file.close()
     except IOError:
-        G = nx.read_edgelist("./data_set/data/ours_format/" + dataset, nodetype=int)
+        G = nx.read_edgelist("./data_set/data/ours_format/" + dataset)
         nx_kcore = nx.core_number(G)
         # save the file for future use... 
         json.dump(nx_kcore, open("./output/nx-kcore-" + dataset, 'w'))
