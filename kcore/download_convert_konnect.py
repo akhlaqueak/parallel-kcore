@@ -28,7 +28,7 @@ def convert_format(ds):
     for line in lines:
         if line[0] in comment_ch:
             continue
-        s, e = line.split()
+        s, e = line.split()[:2]
         if s == e:
             continue
         out_lines.append(line)
