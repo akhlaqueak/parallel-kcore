@@ -39,7 +39,10 @@ def parseResult(output):
     return line[0].split(":")[1]
 
 def parseDataSet(args):
-    datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "twitter_mpi.g", "wikiTalk.g", "twitter.g")
+    datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
+        "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "twitter_mpi.g", \
+        "wikiTalk.g", "twitter.g", "livejournal-groupmemberships.g", "yahoo-song.g", "bag-pubmed.g", \
+     	"dbpedia-link.g", "wikipedia_link_ms.g", "dimacs10-uk-2002.g")
     ds = []
     arg = "" if len(args)<2 else args[1]
 
@@ -53,11 +56,8 @@ def parseDataSet(args):
             print("Please provide valid dataset: ", [(x, y) for x, y in enumerate(datasets)])
     elif arg == "all":
         ds = datasets
-    elif arg in datasets:
-        ds.append(arg) 
     else:
-        print("Please provide valid dataset: ", [(x, y) for x, y in enumerate(datasets)])
-        exit(0)
+        ds.append(arg) 
     return ds
 
 def runSim(datasets):
@@ -94,7 +94,6 @@ def parseFolder(args):
 if __name__ == "__main__":
     datasets = parseDataSet(sys.argv)
     folders = parseFolder(sys.argv)
-    sp.run(["git", "pull"])
     for folder in folders:
         os.chdir(folder)
         sp.run(["make"])

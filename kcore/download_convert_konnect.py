@@ -31,7 +31,7 @@ def convert_format(ds):
         s, e = line.split()[:2]
         if s == e:
             continue
-        out_lines.append(line)
+        out_lines.append(s + " " + e)
         max_node = max(max_node, int(s), int(e))
 
     with open(outfile, 'w') as writer:
