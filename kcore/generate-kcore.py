@@ -1,7 +1,7 @@
 import networkx as nx
 import json
 import time
-datasets = ['Enron.g', 'wikiTalk.g']
+datasets = ["soc-Journal.g", "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g"]
 # ds = ['33.g']
 
 for ds in datasets:
