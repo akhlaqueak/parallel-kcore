@@ -3,8 +3,9 @@ import json
 import time
 # datasets = ["soc-Journal.g", "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g"]
 # datasets = ["wikipedia-link-de.g"]
-datasets = ["Enron.g", "wikiTalk.g"]
+# datasets = ["Enron.g", "wikiTalk.g"]
 # datasets = ['patentcite.g']
+datasets = ["trackers.g", "twitter_mpi.g", "orkut-links.g"]
 for ds in datasets:
     tick = time.time()
     print(ds, " loading started at ", time.ctime())
