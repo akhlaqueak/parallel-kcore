@@ -7,7 +7,7 @@ datasets = ["Enron.g", "wikiTalk.g"]
 # datasets = ['patentcite.g']
 for ds in datasets:
     tick = time.time()
-    print(ds, " loading started at ", tick)
+    print(ds, " loading started at ", time.ctime())
     G = nx.read_edgelist("./data_set/data/ours_format/" + ds)
     tock = time.time()
     print(ds, " loading completed in ", tock-tick)
@@ -19,13 +19,13 @@ for ds in datasets:
     
     
     tick = time.time()
-    print(ds, " processing started at ", tick)
+    print(ds, " processing started at ", time.ctime())
     nxkcore = nx.core_number(G)
     tock = time.time()
     print(ds, " processing completed in ", tock-tick)
 
     tick = time.time()
-    print(ds, " writing started at ", tick)
+    print(ds, " writing started at ", time.ctime())
     json.dump(nxkcore, open("./output/gennx-kcore-" + ds, 'w'))
     tock = time.time()
     print(ds, " writing completed in ", tock-tick)
