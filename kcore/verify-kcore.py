@@ -6,7 +6,7 @@ def verify(arg):
     nx_kcore = {}
     try:
         file = open("./output/nx-kcore-" + dataset, 'r')
-        nx_kcore = json.loads(file)
+        nx_kcore = json.load(file)
         file.close()
     except IOError:
         G = nx.read_edgelist("./data_set/data/ours_format/" + dataset)
@@ -14,7 +14,7 @@ def verify(arg):
         # save the file for future use... 
         json.dump(nx_kcore, open("./output/nx-kcore-" + dataset, 'w'))
 
-    pkc_kcore = json.loads(open("./output/pkc-kcore-" + dataset, 'r'))
+    pkc_kcore = json.load(open("./output/pkc-kcore-" + dataset, 'r'))
 
     if nx_kcore == pkc_kcore:
         print("Test Passed!")
