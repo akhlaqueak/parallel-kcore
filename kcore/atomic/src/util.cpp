@@ -41,13 +41,13 @@ void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::s
     // first entry is read as zero degree node by networkx, 
     // to make it compatible just insert this dummy entry
     out<<"{ ";
-    out<<V<<": "<<0; 
+    out<<'"'<<V<<'"'<<": "<<0; 
     
     for(unsigned long long int i=0;i<V;++i)
         if(degrees[i]!=0)
             // not writing zero degree nodes, because certain nodes in dataset are not present... 
             // our algo treats them isloated nodes, but nxcore doesn't recognize them
-           out<<", "<<i<<": "<<degrees[i];
+           out<<", \""<<i<<'"'<<": "<<degrees[i];
 
     out<<" }";
     out.close();
