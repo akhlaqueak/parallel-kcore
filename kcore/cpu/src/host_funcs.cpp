@@ -40,7 +40,7 @@ void find_kcore(string data_file, bool write_to_disk){
                 buffer[tail++] = i;
      cout<<"Total nodes here: "<<tail<<endl;
         for(int i=0;i<tail;i++)
-            processNode(i, data_graph, buffer, tail, level);
+            processNode(buffer[i], data_graph, buffer, tail, level);
             
         count+=tail;
 
