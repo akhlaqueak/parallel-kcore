@@ -37,40 +37,42 @@ void find_kcore(string data_file,bool write_to_disk){
     cout<<"end copying graph to gpu..."<<endl;
 
     unsigned int level = 0;
+    unsigned int count = 0;
     unsigned int *global_count  = NULL;
     unsigned int* blockCounter  = NULL;
     unsigned int* glBuffers     = NULL;
 
-    cudaMallocManaged(&global_count,sizeof(unsigned int));
-    cudaMallocManaged(&blockCounter,sizeof(unsigned int));
+    chkerr(cudaMalloc(&global_count, sizeof(unsigned int)));
+    chkerr(cudaMalloc(&blockCounter, sizeof(unsigned int)));
+    cudaMemset(global_count, 0, sizeof(unsigned int));
     
-
-    cudaMemset(global_count,0,sizeof(unsigned int));
-
+    
     cudaEventRecord(event_start);
-
+    
     size_t limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
-
+    
     cout<<"default limit is: "<<limit<<endl;
-
+    
     limit = 1024*1024*1024ULL;
     chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
     limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
-
+    
     cout<<"new limit is: "<<limit<<endl;
-
-
+    
+    
 	cout<<"Entering in while"<<endl;
-	while(global_count[0] < data_graph.V){
+	while(coutn < data_graph.V){
+        cudaMemset(blockCounter,0,sizeof(unsigned int));        
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter, glBuffers);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         // chkerr(cudaDeviceSynchronize());
-        cout<<"*********Completed level: "<<level<<", global_count: "<<global_count[0]<<" *********"<<endl;
+        chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
+        
+        cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level += 1;
-        blockCounter[0] = 0;
     }
 
 	get_results_from_gpu(data_graph, data_pointers);
