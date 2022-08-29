@@ -64,7 +64,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     
 	cout<<"Entering in while"<<endl;
-	while(coutn < data_graph.V){
+	while(count < data_graph.V){
         cudaMemset(blockCounter,0,sizeof(unsigned int));        
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter, glBuffers);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
