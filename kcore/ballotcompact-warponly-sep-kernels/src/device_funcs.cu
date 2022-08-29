@@ -16,7 +16,7 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int *bufTails
     __shared__ unsigned int* shBuffer;
     if(THID==0){
         bufTail = 0;
-        glBuffer = glBuffers[blockIdx.x*GLBUFFER_SIZE];
+        glBuffer = glBuffers+(blockIdx.x*GLBUFFER_SIZE);
     }
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
