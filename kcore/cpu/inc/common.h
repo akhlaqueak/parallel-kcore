@@ -9,6 +9,11 @@
 #include <vector>
 #include <set>
 #include <fstream>
+#include <numeric>
+#include <vector>
+#include <iterator>
+#include <functional>
+
 #include "omp.h"
 using namespace std;
 
