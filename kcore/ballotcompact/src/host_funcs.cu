@@ -65,14 +65,14 @@ void find_kcore(string data_file,bool write_to_disk){
     auto start = chrono::steady_clock::now();
     
 	cout<<"Entering in while"<<endl;
-	while(level < 132){
+	while(count < data_graph.V){
         cudaMemset(blockCounter,0,sizeof(unsigned int));        
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter, glBuffers);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         // chkerr(cudaDeviceSynchronize());
-        // chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
+        chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
         
-        // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
+        cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level += 1;
     }
 
