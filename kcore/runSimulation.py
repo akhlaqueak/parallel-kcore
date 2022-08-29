@@ -41,8 +41,9 @@ def parseResult(output):
 def parseDataSet(args):
     datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
         "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "twitter_mpi.g", \
-        "wikiTalk.g", "twitter.g", "livejournal-groupmemberships.g", "yahoo-song.g", "bag-pubmed.g", \
-     	"dbpedia-link.g", "wikipedia_link_ms.g", "dimacs10-uk-2002.g")
+        "wikiTalk.g")
+        #  "twitter.g", "livejournal-groupmemberships.g", "yahoo-song.g", "bag-pubmed.g", \
+     	# "dbpedia-link.g", "wikipedia_link_ms.g", "dimacs10-uk-2002.g")
     ds = []
     arg = "" if len(args)<2 else args[1]
 
@@ -71,7 +72,8 @@ def runSim(datasets):
     return results
 
 def parseFolder(args):
-    folders = ["atomic", "fastcompact", "fastcompact-warponly", "ballotcompact", "ballotcompact-warponly", "ballotcompact-linkedlist"]
+    folders = ["atomic", "fastcompact", "fastcompact-warponly", "ballotcompact", \
+        "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels"]
     folder = []
     arg = "" if len(args)<3 else args[2]
 
