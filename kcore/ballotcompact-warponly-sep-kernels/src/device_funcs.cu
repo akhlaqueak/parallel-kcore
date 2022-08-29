@@ -29,7 +29,7 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int *bufTails
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         if(predicate[THID]) temp[THID] = v;
 
-        compactWarp(predicate, addresses, temp, shBuffer, glBuffers, &bufTail);        
+        compactWarp(predicate, addresses, temp, shBuffer, glBuffer, &bufTail);        
         
         __syncthreads();
             
