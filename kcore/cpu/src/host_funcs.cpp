@@ -37,7 +37,7 @@ void find_kcore(string data_file, bool write_to_disk){
 
         for(int i=0;i<data_graph.V;i++)
             if(data_graph.degrees[i] == level)
-            processNode(i, data_graph, buffer, tail, level);
+                buffer[tail++] = i;
         
 
         for(int i=0;i<tail;i++)
