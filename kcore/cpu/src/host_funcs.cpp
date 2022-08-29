@@ -24,7 +24,7 @@ void processNode(unsigned int v, Graph &g, unsigned int* buffer, unsigned int &t
            
 }
 
-void find_kcore(string data_file,bool write_to_disk){
+void find_kcore(string data_file, bool write_to_disk){
     cout<<"start loading graph file from disk to memory..."<<endl;    
     Graph data_graph(data_file);
     cout<<"graph loading complete..."<<endl;
@@ -36,6 +36,7 @@ void find_kcore(string data_file,bool write_to_disk){
         unsigned int tail = 0;
 
         for(int i=0;i<data_graph.V;i++)
+            if(data_graph.degrees[i] == level)
             processNode(i, data_graph, buffer, tail, level);
         
 
