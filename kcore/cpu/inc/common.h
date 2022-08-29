@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <fstream>
 #include "omp.h"
 using namespace std;
 
