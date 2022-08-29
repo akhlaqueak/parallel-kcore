@@ -5,7 +5,7 @@ import time
 # datasets = ["wikipedia-link-de.g"]
 # datasets = ["Enron.g", "wikiTalk.g"]
 # datasets = ['patentcite.g']
-datasets = ["trackers.g", "twitter_mpi.g", "orkut-links.g"]
+datasets = ["trackers.g"]
 for ds in datasets:
     tick = time.time()
     print(ds, " loading started at ", time.ctime())
