@@ -19,7 +19,7 @@
 #
 # Set your email address and request notification when you job is complete or if it fails
 #
-#SBATCH --mail-type=SUCCESS
+#SBATCH --mail-type=END
 #SBATCH --mail-user=akhlaque.ak@gmail.com
 module load Anaconda3
 python generate-kcore-test.py
