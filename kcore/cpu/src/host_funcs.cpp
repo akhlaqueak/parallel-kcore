@@ -38,12 +38,12 @@ void find_kcore(string data_file, bool write_to_disk){
         for(int i=0;i<data_graph.V;i++)
             if(data_graph.degrees[i] == level)
                 buffer[tail++] = i;
-        
-
+     cout<<"Total nodes here: "<<tail<<endl;
         for(int i=0;i<tail;i++)
             processNode(i, data_graph, buffer, tail, level);
             
         count+=tail;
+
         cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
 
     }
