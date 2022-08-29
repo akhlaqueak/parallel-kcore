@@ -1,6 +1,6 @@
 
 #include "../inc/host_funcs.h"
-#include <ctime>
+#include <chrono>
 void processNode(unsigned int v, Graph &g, unsigned int* buffer, unsigned int &tail, unsigned int level){
 
     unsigned int start = g.neighbors_offset[v];
@@ -31,7 +31,7 @@ void find_kcore(string data_file, bool write_to_disk){
     unsigned int buffer[50000000];
 
     unsigned int count = 0;
-    double tick = time(NULL);
+    auto start = chrono::steady_clock::now();
     for(unsigned int level=0; count<data_graph.V; level++){
         unsigned int tail = 0;
 
@@ -47,9 +47,9 @@ void find_kcore(string data_file, bool write_to_disk){
         cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
 
     }
-
-    double tock = time(NULL);
-    cout<<"Elapsed Time: "<<tock-tick<<endl;
+    auto end = chrono::steady_clock::now();
+    cout << "Elapsed Time: "
+    << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
 
     
     if(write_to_disk){
