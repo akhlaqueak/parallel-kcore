@@ -40,8 +40,8 @@ def parseResult(output):
 
 def parseDataSet(args):
     datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
-        "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "twitter_mpi.g", \
-        "wikiTalk.g")
+        "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
+        )
         #  "twitter.g", "livejournal-groupmemberships.g", "yahoo-song.g", "bag-pubmed.g", \
      	# "dbpedia-link.g", "wikipedia_link_ms.g", "dimacs10-uk-2002.g")
     ds = []
