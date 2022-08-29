@@ -1,6 +1,6 @@
 
 #include "../inc/host_funcs.h"
-
+#include <ctime>
 void processNode(unsigned int v, Graph &g, unsigned int* buffer, unsigned int &tail, unsigned int level){
 
     unsigned int start = g.neighbors_offset[v];
@@ -31,7 +31,7 @@ void find_kcore(string data_file,bool write_to_disk){
     unsigned int buffer[50000000];
 
     unsigned int count = 0;
-
+    double tick = time();
     for(unsigned int level=0; count<data_graph.V; level++){
         unsigned int tail = 0;
 
@@ -43,6 +43,18 @@ void find_kcore(string data_file,bool write_to_disk){
             processNode(i, data_graph, buffer, tail, level);
             
         count+=tail;
+        cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
+
+    }
+
+    double tock = time(NULL);
+    cout<<"Elapsed Time: "<<tock-tick<<endl;
+
+    
+    if(write_to_disk){
+        cout<<"Writing kcore to disk started... "<<endl;
+        write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file);
+        cout<<"Writing kcore to disk completed... "<<endl;
     }
 
 }
