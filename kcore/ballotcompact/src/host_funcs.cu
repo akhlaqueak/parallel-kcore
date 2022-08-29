@@ -20,8 +20,8 @@ void find_kcore(string data_file,bool write_to_disk){
     cout<<"graph loading complete..."<<endl;
     G_pointers data_pointers;
 
-    cudaEvent_t event_start;
-    cudaEvent_t event_stop;
+    // cudaEvent_t event_start;
+    // cudaEvent_t event_stop;
     
     // if(write_to_disk){
     //     cout<<"Writing degrees to disk started... "<<endl;
@@ -29,8 +29,8 @@ void find_kcore(string data_file,bool write_to_disk){
     //     cout<<"Writing degrees to disk completed... "<<endl;
     // }
     
-    cudaEventCreate(&event_start);
-    cudaEventCreate(&event_stop);
+    // cudaEventCreate(&event_start);
+    // cudaEventCreate(&event_stop);
 
     cout<<"start copying graph to gpu..."<<endl;
     malloc_graph_gpu_memory(data_graph, data_pointers);
@@ -47,7 +47,7 @@ void find_kcore(string data_file,bool write_to_disk){
     cudaMemset(global_count, 0, sizeof(unsigned int));
     
     
-    cudaEventRecord(event_start);
+    // cudaEventRecord(event_start);
     
     size_t limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
@@ -62,6 +62,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
     cout<<"new limit is: "<<limit<<endl;
     
+    auto start = chrono::steady_clock::now();
     
 	cout<<"Entering in while"<<endl;
 	while(count < data_graph.V){
@@ -77,15 +78,15 @@ void find_kcore(string data_file,bool write_to_disk){
 
 	get_results_from_gpu(data_graph, data_pointers);
 
-    cudaEventRecord(event_stop);
-    cudaEventSynchronize(event_stop);
+    // cudaEventRecord(event_stop);
+    // cudaEventSynchronize(event_stop);
     cudaFree(glBuffers);
 
 
-    float time_milli_sec = 0;
-    cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
-    cout<<"Elapsed Time: "<<time_milli_sec<<endl;
 
+    auto end = chrono::steady_clock::now();
+    cout << "Elapsed Time: "
+    << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
