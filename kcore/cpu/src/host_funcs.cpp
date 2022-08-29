@@ -31,7 +31,7 @@ void find_kcore(string data_file,bool write_to_disk){
     unsigned int buffer[50000000];
 
     unsigned int count = 0;
-    double tick = time();
+    double tick = time(NULL);
     for(unsigned int level=0; count<data_graph.V; level++){
         unsigned int tail = 0;
 
