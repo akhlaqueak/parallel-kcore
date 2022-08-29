@@ -10,11 +10,6 @@ for ds in datasets:
     tock = time.time()
     print("Time in edgelist", tock-tick)
     
-    # tick = time.time()
-    # G = nx.read_adjlist("./data_set/data/ours_format/" + ds)
-    # tock = time.time()
-    # print("Time in edgelist", tock-tick)
-    
     
     tick = time.time()
     nxkcore = nx.core_number(G)
