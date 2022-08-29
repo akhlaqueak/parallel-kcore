@@ -20,69 +20,61 @@ void find_kcore(string data_file,bool write_to_disk){
     cout<<"graph loading complete..."<<endl;
     G_pointers data_pointers;
 
-    cudaEvent_t event_start;
-    cudaEvent_t event_stop;
-    
-    // if(write_to_disk){
-    //     cout<<"Writing degrees to disk started... "<<endl;
-    //     write_kcore_to_disk(data_graph.degrees, data_graph.V, "degrees.txt");
-    //     cout<<"Writing degrees to disk completed... "<<endl;
-    // }
-    
-    cudaEventCreate(&event_start);
-    cudaEventCreate(&event_stop);
+ 
 
     cout<<"start copying graph to gpu..."<<endl;
     malloc_graph_gpu_memory(data_graph, data_pointers);
     cout<<"end copying graph to gpu..."<<endl;
 
     unsigned int level = 0;
+    unsigned int count = 0;
     unsigned int *global_count  = NULL;
     unsigned int* blockCounter  = NULL;
     unsigned int* glBuffers     = NULL;
 
-    cudaMallocManaged(&global_count,sizeof(unsigned int));
-    cudaMallocManaged(&blockCounter,sizeof(unsigned int));
+    chkerr(cudaMalloc(&global_count, sizeof(unsigned int)));
+    chkerr(cudaMalloc(&blockCounter, sizeof(unsigned int)));
+    cudaMemset(global_count, 0, sizeof(unsigned int));
     
-    chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
-
-    cudaMemset(global_count,0,sizeof(unsigned int));
-
-    cudaEventRecord(event_start);
-
+    
+    
     size_t limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
-
+    
     cout<<"default limit is: "<<limit<<endl;
-
+    
     limit = 1024*1024*1024ULL;
     chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
     limit = 0;
     cudaDeviceGetLimit(&limit, cudaLimitMallocHeapSize);
-
+    chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
+    
     cout<<"new limit is: "<<limit<<endl;
-
-
+    
+    auto start = chrono::steady_clock::now();
+    
 	cout<<"Entering in while"<<endl;
-	while(global_count[0] < data_graph.V){
+	while(count < data_graph.V){
+        cudaMemset(blockCounter,0,sizeof(unsigned int));        
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter, glBuffers);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
-        chkerr(cudaDeviceSynchronize());
-        cout<<"*********Completed level: "<<level<<", global_count: "<<global_count[0]<<" *********"<<endl;
+        // chkerr(cudaDeviceSynchronize());
+        chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
+        
+        cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level += 1;
-        blockCounter[0] = 0;
     }
 
 	get_results_from_gpu(data_graph, data_pointers);
 
-    cudaEventRecord(event_stop);
-    cudaEventSynchronize(event_stop);
+
+    cudaFree(glBuffers);
 
 
-    float time_milli_sec = 0;
-    cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
-    cout<<"Elapsed Time: "<<time_milli_sec<<endl;
 
+    auto end = chrono::steady_clock::now();
+    cout << "Elapsed Time: "
+    << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
