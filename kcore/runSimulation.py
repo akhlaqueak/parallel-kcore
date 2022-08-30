@@ -4,8 +4,13 @@ import sys
 import json
 import networkx as nx
 from subprocess import PIPE
+folders = ["atomic", "fastcompact", "fastcompact-warponly", "ballotcompact", \
+        "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels", "cpu"]
 
-FOLDERS = ["ballotcompact-linkedlist"]
+datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
+    "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
+    )
+
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
 VERIFY = False
@@ -39,9 +44,6 @@ def parseResult(output):
     return line[0].split(":")[1]
 
 def parseDataSet(args):
-    datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
-        "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
-        )
         #  "twitter.g", "livejournal-groupmemberships.g", "yahoo-song.g", "bag-pubmed.g", \
      	# "dbpedia-link.g", "wikipedia_link_ms.g", "dimacs10-uk-2002.g")
     ds = []
@@ -72,8 +74,6 @@ def runSim(datasets):
     return results
 
 def parseFolder(args):
-    folders = ["atomic", "fastcompact", "fastcompact-warponly", "ballotcompact", \
-        "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels"]
     folder = []
     arg = "" if len(args)<3 else args[2]
 
@@ -94,6 +94,12 @@ def parseFolder(args):
         exit(0)
     return folder
 if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        print("usage: ")
+        print("python runSimulation.py datasetIndex|all folderIndex|all \n")
+        print("datasetIndex: ", [str(x)+ ": " + y for x, y in enumerate(datasets)])
+        print("folderIndex: ", [str(x)+ ": " + y  for x, y in enumerate(folders)])
+        exit(0)
     datasets = parseDataSet(sys.argv)
     folders = parseFolder(sys.argv)
     for folder in folders:
