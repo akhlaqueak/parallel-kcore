@@ -22,4 +22,4 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=akhlaque.ak@gmail.com
 module load cuda11.4/toolkit
-python3 runSimulation.py 0 7
+python3 runSimulation.py twitter.g 7
