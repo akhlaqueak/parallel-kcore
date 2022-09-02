@@ -6,7 +6,7 @@
 
 
 __device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
-    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
+    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level, unsigned int* counter){
 
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
@@ -20,6 +20,10 @@ __device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addre
         if(predicate[THID]) temp[THID] = v;
 
         compactBlock(predicate, addresses, temp, shBuffer, glBuffer, bufTail);        
+        if(v==V-1){
+            counter = 1;
+            __threadfence();
+        }
         __syncthreads();
             
     }
@@ -65,9 +69,11 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     __syncthreads();
     
-    selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
+    selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, shBuffer, glBuffer, &bufTail, level, blockCounter);
     
-    syncBlocks(blockCounter);
+    // syncBlocks(blockCounter);
+
+    while(ldg(blockCounter) == 0){}
 
     __syncthreads();
     
