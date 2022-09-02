@@ -15,27 +15,28 @@ OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
 VERIFY = True
 
-def verify(dataset):
-    nx_kcore = {}
-    try:
-        file = open(OUTPUT + "nx-kcore-" + dataset, 'r')
-        nx_kcore = json.load(file)
-        file.close()
-    except IOError:
-        G = nx.read_adjlist(DATASET + dataset)
-        nx_kcore = nx.core_number(G)
-        # save the file for future use... 
-        json.dump(nx_kcore, open(OUTPUT + "nx-kcore-" + dataset, 'w'))
+def verify(datasets):
+    for dataset in datasets: 
+        nx_kcore = {}
+        try:
+            file = open(OUTPUT + "nx-kcore-" + dataset, 'r')
+            nx_kcore = json.load(file)
+            file.close()
+        except IOError:
+            G = nx.read_adjlist(DATASET + dataset)
+            nx_kcore = nx.core_number(G)
+            # save the file for future use... 
+            json.dump(nx_kcore, open(OUTPUT + "nx-kcore-" + dataset, 'w'))
 
-    pkc_kcore = json.load(open(OUTPUT + "pkc-kcore-" + dataset, 'r'))
+        pkc_kcore = json.load(open(OUTPUT + "pkc-kcore-" + dataset, 'r'))
 
-    if nx_kcore == pkc_kcore:
-        print(dataset, "Verification Test Passed!")
-    else:
-        print(dataset, "Verification Test Failed!")
-        print("The difference is: ")
-        diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
-        print (len(diff), " items")
+        if nx_kcore == pkc_kcore:
+            print(dataset, "Verification Test Passed!")
+        else:
+            print(dataset, "Verification Test Failed!", end=" ")
+            print("The difference is: ", end=" ")
+            diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
+            print (len(diff), " items")
 
 def parseResult(output):
     # One of the line in output has this format
@@ -72,7 +73,7 @@ def runSim(datasets):
         print(text)
         time = parseResult(text) # decode is converting byte string to regular
         results.append((ds, time),)
-        print("Completed")
+        print("Simulations Completed")
     return results
 
 def parseFolder(args):
@@ -111,8 +112,7 @@ if __name__ == "__main__":
         print("Executing in ", folder)
         results = runSim(datasets)
         if VERIFY:
-            for ds in datasets:
-                verify(ds)
+            verify(datasets)
         print("### Results for ", folder, " ###")
         for ds, time in results:
             print(ds, time)

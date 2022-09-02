@@ -110,7 +110,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             if(j >= end) continue;
 
             unsigned int u = d_p.neighbors[j];
-            if(ldg(d_p.degrees+u) > level){
+            if(d_p.degrees+u > level){
                 
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
@@ -128,7 +128,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     }
 
-    __syncthreads();
     if(THID == 0 ){
         if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
         // if(glBuffer!=NULL) free(glBuffer);
