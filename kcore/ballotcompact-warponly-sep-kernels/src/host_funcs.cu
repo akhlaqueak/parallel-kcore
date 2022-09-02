@@ -71,6 +71,10 @@ void find_kcore(string data_file,bool write_to_disk){
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, bufTails, glBuffers);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         chkerr(cudaDeviceSynchronize());
+        if(level==1) 
+        for(int i=0; i<BLK_NUMS; i++){
+            cout<<bufTails[i]<<" ";
+        }
         cout<<"*********Completed level: "<<level<<", global_count: "<<global_count[0]<<" *********"<<endl;
         level += 1;
         blockCounter[0] = 0;
