@@ -13,7 +13,7 @@ datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
 
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
-VERIFY = False
+VERIFY = True
 
 def verify(dataset):
     nx_kcore = {}
@@ -94,6 +94,7 @@ def parseFolder(args):
         exit(0)
     return folder
 if __name__ == "__main__":
+    sp.run(["git", "pull"])
     if len(sys.argv) == 1:
         print("usage: ")
         print("python runSimulation.py datasetIndex|all folderIndex|all \n")
