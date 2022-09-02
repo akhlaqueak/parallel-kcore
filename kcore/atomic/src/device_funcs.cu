@@ -37,6 +37,7 @@ __device__ void syncBlocks(unsigned int* blockCounter){
             // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
             // printf("%d ", blockCounter[0]);
         };// busy wait until all blocks increment
+        
     }   
     __syncthreads();
 }
@@ -67,6 +68,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     syncBlocks(blockCounter);
 
+    if(level ==  1)
+        printf("%d ", bufTail);
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
