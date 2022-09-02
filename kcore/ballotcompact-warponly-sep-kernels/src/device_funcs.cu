@@ -100,7 +100,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
 
         while(true){
-            __syncwarp();
+            // __syncwarp();
 
             // compactWarp(predicate, addresses, temp, shBuffer, glBuffer, &bufTail);
             if(start >= end) break;
@@ -128,7 +128,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         }
 
     }
-
+    __syncthreads();
 
     if(THID == 0 ){
         if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
