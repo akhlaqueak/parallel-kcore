@@ -70,7 +70,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __syncthreads();
     
     selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, 
-                        shBuffer, glBuffer, &bufTail, level, blockCounter);
+                        shBuffer, glBuffer, &bufTail, level);
     
     // syncBlocks(blockCounter);
 
