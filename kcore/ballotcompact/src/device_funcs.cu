@@ -67,6 +67,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
     
     syncBlocks(blockCounter);
+
+    __syncthreads();
+    
+
     
     predicate[THID] = 0;
     // bufTail is being incrmented within the loop, 
@@ -77,19 +81,19 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // for(unsigned int i = warp_id; i<bufTail ; i = warp_id + base){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
-        __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
-
+        __syncthreads(); //syncthreads must be executed by all the threads
         if(base == bufTail) break;
 
         i = base + warp_id;
-        __syncthreads();
         
+        __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
+
         if(THID == 0){
             base += WARPS_EACH_BLK;
             if(bufTail < base )
                 base = bufTail;
         }
-
+        
         if(i >= bufTail) continue; // this warp won't have to do anything     
         
         
@@ -101,7 +105,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
 
         while(true){
-            __syncwarp();
+            // __syncwarp();
 
             compactWarp(predicate, addresses, temp, shBuffer, glBuffer, &bufTail);
             if(start >= end) break;
@@ -129,7 +133,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         }
 
     }
-
+    __syncthreads();
 
     if(THID == 0 ){
         if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
@@ -137,5 +141,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     }
 
 }
+
+
 
 
