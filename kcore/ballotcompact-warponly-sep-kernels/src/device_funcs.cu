@@ -52,7 +52,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int temp[BLK_DIM];
     __shared__ unsigned int *shBuffer;
     __shared__ unsigned int bufTail;
-    __shared__ unsigned int base;
+    __shared__ volatile unsigned int base;
     __shared__ unsigned int* glBuffer;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
