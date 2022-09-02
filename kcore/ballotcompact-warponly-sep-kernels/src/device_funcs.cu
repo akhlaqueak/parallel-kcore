@@ -54,7 +54,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
     __shared__ unsigned int* glBuffer;
-    __shared__ unsigned int nodes[32];
+    // __shared__ unsigned int nodes[32];
     __shared__ unsigned int starts[32];
     __shared__ unsigned int ends[32];
     unsigned int warp_id = THID / 32;
@@ -86,8 +86,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         i = base + warp_id;
         
         if(warp_id == 0){
-            unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
-            nodes[lane_id] = v;
+            unsigned int v = readFromBuffer(shBuffer, glBuffer, base+lane_id);
             starts[lane_id] = d_p.neighbors_offset[v];
             ends[lane_id] = d_p.neighbors_offset[v+1];
         }
@@ -104,7 +103,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         
         unsigned int v, start, end;
 
-        v = nodes[warp_id];
         start = starts[warp_id];
         end = ends[warp_id];
 
