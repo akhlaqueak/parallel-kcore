@@ -33,12 +33,12 @@ __device__ void syncBlocks(unsigned int* blockCounter){
     {
         atomicAdd(blockCounter, 1);
         __threadfence();
+        
+    }   
         while(ldg(blockCounter) < BLK_NUMS){
             // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
             // printf("%d ", blockCounter[0]);
         };// busy wait until all blocks increment
-        
-    }   
     __syncthreads();
 }
 
