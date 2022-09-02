@@ -35,7 +35,7 @@ def verify(dataset):
         print(dataset, "Verification Test Failed!")
         print("The difference is: ")
         diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
-        print (diff)
+        print (len(diff), " items")
 
 def parseResult(output):
     # One of the line in output has this format
