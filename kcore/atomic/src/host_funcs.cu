@@ -83,37 +83,3 @@ void find_kcore(string data_file,bool write_to_disk){
     }
 
 }
-
-void find_kcore_CPU(string data_file,bool write_to_disk){
-    cout<<"start loading graph file from disk to memory..."<<endl;    
-    Graph data_graph(data_file);
-    cout<<"graph loading complete..."<<endl;
-
-    unsigned int level = 0;
-    unsigned int count = 0;
-
-    while(count<data_graph.V){
-
-        for(int i=0; i<data_graph.V; i++){
-            if (data_graph.degrees[i] == level){
-                count++;
-                unsigned int start = data_graph.neighbors_offset[i];
-                unsigned int end = data_graph.neighbors_offset[i+1];
-
-                for(unsigned int j = start; j<end; j++){
-                    
-                    unsigned int u = data_graph.neighbors[j];
-
-                    if(data_graph.degrees[u] > level){
-                        (data_graph.degrees[u])--;                        
-                    }
-
-                }
-               
-            }
-        }    
-        
-        level++;
-    }
-
-}

@@ -82,13 +82,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         if(base == bufTail) break;
 
         i = base + warp_id;
+        __syncthreads();
         
         if(THID == 0){
             base += WARPS_EACH_BLK;
             if(bufTail < base )
                 base = bufTail;
         }
-        __syncthreads();
         if(i >= bufTail) continue; // this warp won't have to do anything     
         
         
