@@ -1,4 +1,5 @@
 import os
+from re import VERBOSE
 import subprocess as sp
 import sys
 import json
@@ -14,10 +15,12 @@ datasets = ("Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
 VERIFY = True
+VERBOSE = False
 
 def verify(datasets):
     for dataset in datasets: 
         nx_kcore = {}
+        print("Verifying ", dataset, "... ", flush=True, end=" ")
         try:
             file = open(OUTPUT + "nx-kcore-" + dataset, 'r')
             nx_kcore = json.load(file)
@@ -31,10 +34,10 @@ def verify(datasets):
         pkc_kcore = json.load(open(OUTPUT + "pkc-kcore-" + dataset, 'r'))
 
         if nx_kcore == pkc_kcore:
-            print(dataset, "Verification Test Passed!")
+            print(" Passed!")
         else:
-            print(dataset, "Verification Test Failed!", end=" ")
-            print("The difference is: ", end=" ")
+            print(" Failed!", end=" ")
+            print("The difference is: ", flush=True, end=" ")
             diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
             print (len(diff), " items")
 
@@ -70,10 +73,11 @@ def runSim(datasets):
         print(ds, ": Started... ", end=" ", flush=True)
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         text = output.stdout.decode()
-        print(text)
+        if(VERBOSE): 
+            print(text)
         time = parseResult(text) # decode is converting byte string to regular
         results.append((ds, time),)
-        print("Simulations Completed")
+        print("Completed")
     return results
 
 def parseFolder(args):
