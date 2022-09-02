@@ -54,6 +54,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
     __shared__ unsigned int* glBuffer;
+    __shared__ unsigned int nodes[32];
+    __shared__ unsigned int starts[32];
+    __shared__ unsigned int ends[32];
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
@@ -82,6 +85,12 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
         i = base + warp_id;
         
+        if(warp_id == 0){
+            unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
+            nodes[lane_id] = v;
+            starts[lane_id] = d_p.neighbors_offset[v];
+            ends[lane_id] = d_p.neighbors_offset[v+1];
+        }
         __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
 
         if(THID == 0){
@@ -95,9 +104,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         
         unsigned int v, start, end;
 
-        v = readFromBuffer(shBuffer, glBuffer, i);
-        start = d_p.neighbors_offset[v];
-        end = d_p.neighbors_offset[v+1];
+        v = nodes[warp_id];
+        start = starts[warp_id];
+        end = ends[warp_id];
 
 
         while(true){
