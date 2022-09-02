@@ -77,7 +77,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // for(unsigned int i = warp_id; i<bufTail ; i = warp_id + base){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
-        // __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
+        __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
 
         if(base == bufTail) break;
 
@@ -90,7 +90,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             if(bufTail < base )
                 base = bufTail;
         }
-        __syncthreads();
+        // __syncthreads();
         
         if(i >= bufTail) continue; // this warp won't have to do anything     
         
