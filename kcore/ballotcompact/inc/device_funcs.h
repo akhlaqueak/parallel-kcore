@@ -9,7 +9,8 @@
 #include "stdio.h"
 
 __device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
-    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level);
+    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level,
+    unsigned int*);
 
 __device__ void syncBlocks(unsigned int* blockCounter);
 

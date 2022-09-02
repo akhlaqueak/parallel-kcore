@@ -21,7 +21,7 @@ __device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addre
 
         compactBlock(predicate, addresses, temp, shBuffer, glBuffer, bufTail);        
         if(v==V-1){
-            counter = 1;
+            *counter = 1;
             __threadfence();
         }
         __syncthreads();
