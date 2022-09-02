@@ -39,7 +39,7 @@ def verify(datasets):
             print(" Failed!", end=" ")
             print("The difference is: ", flush=True, end=" ")
             diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
-            print (len(diff), " items")
+            print (len(diff)/2, " items")
 
 def parseResult(output):
     # One of the line in output has this format
