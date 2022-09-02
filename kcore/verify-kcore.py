@@ -22,7 +22,7 @@ def verify(arg):
         print("Test Failed!")
         print("The difference is: ")
         diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
-        print (diff)
+        print (len(diff), " items")
 
 if __name__ == "__main__":
     verify(sys.argv)
