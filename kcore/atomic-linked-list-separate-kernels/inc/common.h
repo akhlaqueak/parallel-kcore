@@ -50,5 +50,5 @@ typedef struct Node {
     Node* prev;
 } Node;
 
-__device__ unsigned int total;
+
 #endif //CUTS_COMMON_H
