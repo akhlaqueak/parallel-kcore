@@ -13,8 +13,7 @@ __global__ void initialScan(G_pointers d_p, unsigned int *global_count, int leve
     Node** head = heads + blockIdx.x;
     unsigned int* bufTail = bufTails + blockIdx.x;
 
-    if(level==1)
-        printf("%d ", bufTail[0]);
+
 
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
@@ -63,7 +62,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         base = 0;
         lock = 0;
     }
-
+    if(level==1)
+        printf("%d ", bufTail);
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
 
     // __syncthreads();
