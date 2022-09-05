@@ -13,6 +13,9 @@ __global__ void initialScan(G_pointers d_p, unsigned int *global_count, int leve
     Node** head = heads + blockIdx.x;
     unsigned int* bufTail = bufTails + blockIdx.x;
 
+    if(level==1)
+        printf("%d ", bufTail[0]);
+
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
         unsigned int v = base + global_threadIdx; 
@@ -44,9 +47,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ Node** head;
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
-    __shared__ unsigned int predicate[BLK_DIM];
-    __shared__ unsigned int temp[BLK_DIM];
-    __shared__ unsigned int addresses[BLK_DIM];
+    // __shared__ unsigned int predicate[BLK_DIM];
+    // __shared__ unsigned int temp[BLK_DIM];
+    // __shared__ unsigned int addresses[BLK_DIM];
     __shared__ volatile unsigned int lock;
 
     unsigned int warp_id = THID / 32;
@@ -94,12 +97,14 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 base = bufTail;
         }
         __syncthreads();
+
         if(i >= bufTail) continue; // this warp won't have to do anything 
 
         
         unsigned int v = readFromBuffer(head[0], i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
+
         // for(int j = start + lane_id; j<end ; j+=32){
         // the for loop may leave some of the threads inactive in its last iteration
         // following while loop will keep all threads active until the continue condition
