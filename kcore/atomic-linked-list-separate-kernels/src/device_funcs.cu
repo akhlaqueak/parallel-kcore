@@ -7,8 +7,12 @@
 
 
 
-__global__ void initialScan(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned int* bufTail, Node** tails, Node** heads){
+__global__ void initialScan(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned int* bufTails, Node** tails, Node** heads){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
+    Node** tail = tails + blockIdx.x;
+    Node** head = heads + blockIdx.x;
+    unsigned int* bufTail = bufTails + blockIdx.x;
+
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
         unsigned int v = base + global_threadIdx; 
@@ -25,7 +29,7 @@ __global__ void initialScan(G_pointers d_p, unsigned int *global_count, int leve
 
         if(v >= V) continue;
 
-        if(degrees[v] == level){
+        if(d_p.degrees[v] == level){
             unsigned int loc = atomicAdd(bufTail, 1);
             writeToBuffer(tail[0], loc, v);
         }
@@ -36,8 +40,8 @@ __global__ void initialScan(G_pointers d_p, unsigned int *global_count, int leve
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned int* bufTails, Node** tails, Node** heads){
    
     
-    __shared__ Node* tail;
-    __shared__ Node* head;
+    __shared__ Node** tail;
+    __shared__ Node** head;
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
     __shared__ unsigned int predicate[BLK_DIM];
@@ -50,8 +54,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int i;
 
     if(THID==0){
-        tail = tails[blockIdx.x];
-        head = heads[blockIdx.x];
+        tail = tails + blockIdx.x;
+        head = heads + blockIdx.x;
         bufTail = bufTails[blockIdx.x];
         base = 0;
         lock = 0;
@@ -127,7 +131,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                     // temp[THID] = u;
                     // predicate[THID] = 1;
                     unsigned int loc = getWriteLoc(&bufTail);
-                    writeToBuffer(shBuffer, &glBuffer, loc, u);
+                    writeToBuffer(tail[0], loc, v);
+
                 }
 
                 if(a <= level){
