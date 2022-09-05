@@ -15,7 +15,7 @@ datasets = ["Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
 
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
-VERIFY = True
+VERIFY = False
 VERBOSE = False
 
 def verify(datasets):
