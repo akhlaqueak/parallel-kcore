@@ -61,7 +61,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         bufTail = bufTails[blockIdx.x];
         base = 0;
         lock = 0;
-        total++;
     }
 
     // if(level == 1 && THID == 0) printf("%d ", bufTail);
