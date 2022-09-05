@@ -42,9 +42,14 @@ void find_kcore(string data_file,bool write_to_disk){
     Node** heads;
     Node** tails;
     cudaMallocManaged(&global_count,sizeof(unsigned int));
-    cudaMallocManaged(&bufTails,sizeof(unsigned int)*BLK_NUMS);
-    cudaMallocManaged(&heads,sizeof(Node*)*BLK_NUMS);
-    cudaMallocManaged(&tails,sizeof(Node*)*BLK_NUMS);
+
+    chkerr(cudaMalloc(&heads, BLK_NUMS*sizeof(Node*)));
+    chkerr(cudaMalloc(&tails, BLK_NUMS*sizeof(Node*)));
+    chkerr(cudaMalloc(&bufTails, BLK_NUMS*sizeof(int)));
+
+    // cudaMallocManaged(&bufTails,sizeof(unsigned int)*BLK_NUMS);
+    // cudaMallocManaged(&heads,sizeof(Node*)*BLK_NUMS);
+    // cudaMallocManaged(&tails,sizeof(Node*)*BLK_NUMS);
 
 
     cudaMemset(global_count,0,sizeof(unsigned int));
@@ -69,11 +74,13 @@ void find_kcore(string data_file,bool write_to_disk){
 	cout<<"Entering in while"<<endl;
 	while(global_count[0] < data_graph.V ){
         for(int i=0;i<BLK_NUMS;i++){
-            heads[i] = NULL;
-            tails[i] = NULL;
-            bufTails[i] = 0;
+            cudaMemset(heads+i, NULL, sizeof(Node*));
+            cudaMemset(tails+i, NULL, sizeof(Node*));
+            cudaMemset(bufTails+i, 0, sizeof(unsigned int));
+            // heads[i] = NULL;
+            // tails[i] = NULL;
+            // bufTails[i] = 0;
         }
-        chkerr(cudaDeviceSynchronize());
 
         initialScan<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, bufTails, tails, heads);
         
