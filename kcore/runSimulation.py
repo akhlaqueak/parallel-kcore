@@ -7,7 +7,7 @@ import networkx as nx
 from subprocess import PIPE
 folders = ["atomic", "fastcompact", "fastcompact-warponly", "ballotcompact", \
         "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels", "cpu", 
-        "atomic-linked-list-separate-kernels"]
+        "atomic-linked-list-separate-kernels", "compact-linked-list-separate-kernels"]
 
 datasets = ["Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
     "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
