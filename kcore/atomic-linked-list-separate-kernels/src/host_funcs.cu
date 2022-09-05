@@ -48,6 +48,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
 
     cudaMemset(global_count,0,sizeof(unsigned int));
+    cudaMemset(total,0,sizeof(unsigned int));
 
 
 
@@ -90,7 +91,9 @@ void find_kcore(string data_file,bool write_to_disk){
 
     cudaEventRecord(event_stop);
     cudaEventSynchronize(event_stop);
-
+    unsigned int ltotal;
+    chkerr(cudaMemcpy(ltotal,total,sizeof(unsigned int),cudaMemcpyDeviceToHost));    
+    cout<<ltotal;
 
     float time_milli_sec = 0;
     cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
