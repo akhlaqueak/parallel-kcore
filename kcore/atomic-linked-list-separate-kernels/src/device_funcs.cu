@@ -22,7 +22,7 @@ __global__ void initialScan(G_pointers d_p, unsigned int *global_count, int leve
         // only the last thread in warp is responsible to alloate memory
         if(THID == BLK_DIM - 1){  
 
-            if(allocationRequired(tail[0], bufTail+BLK_DIM)) // adding BLK_DIM to bufTail so that node is created when possibly all threads need to add into it
+            if(allocationRequired(tail[0], bufTail[0]+BLK_DIM)) // adding BLK_DIM to bufTail so that node is created when possibly all threads need to add into it
                 allocateMemory(tail, head);
         }
         __syncthreads();
@@ -86,8 +86,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         
         if(THID == 0){
             assert(head!=NULL);
-            if(base >= head->limit){
-                advanceNode(&head);
+            if(base >= head[0]->limit){
+                advanceNode(head);
             }
             base += WARPS_EACH_BLK;
             if(bufTail < base )
@@ -97,7 +97,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         if(i >= bufTail) continue; // this warp won't have to do anything 
 
         
-        unsigned int v = readFromBuffer(head, i);
+        unsigned int v = readFromBuffer(head[0], i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         // for(int j = start + lane_id; j<end ; j+=32){
@@ -114,9 +114,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             // look for allocating the node:            
             if(THID == WARP_SIZE - 1){  
                 if(allocationRequired(tail[0], bufTail+WARP_SIZE)){ // adding BLK_DIM to bufTail so that node is created when possibly all threads need to add into it
-                    atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
+                    atomicCAS((unsigned int*)&lock, 2, 0); // resets the lock in case a memory was allocated before
                     __threadfence_block();
-                    allocateMemoryMutex(tail, head, lock);
+                    allocateMemoryMutex(tail, head, &lock);
                 }
             }
             __syncwarp();
@@ -130,7 +130,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 if(a == level+1){
                     // temp[THID] = u;
                     // predicate[THID] = 1;
-                    unsigned int loc = getWriteLoc(&bufTail);
+                    unsigned int loc = atomicAdd(&bufTail, 1);
                     writeToBuffer(tail[0], loc, v);
 
                 }
