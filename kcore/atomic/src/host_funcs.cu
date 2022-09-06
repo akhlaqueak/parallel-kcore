@@ -28,7 +28,7 @@ void find_kcore(string data_file,bool write_to_disk){
 
     unsigned int level = 0;
     unsigned int count = 0;
-    unsigned int *global_count  = NULL;
+    unsigned int* global_count  = NULL;
     unsigned int* blockCounter  = NULL;
     unsigned int* glBuffers     = NULL;
 
