@@ -79,7 +79,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
 
-        if(base == bufTail) break; // all the threads will evaluate to true at same iteration
+        if(base >= bufTail) break; // all the threads will evaluate to true at same iteration
         
         i = base + warp_id;
 
