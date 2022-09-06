@@ -10,13 +10,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         
         unsigned int v = base + global_threadIdx; 
 
-        // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
-
-        // only the last thread in warp is responsible to alloate memory
-
-        __syncthreads();
-
-        if(v >= V) continue;
+        if(v >= V) break;
 
         if(degrees[v] == level){
             unsigned int loc = atomicAdd(bufTail, 1);
@@ -61,6 +55,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
+
+    unsigned int regTail, regBase;
     
     __syncthreads();
 
@@ -68,8 +64,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     syncBlocks(blockCounter);
 
-    if(level ==  1 && THID == 0)
-        printf("%d ", bufTail);
+    // if(level ==  1 && THID == 0)
+    //     printf("%d ", bufTail);
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     
@@ -78,19 +74,23 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
+        regBase = base;
+        regTail = bufTail;
+        __syncthreads();
 
-        if(base >= bufTail) break; // all the threads will evaluate to true at same iteration
+
+        if(regBase == regTail) break; // all the threads will evaluate to true at same iteration
         
-        i = base + warp_id;
-
-        __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
+        i = regBase + warp_id;
 
         if(THID == 0){
+            // update base for next iteration
             base += WARPS_EACH_BLK;
-            if(bufTail < base )
-                base = bufTail+1;
+            if(regTail < base )
+                base = regTail;
         }
-        __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
+        // __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
+
         
         if(i >= bufTail) continue; // this warp won't have to do anything     
         
