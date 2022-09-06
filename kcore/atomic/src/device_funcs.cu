@@ -29,7 +29,7 @@ __device__ void syncBlocks(unsigned int* blockCounter){
         __threadfence();
         
         while(ldg(blockCounter) < BLK_NUMS){
-            printf(".");
+            // printf(".");
             // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
         };// busy wait until all blocks increment
     }   
