@@ -30,7 +30,7 @@ __device__ void syncBlocks(unsigned int* blockCounter){
         
         while(ldg(blockCounter) < BLK_NUMS){
             // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
-            // printf("%d ", blockCounter[0]);
+            printf("%d ", blockCounter[0]);
         };// busy wait until all blocks increment
     }   
     __syncthreads();
@@ -70,7 +70,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // warps should process all the nodes added during the execution of loop
     
     
-    // for(unsigned int i = warp_id; i<bufTail ; i = warp_id + base){
+    // for(unsigned int i = warp_id; i<bufTail ; i +=warps_each_block ){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
