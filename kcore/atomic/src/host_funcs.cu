@@ -58,7 +58,7 @@ void find_kcore(string data_file,bool write_to_disk){
         cudaMemset(blockCounter, 0, sizeof(unsigned int));        
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, blockCounter, glBuffers);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
-        // chkerr(cudaDeviceSynchronize());
+        chkerr(cudaDeviceSynchronize());
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
         
         cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
