@@ -53,10 +53,10 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int lock;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int i;
+    unsigned int i = 0;
     if(THID==0){
         bufTail = 0;
-        base = 0;
+        // base = 0;
         lock = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
@@ -74,13 +74,16 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     // warps should process all the nodes added during the execution of loop
     
     
-    // for(unsigned int i = warp_id; i<bufTail ; i = warp_id + base){
+    // for(unsigned int i = warp_id; i<bufTail ; i = warp_id + numofwarps){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
-
+        // int loctail = bufTail;
+        //todo locbase = base
+        //todo syncthreads move here
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
         i = base + warp_id;
+        
         __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
 
         if(THID == 0){
@@ -88,6 +91,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             if(bufTail < base )
                 base = bufTail;
         }
+        __syncthreads();
         
         if(i >= bufTail) continue; // this warp won't have to do anything     
         
