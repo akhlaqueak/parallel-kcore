@@ -64,8 +64,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     syncBlocks(blockCounter);
 
-    // if(level ==  1 && THID == 0)
-    //     printf("%d ", bufTail);
+    if(level ==  1 && THID == 0)
+        printf("%d ", bufTail);
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     
@@ -89,7 +89,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             if(regTail < base )
                 base = regTail;
         }
-        __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
+        // __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
 
         
         if(i >= regTail) continue; // this warp won't have to do anything     
