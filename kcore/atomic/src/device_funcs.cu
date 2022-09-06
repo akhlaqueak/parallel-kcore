@@ -10,7 +10,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
         
         unsigned int v = base + global_threadIdx; 
 
-        if(v >= V) break;
+        if(v >= V) continue;
 
         if(degrees[v] == level){
             unsigned int loc = atomicAdd(bufTail, 1);
