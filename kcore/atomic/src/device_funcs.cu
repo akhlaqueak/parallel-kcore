@@ -91,8 +91,8 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
             if(bufTail < base )
                 base = bufTail;
         }
-        __syncthreads();
-        
+        // __syncthreads();
+
         if(i >= bufTail) continue; // this warp won't have to do anything     
         
         
