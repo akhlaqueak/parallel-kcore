@@ -19,7 +19,7 @@ datasets = ["Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
 VERIFY = True
-VERBOSE = False
+VERBOSE = True
 NITERATIONS = 10
 
 def verify(datasets):
