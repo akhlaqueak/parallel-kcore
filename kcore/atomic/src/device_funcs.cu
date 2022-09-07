@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-__device__ uint64_t ct;
+__device__ unsigned long long int ct;
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
