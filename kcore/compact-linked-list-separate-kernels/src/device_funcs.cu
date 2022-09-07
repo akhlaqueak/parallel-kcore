@@ -22,7 +22,7 @@
 __global__ void initialScan(G_pointers d_p, unsigned int *global_count, int level, int V, unsigned int* bufTails, Node** tails, Node** heads){
     
     compactBlock(d_p.degrees, V, tails+blockIdx.x , heads+blockIdx.x, bufTails+blockIdx.x, level);
-    if(level == 1 && THID==0) printf("%d ", tails[blockIdx.x]);
+    if(level == 1 && THID==0) printf("%d ", bufTails[blockIdx.x]);
 }
 
 
