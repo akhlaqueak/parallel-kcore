@@ -30,7 +30,7 @@ __device__ void syncBlocks(unsigned int* blockCounter){
     if (THID == 0) {
         while ((atomicOr(&ct, 1ULL << blockIdx.x)) != SollMask) { 
             // printf("%u ", blockIdx.x); 
-            // printf("%llX ", SollMask);
+            printf("%llX ", SollMask);
         }
     }
 
