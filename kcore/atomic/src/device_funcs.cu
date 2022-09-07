@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-__device__ unsigned int ct = 0;
+__device__ unsigned long int ct;
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
@@ -26,6 +26,12 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 __device__ void syncBlocks(unsigned int* blockCounter){
 
+    const auto SollMask = (1 << gridDim.x) - 1;
+    if (THID == 0) {
+        while ((atomicOr(&ct, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
+    }
+
+
     // if (THID==0)
     // {
     //     atomicAdd(blockCounter, 1);
@@ -42,7 +48,7 @@ __device__ void syncBlocks(unsigned int* blockCounter){
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
                     unsigned int* blockCounter, unsigned int* glBuffers){
 
-
+    atomicAnd(&ct, 0);
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
@@ -65,12 +71,9 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
 
-    // syncBlocks(blockCounter);
-    // syncBlocks(blockCounter);
-    while(ldg(&ct) < (level+1) * BLK_NUMS){
+    syncBlocks(blockCounter);
 
-    }
-    
+
     if(level ==  1 && THID == 0)
         printf("%d ", bufTail);
     // bufTail is being incrmented within the loop, 
