@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-__device__ unsigned long long int ct;
+__device__ unsigned long long int ct = 0;
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
@@ -51,7 +51,7 @@ __device__ void syncBlocks(unsigned int* blockCounter){
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
                     unsigned int* blockCounter, unsigned int* glBuffers){
 
-    if(blockIdx.x == 0) atomicAnd(&ct, 0);
+    // atomicAnd(&ct, 0);
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
@@ -141,5 +141,5 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
         // if(glBuffer!=NULL) free(glBuffer);
     }
-
+    atomicAnd(&ct, 0);
 }
