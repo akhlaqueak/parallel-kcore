@@ -107,7 +107,7 @@ def parseFolder(args):
     else:
         print("Please provide valid folder: ", [(x, y) for x, y in enumerate(folders)])
         exit(0)
-    return folder
+    return folder[0]
 
 def runSimulation(datasets, folder):
     verResult = {}
