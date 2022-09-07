@@ -130,3 +130,10 @@ if __name__ == "__main__":
             print(ds, time)
         print("### --------------- ###")
         os.chdir("../")
+
+    
+# max=10
+# for i in `seq 2 $max`
+# do
+#     python runSimulation.py all 6
+# done
