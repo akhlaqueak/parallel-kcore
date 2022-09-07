@@ -51,7 +51,7 @@ __device__ void syncBlocks(unsigned int* blockCounter){
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
                     unsigned int* blockCounter, unsigned int* glBuffers){
 
-    atomicAnd(&ct, 0);
+    if(blockIdx.x == 0) atomicAnd(&ct, 0);
     __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
