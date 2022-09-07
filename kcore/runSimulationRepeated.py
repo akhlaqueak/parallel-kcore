@@ -6,6 +6,8 @@ import json
 from unittest import result
 import networkx as nx
 from subprocess import PIPE
+import statistics as stat
+
 folders = ["atomic", "fastcompact", "fastcompact-warponly", "ballotcompact", \
         "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels", "cpu", 
         "atomic-linked-list-separate-kernels", "compact-linked-list-separate-kernels"]
@@ -133,11 +135,13 @@ def repeatedSimulations(datasets, folder):
         print("Running Simulation No. ", i+1)
         exec, ver = runSimulation(datasets, folder)
         for ds in datasets:
-            execTime[ds].append(exec[ds])
+            execTime[ds].append(int(exec[ds]))
             verResult[ds].append(ver[ds])
     for ds in datasets:
         print(ds, execTime[ds])
         print(ds, verResult[ds])
+        print(ds, "Execution Time Average : ", stat.mean(execTime[ds]))
+        print(ds, "Difference Average : ", stat.mean(verResult[ds]))
         
 
 if __name__ == "__main__":
