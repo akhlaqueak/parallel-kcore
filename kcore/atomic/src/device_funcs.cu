@@ -26,7 +26,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 __device__ void syncBlocks(unsigned int* blockCounter){
 
-    const unsigned long long int SollMask = (0x00ffffffffffffff);
+    const unsigned long long int SollMask = 1ULL << BLK_NUMS;
     if (THID == 0) {
         while ((atomicOr(&ct, 1ULL << blockIdx.x)) != SollMask) { 
             // printf("%u ", blockIdx.x); 
