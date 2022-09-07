@@ -66,6 +66,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
         if(base == bufTail) break;
         i = base + warp_id;
+        __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
         
         if(THID == 0){
             assert(head!=NULL);

@@ -101,6 +101,11 @@ def parseFolder(args):
         print("Please provide valid folder: ", [(x, y) for x, y in enumerate(folders)])
         exit(0)
     return folder
+
+# def repeatedSimulation(folders):
+#     for folder in folders:
+        
+
 if __name__ == "__main__":
     sp.run(["git", "pull"])
     if len(sys.argv) == 1:
@@ -111,6 +116,8 @@ if __name__ == "__main__":
         exit(0)
     datasets = parseDataSet(sys.argv)
     folders = parseFolder(sys.argv)
+
+
     for folder in folders:
         os.chdir(folder)
         sp.run(["make"])
