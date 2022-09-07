@@ -29,8 +29,8 @@ __device__ void syncBlocks(unsigned int* blockCounter){
     const unsigned long long int SollMask = (0x00ffffffffffffff);
     if (THID == 0) {
         while ((atomicOr(&ct, 1ULL << blockIdx.x)) != SollMask) { 
-            printf("%u ", blockIdx.x); 
-            printf("%llX ", SollMask);
+            // printf("%u ", blockIdx.x); 
+            // printf("%llX ", SollMask);
         }
     }
 
