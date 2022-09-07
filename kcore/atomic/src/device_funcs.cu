@@ -26,7 +26,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 __device__ void syncBlocks(unsigned int* blockCounter){
 
-    const auto SollMask = (1 << gridDim.x) - 1;
+    const unsigned long long int SollMask = (1 << BLK_NUM) - 1;
     if (THID == 0) {
         while ((atomicOr(&ct, 1ULL << blockIdx.x)) != SollMask) { /*do nothing*/ }
     }
