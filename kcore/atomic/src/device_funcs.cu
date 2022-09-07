@@ -24,7 +24,7 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 
 
-__device__ void syncBlocks(unsigned int* blockCounter){
+__device__ void syncBlocks(unsigned long long int* blockCounter){
 
     const unsigned long long int SollMask = (1ULL << BLK_NUMS) - 1;
     if (THID == 0) {
@@ -49,7 +49,7 @@ __device__ void syncBlocks(unsigned int* blockCounter){
 }
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
-                    unsigned int* blockCounter, unsigned int* glBuffers){
+                    unsigned long long int* blockCounter, unsigned int* glBuffers){
 
     // atomicAnd(&ct, 0);
     __shared__ unsigned int shBuffer[MAX_NV];
@@ -141,5 +141,5 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
         // if(glBuffer!=NULL) free(glBuffer);
     }
-    atomicAnd(&ct, 0);
+    // atomicAnd(&ct, 0);
 }
