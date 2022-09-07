@@ -151,7 +151,7 @@ if __name__ == "__main__":
     datasets = parseDataSet(sys.argv)
     folder = parseFolder(sys.argv)
 
-    runSimulation(datasets, folder)
+    repeatedSimulations(datasets, folder)
 
 
 
