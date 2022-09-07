@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 
+__device__ usigned int ct = 0;
 
 __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail, unsigned int level){
     unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
@@ -17,23 +18,27 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
             writeToBuffer(shBuffer, glBuffer, loc, v);
         }
     }
+    if(THID==0)
+        atomicAdd(&ct, 1);
 }
 
 
 
 __device__ void syncBlocks(unsigned int* blockCounter){
-    
-    if (THID==0)
-    {
-        atomicAdd(blockCounter, 1);
-        __threadfence();
+    while(ldg(&ct) < (level+1) * BLK_NUMS){
         
-        while(ldg(blockCounter) < BLK_NUMS){
-            // printf(".");
-            // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
-        };// busy wait until all blocks increment
-    }   
-    __syncthreads();
+    }
+    // if (THID==0)
+    // {
+    //     atomicAdd(blockCounter, 1);
+    //     __threadfence();
+        
+    //     while(ldg(blockCounter) < BLK_NUMS){
+    //         // printf(".");
+    //         // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
+    //     };// busy wait until all blocks increment
+    // }   
+    // __syncthreads();
 }
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
