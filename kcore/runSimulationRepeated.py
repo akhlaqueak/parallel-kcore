@@ -19,7 +19,7 @@ datasets = ["Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
 VERIFY = True
-VERBOSE = True
+VERBOSE = False
 NITERATIONS = 10
 
 def verify(datasets):
@@ -138,10 +138,15 @@ def repeatedSimulations(datasets, folder):
             execTime[ds].append(int(exec[ds]))
             verResult[ds].append(ver[ds])
     for ds in datasets:
-        print(ds, execTime[ds])
-        print(ds, verResult[ds])
-        print(ds, "Execution Time Average : ", stat.mean(execTime[ds]))
-        print(ds, "Difference Average : ", stat.mean(verResult[ds]))
+        print(ds, end=" ")
+        for t in execTime[ds]:
+            print(t, end=" ")
+        print(stat.mean(execTime[ds]))
+    for ds in datasets:
+        print(ds, end=" ")
+        for t in verResult[ds]:
+            print(t, end=" ")
+        print(stat.mean(execTime[ds]))
         
 
 if __name__ == "__main__":
@@ -157,11 +162,3 @@ if __name__ == "__main__":
 
     repeatedSimulations(datasets, folder)
 
-
-
-    
-# max=10
-# for i in `seq 1 $max`
-# do
-#     python runSimulation.py all 6
-# done
