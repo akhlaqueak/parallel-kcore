@@ -29,23 +29,9 @@ __device__ void syncBlocks(unsigned long long int* blockCounter){
     const unsigned long long int SollMask = (1ULL << BLK_NUMS) - 1;
     if (THID == 0) {
         while ((atomicOr(blockCounter, 1ULL << blockIdx.x)) != SollMask) { 
-            // printf("%u ", blockIdx.x); 
-            // printf("%llx ", SollMask);
+            // Busy wait... 
         }
     }
-
-
-    // if (THID==0)
-    // {
-    //     atomicAdd(blockCounter, 1);
-    //     __threadfence();
-        
-    //     while(ldg(blockCounter) < BLK_NUMS){
-    //         // printf(".");
-    //         // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
-    //     };// busy wait until all blocks increment
-    // }   
-    // __syncthreads();
 }
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
@@ -77,8 +63,6 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     syncBlocks(blockCounter);
 
 
-    if(level ==  1 && THID == 0)
-        printf("%d ", bufTail);
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     
