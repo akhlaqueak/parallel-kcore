@@ -68,7 +68,6 @@ void find_kcore(string data_file,bool write_to_disk){
 	get_results_from_gpu(data_graph, data_pointers);
 
 
-    cudaFree(glBuffers);
 
 
 
@@ -76,6 +75,8 @@ void find_kcore(string data_file,bool write_to_disk){
     cout << "Elapsed Time: "
     << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     
+    cudaFree(glBuffers);
+    free_graph_gpu_memory(data_pointers);
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
         write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file);
