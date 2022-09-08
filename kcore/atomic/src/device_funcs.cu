@@ -27,11 +27,15 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 __device__ void syncBlocks(unsigned long long int* blockCounter){
 
     const unsigned long long int SollMask = (1ULL << BLK_NUMS) - 1;
-    if (THID == 0) {
+    if (THID == 0)
+     {
         while ((atomicOr(blockCounter, 1ULL << blockIdx.x)) != SollMask) { 
             // Busy wait... 
         }
     }
+    __syncthreads();
+
+    __threadfence();
 }
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
@@ -45,6 +49,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     __shared__ unsigned int lock;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
+    unsigned int regTail, regBase;
     unsigned int i;
     if(THID==0){
         bufTail = 0;
@@ -54,13 +59,13 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         assert(glBuffer!=NULL);
     }
 
-    unsigned int regTail, regBase;
     
     __syncthreads();
 
     selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
 
     syncBlocks(blockCounter);
+
 
 
     // bufTail is being incrmented within the loop, 
