@@ -57,9 +57,8 @@ __global__ void PKC(G_pointers d_p, int level, int V,
     
     __syncthreads();
 
-    // selectNodesAtLevel(d_p.degrees, V, shBuffer, glBuffer, &bufTail, level);
-
-    // syncBlocks(blockCounter);
+    if(THID == 0 && level == 1)
+        print("%d ", bufTail);
 
 
 
