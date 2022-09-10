@@ -64,7 +64,7 @@ void find_kcore(string data_file,bool write_to_disk){
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
         
         cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
-        level += 1;
+        level++;
     }
 
 	get_results_from_gpu(data_graph, data_pointers);

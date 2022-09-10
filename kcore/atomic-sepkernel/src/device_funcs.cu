@@ -44,7 +44,7 @@ __global__ void PKC(G_pointers d_p, int level, int V,
     __shared__ unsigned int lock;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int regTail, regBase;
+    unsigned int regTail;
     unsigned int i;
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
@@ -71,10 +71,9 @@ __global__ void PKC(G_pointers d_p, int level, int V,
         __syncthreads(); //syncthreads must be executed by all the threads
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
         i = base + warp_id;
-        regBase = base;
         regTail = bufTail;
         __syncthreads();
-        
+
         if(i >= regTail) continue; // this warp won't have to do anything            
 
         if(THID == 0){
@@ -120,7 +119,5 @@ __global__ void PKC(G_pointers d_p, int level, int V,
 
     if(THID == 0 ){
         if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
-        // if(glBuffer!=NULL) free(glBuffer);
     }
-    // atomicAnd(&ct, 0);
 }
