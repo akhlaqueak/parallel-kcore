@@ -58,7 +58,7 @@ __global__ void PKC(G_pointers d_p, int level, int V,
     __syncthreads();
 
     if(THID == 0 && level == 1)
-        print("%d ", bufTail);
+        printf("%d ", bufTail);
 
 
 
