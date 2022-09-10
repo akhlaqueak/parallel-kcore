@@ -26,16 +26,23 @@ __device__ void selectNodesAtLevel(unsigned int *degrees, unsigned int V, unsign
 
 __device__ void syncBlocks(unsigned long long int* blockCounter){
 
-    const unsigned long long int SollMask = (1ULL << BLK_NUMS) - 1;
-    if (THID == 0)
-     {
-        while ((atomicOr(blockCounter, 1ULL << blockIdx.x)) != SollMask) { 
-            // Busy wait... 
-        }
-    }
+    // const unsigned long long int fullMask = (1ULL << BLK_NUMS) - 1;
+    // if (THID == 0)
+    //  {
+    //     while ((atomicOr(blockCounter, 1ULL << blockIdx.x)) != fullMask) { 
+    //         // Busy wait... 
+    //     }
+    // }
+    // __syncthreads();
+
+    if (THID==0){
+            atomicAdd(blockCounter, 1);
+            __threadfence();
+            while(blockCounter[0]<BLK_NUMS){};
+            // busy wait until all blocks increment
+        }  
     __syncthreads();
 
-    __threadfence();
 }
 
 __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
