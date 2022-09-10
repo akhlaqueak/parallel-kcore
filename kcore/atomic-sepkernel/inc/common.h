@@ -1,7 +1,7 @@
 
 #ifndef CUTS_COMMON_H
 #define CUTS_COMMON_H
-#define BLK_NUMS 2
+#define BLK_NUMS 56
 #define BLK_DIM 1024
 #define WARPS_EACH_BLK (BLK_DIM/32)
 #define WORK_UNITS (BLK_NUMS*WARPS_EACH_BLK)
