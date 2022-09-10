@@ -36,7 +36,8 @@ __device__ void syncBlocks(unsigned long long int* blockCounter){
     // __syncthreads();
 
     if (THID==0){
-            atomicAdd((unsigned int*) blockCounter, 1);
+            atomicAdd(blockCounter, 1);
+            printf("%d ", blockIdx.x);
             // __threadfence();
             while(ldg((unsigned int*)blockCounter)<BLK_NUMS){};
             // busy wait until all blocks increment
