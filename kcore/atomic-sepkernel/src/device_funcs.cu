@@ -12,7 +12,6 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
     
     if(THID == 0){
         bufTail = bufTails + blockIdx.x;
-        printf("%d ", *bufTail);
         glBuffer = glBuffers + blockIdx.x;
     }
     __syncthreads();
@@ -43,8 +42,8 @@ __global__ void PKC(G_pointers d_p, int level, int V,
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
     __shared__ unsigned int lock;
-    unsigned int warp_id = THID >> 5;
-    unsigned int lane_id = THID & 31;
+    unsigned int warp_id = THID / 32;
+    unsigned int lane_id = THID % 32;
     unsigned int regTail, regBase;
     unsigned int i;
     if(THID==0){
@@ -83,10 +82,7 @@ __global__ void PKC(G_pointers d_p, int level, int V,
 
         if(regBase == regTail) break; // all the threads will evaluate to true at same iteration
         i = regBase + warp_id;
-        if(i >= regTail) continue; // this warp won't have to do anything     
-        
-        
-        
+        if(i >= regTail) continue; // this warp won't have to do anything            
 
         unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
