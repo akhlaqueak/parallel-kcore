@@ -12,6 +12,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
     
     if(THID == 0){
         bufTail = bufTails + blockIdx.x;
+        printf("%d ", bufTail);
         glBuffer = glBuffers + blockIdx.x;
     }
     __syncthreads();
@@ -85,11 +86,11 @@ __global__ void PKC(G_pointers d_p, int level, int V,
         if(i >= regTail) continue; // this warp won't have to do anything     
         
         
-        unsigned int v, start, end;
+        
 
-        v = readFromBuffer(shBuffer, glBuffer, i);
-        start = d_p.neighbors_offset[v];
-        end = d_p.neighbors_offset[v+1];
+        unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
+        unsigned int start = d_p.neighbors_offset[v];
+        unsigned int end = d_p.neighbors_offset[v+1];
 
 
         while(true){
