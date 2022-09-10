@@ -12,7 +12,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
     
     if(THID == 0){
         bufTail = bufTails + blockIdx.x;
-        printf("%d ", bufTail);
+        printf("%d ", *bufTail);
         glBuffer = glBuffers + blockIdx.x;
     }
     __syncthreads();
