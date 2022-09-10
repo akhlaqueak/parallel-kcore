@@ -69,9 +69,13 @@ __global__ void PKC(G_pointers d_p, int level, int V,
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
+        if(base == bufTail) break; // all the threads will evaluate to true at same iteration
+        i = base + warp_id;
         regBase = base;
         regTail = bufTail;
         __syncthreads();
+        
+        if(i >= regTail) continue; // this warp won't have to do anything            
 
         if(THID == 0){
             // update base for next iteration
@@ -80,9 +84,6 @@ __global__ void PKC(G_pointers d_p, int level, int V,
                 base = regTail;
         }
 
-        if(regBase == regTail) break; // all the threads will evaluate to true at same iteration
-        i = regBase + warp_id;
-        if(i >= regTail) continue; // this warp won't have to do anything            
 
         unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
