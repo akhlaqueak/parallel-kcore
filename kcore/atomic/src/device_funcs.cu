@@ -37,7 +37,7 @@ __device__ void syncBlocks(unsigned long long int* blockCounter){
 
     if (THID==0){
             atomicAdd((unsigned int*) blockCounter, 1);
-            __threadfence();
+            // __threadfence();
             while(ldg((unsigned int*)blockCounter)<BLK_NUMS){};
             // busy wait until all blocks increment
     }  
