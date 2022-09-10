@@ -1,0 +1,25 @@
+#!/bin/bash
+#SBATCH --share
+#SBATCH --partition=medium
+#
+# Name your job to make it easier for you to track
+#
+#SBATCH --job-name=generatekcore
+#
+# Set your error and output files
+#
+#SBATCH --error=generatekcore.err
+#SBATCH --output=generatekcore.out
+#SBATCH --ntasks=2
+#
+# Tell the scheduler only need 10 minutes
+#
+#SBATCH --time=24:00:00
+#SBATCH --mem-per-cpu=256000
+#
+# Set your email address and request notification when you job is complete or if it fails
+#
+#SBATCH --mail-type=END
+#SBATCH --mail-user=akhlaque.ak@gmail.com
+module load cuda11.4/toolkit
+python3 runSimulation.py twitter.g 7
