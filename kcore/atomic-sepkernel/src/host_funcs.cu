@@ -33,7 +33,7 @@ void find_kcore(string data_file,bool write_to_disk){
     unsigned int* glBuffers     = NULL;
 
     chkerr(cudaMalloc(&global_count, sizeof(unsigned int)));
-    chkerr(cudaMallocManaged(&bufTails, sizeof(unsigned int)*BLK_NUMS));
+    chkerr(cudaMalloc(&bufTails, sizeof(unsigned int)*BLK_NUMS));
     cudaMemset(global_count, 0, sizeof(unsigned int));
     
     
@@ -55,8 +55,7 @@ void find_kcore(string data_file,bool write_to_disk){
     
 	cout<<"Entering in while"<<endl;
 	while(count < data_graph.V){
-        // cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
-        for(int i=0; i<BLK_NUMS; i++) bufTails[i] = 0;        
+        cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
         // chkerr(cudaDeviceSynchronize());
         selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, data_graph.V, bufTails, glBuffers);
 
