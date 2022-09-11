@@ -49,7 +49,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         bufTail = bufTails[blockIdx.x];
         initTail = bufTail;
         base = 0;
-        lock = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
