@@ -116,7 +116,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             continue; // warp0 doesn't process nodes. 
         }
 
-        if(i >= regTail) continue; 
+        if(i > regTail) continue; 
         // since warp0 is absent, therefore warp with i==regTail will also process
 
         while(true){
