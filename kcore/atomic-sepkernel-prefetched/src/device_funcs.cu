@@ -101,11 +101,11 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             if(lane_id == 0){
                 // update base for next iteration
                 base += npref;
-                npref = min(WARPS_EACH_BLK-1, regTail-base);
             } 
             __syncwarp(); // so that other lanes can see updated base value
             if(lane_id > 0){
                 int j = base + lane_id - 1;
+                npref = min(WARPS_EACH_BLK-1, regTail-base);
                 if(j < regTail){
                     unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, j);
                     starts[lane_id] = d_p.neighbors_offset[v];
