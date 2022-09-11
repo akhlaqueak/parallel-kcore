@@ -90,7 +90,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             start = starts[warp_id];
             end = ends[warp_id];
         }
-        //todo check this condition
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
         i = base + warp_id;
         regTail = bufTail;
@@ -101,11 +100,11 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             if(lane_id == 0){
                 // update base for next iteration
                 base += npref;
+                npref = min(WARPS_EACH_BLK-1, regTail-base);
             } 
             __syncwarp(); // so that other lanes can see updated base value
             if(lane_id > 0){
                 int j = base + lane_id - 1;
-                npref = min(WARPS_EACH_BLK-1, regTail-base);
                 if(j < regTail){
                     unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, j);
                     starts[lane_id] = d_p.neighbors_offset[v];
