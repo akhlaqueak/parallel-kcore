@@ -43,7 +43,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     __shared__ unsigned int initTail;
     __shared__ unsigned int starts[32];
     __shared__ unsigned int ends[32];
-    __shared__ bool prefetched[32];
     __shared__ int npref;
 
     unsigned int warp_id = THID / 32;
@@ -58,10 +57,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
-
-    if(lane_id == 0)
-        prefetched[warp_id] = false;
-
     
     __syncthreads();
 
@@ -97,7 +92,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         }
         //todo check this condition
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
-        i = base + warp_id - 1;
+        i = base + warp_id;
         regTail = bufTail;
         __syncthreads();
 
@@ -120,7 +115,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             continue;
         }
 
-        if(i >= regTail) continue;
+        if(i > regTail) continue;
 
         while(true){
             __syncwarp();
