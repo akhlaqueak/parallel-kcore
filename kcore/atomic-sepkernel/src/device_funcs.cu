@@ -41,6 +41,10 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
     __shared__ unsigned int initTail;
+    __shared__ unsigned int starts[32];
+    __shared__ unsigned int ends[32];
+    __shared__ unsigned int nprefetched;
+
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
@@ -49,6 +53,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         bufTail = bufTails[blockIdx.x];
         initTail = bufTail;
         base = 0;
+        nprefetched = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
@@ -69,24 +74,32 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
-        i = base + warp_id;
+        i = base + warp_id-1;
         regTail = bufTail;
         __syncthreads();
 
-        if(i >= regTail) continue; // this warp won't have to do anything            
 
-        if(THID == 0){
-            // update base for next iteration
-            base += WARPS_EACH_BLK;
-            if(regTail < base )
-                base = regTail;
+        if(warp_id == 0){
+            if(lane_id > 0){
+                unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
+                starts[lane_id] = d_p.neighbors_offset[v];
+                ends[lane_id] = d_p.neighbors_offset[v+1];
+            }
+            if(lane_id == 0){
+                // update base for next iteration
+                base += WARPS_EACH_BLK-1;
+                if(regTail < base )
+                    base = regTail;
+            } 
         }
 
+        __syncthreads();
 
-        unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
-        unsigned int start = d_p.neighbors_offset[v];
-        unsigned int end = d_p.neighbors_offset[v+1];
+        if(i >= regTail || warp_id == 0) continue; // this warp won't have to do anything            
 
+        // rest is executed by warpid>0
+        unsigned int start = starts[warp_id];
+        unsigned int end = ends[warp_id];
 
         while(true){
             __syncwarp();
