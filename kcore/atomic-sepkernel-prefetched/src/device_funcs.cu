@@ -90,6 +90,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             start = starts[warp_id];
             end = ends[warp_id];
         }
+        //todo check this condition
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
         i = base + warp_id;
         regTail = bufTail;
@@ -114,7 +115,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             continue;
         }
 
-        if(i > regTail) continue;
+        if(i >= regTail) continue;
 
         while(true){
             __syncwarp();
