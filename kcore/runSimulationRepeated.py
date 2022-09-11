@@ -8,7 +8,7 @@ import networkx as nx
 from subprocess import PIPE
 import statistics as stat
 
-folders = ["atomic", "atomic-sepkernel", "fastcompact", "fastcompact-warponly", "ballotcompact", \
+folders = ["atomic", "atomic-sepkernel", "atomic-sepkernel-prefetched", "fastcompact", "fastcompact-warponly", "ballotcompact", \
         "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels", "cpu", 
         "atomic-linked-list-separate-kernels", "compact-linked-list-separate-kernels"]
 
