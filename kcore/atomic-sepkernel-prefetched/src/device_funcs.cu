@@ -115,7 +115,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             continue;
         }
 
-        if(i >= regTail) continue;
+        if(i > regTail) continue;
 
         while(true){
             __syncwarp();
