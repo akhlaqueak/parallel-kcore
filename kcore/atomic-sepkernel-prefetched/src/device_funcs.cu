@@ -91,7 +91,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
-        if(warp_id < npref){
+        if(warp_id <= npref){
             start = starts[warp_id];
             end = ends[warp_id];
         }
