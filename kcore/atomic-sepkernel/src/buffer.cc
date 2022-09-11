@@ -29,8 +29,6 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int* glB
     assert(loc < GLBUFFER_SIZE + MAX_NV);
     unsigned int v;
 
-    printf("%u-%u ", loc, initTail);
-
     if(loc < initTail) 
         v = glBuffer[loc];
     else if((loc - initTail) < MAX_NV) 

@@ -56,8 +56,8 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     
     __syncthreads();
 
-    if(THID == 0 && level == 1)
-        printf("%d ", bufTail);
+    // if(THID == 0 && level == 1)
+    //     printf("%d ", bufTail);
 
 
 
