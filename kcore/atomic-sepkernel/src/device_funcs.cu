@@ -8,7 +8,6 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 
     __shared__ unsigned int* glBuffer; 
     __shared__ unsigned int* bufTail; 
-    __shared__ unsigned int* shBuffer;
     
     if(THID == 0){
         bufTail = bufTails + blockIdx.x;
@@ -25,7 +24,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 
         if(degrees[v] == level){
             unsigned int loc = atomicAdd(bufTail, 1);
-            writeToBuffer(shBuffer, glBuffer, loc, v);
+            writeToBuffer(glBuffer, loc, v);
         }
     }
 }
@@ -42,12 +41,13 @@ __global__ void PKC(G_pointers d_p, int level, int V,
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
     __shared__ unsigned int lock;
+    __shared__ unsigned int initTail;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
     unsigned int i;
     if(THID==0){
-        bufTail = bufTails[blockIdx.x];
+        initTail = bufTail = bufTails[blockIdx.x];
         base = 0;
         lock = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
@@ -84,7 +84,7 @@ __global__ void PKC(G_pointers d_p, int level, int V,
         }
 
 
-        unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
+        unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
 
@@ -105,7 +105,7 @@ __global__ void PKC(G_pointers d_p, int level, int V,
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(shBuffer, glBuffer, loc, u);
+                    writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
                 }
 
                 if(a <= level){
