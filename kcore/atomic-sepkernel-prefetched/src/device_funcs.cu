@@ -44,6 +44,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     __shared__ unsigned int starts[32];
     __shared__ unsigned int ends[32];
     __shared__ bool prefetched[32];
+    __shared__ int npref;
 
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
@@ -53,6 +54,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         bufTail = bufTails[blockIdx.x];
         initTail = bufTail;
         base = 0;
+        npref = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
@@ -71,8 +73,10 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
             starts[warp_id] = d_p.neighbors_offset[v];
             ends[warp_id] = d_p.neighbors_offset[v+1];
-            prefetched[warp_id] = true;
         }
+    if(THID==0){
+        npref = min(WARPS_EACH_BLK-1, bufTail-base);
+    }
 
     // if(THID == 0){
     //     base += WARPS_EACH_BLK-1;
@@ -87,10 +91,9 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
-        if(prefetched[warp_id]){
+        if(warp_id < npref){
             start = starts[warp_id];
             end = ends[warp_id];
-            prefetched[warp_id] = false;
         }
         //todo check this condition
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
@@ -102,18 +105,16 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         if(warp_id == 0){
             if(lane_id == 0){
                 // update base for next iteration
-                base += WARPS_EACH_BLK-1;
-                if(regTail < base )
-                    base = regTail;
+                base += npref;
             } 
             __syncwarp(); // so that other lanes can see updated base value
             if(lane_id > 0){
                 int j = base + lane_id - 1;
+                npref = min(WARPS_EACH_BLK-1, regTail-base);
                 if(j < regTail){
                     unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, j);
                     starts[lane_id] = d_p.neighbors_offset[v];
                     ends[lane_id] = d_p.neighbors_offset[v+1];
-                    prefetched[lane_id] = true;
                 }
             }
             continue;
