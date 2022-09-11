@@ -66,12 +66,13 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     // if(THID == 0 && level == 1)
     //     printf("%d ", bufTail);
 
-    if(warp_id > 0 && warp_id<bufTail){
-        unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
-        starts[warp_id] = d_p.neighbors_offset[v];
-        ends[warp_id] = d_p.neighbors_offset[v+1];
-        prefetched[warp_id] = true;
-    }
+    if(warp_id > 0)
+        if(warp_id-1<bufTail){
+            unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
+            starts[warp_id] = d_p.neighbors_offset[v];
+            ends[warp_id] = d_p.neighbors_offset[v+1];
+            prefetched[warp_id] = true;
+        }
 
     // if(THID == 0){
     //     base += WARPS_EACH_BLK-1;
