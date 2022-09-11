@@ -103,6 +103,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                 base += npref;
             } 
             __syncwarp(); // so that other lanes can see updated base value
+            
             if(lane_id > 0){
                 int j = base + lane_id - 1;
                 npref = min(WARPS_EACH_BLK-1, regTail-base);
@@ -112,10 +113,11 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                     ends[lane_id] = d_p.neighbors_offset[v+1];
                 }
             }
-            continue;
+            continue; // warp0 doesn't process nodes. 
         }
 
-        if(i > regTail) continue;
+        if(i >= regTail) continue; 
+        // since warp0 is absent, therefore warp with i==regTail will also process
 
         while(true){
             __syncwarp();
