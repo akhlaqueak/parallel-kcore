@@ -53,7 +53,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         bufTail = bufTails[blockIdx.x];
         initTail = bufTail;
         base = 0;
-        prefetched = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
@@ -70,7 +69,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     if(warp_id > 0 && warp_id<bufTail){
         unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
         starts[warp_id] = d_p.neighbors_offset[v];
-        end[warp_id] = d_p.neighbors_offset[v+1];
+        ends[warp_id] = d_p.neighbors_offset[v+1];
         prefetched[warp_id] = true;
     }
 
