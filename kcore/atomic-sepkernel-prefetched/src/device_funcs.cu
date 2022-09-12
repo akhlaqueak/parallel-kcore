@@ -117,7 +117,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             continue; // warp0 doesn't process nodes. 
         }
 
-        if(i > regTail) continue; 
+        if(warp_id > npref) continue; 
         // since warp0 is absent, therefore warp with i==regTail will also process
         start = d_p.neighbors_offset[vv];
         end = d_p.neighbors_offset[vv+1];
