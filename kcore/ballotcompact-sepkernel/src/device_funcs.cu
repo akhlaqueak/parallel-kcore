@@ -30,7 +30,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
-        if(predicate[THID]) temp[THID] = v;
+        temp[THID] = v;
 
         compactBlock(predicate, addresses, temp, shBuffer, glBuffer, bufTail);        
         __syncthreads();            
@@ -60,10 +60,10 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
         bufTail = bufTails[blockIdx.x];
     }
+    predicate[THID] = 0;
 
     __syncthreads();
     
-    predicate[THID] = 0;
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
@@ -81,7 +81,10 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         if(i >= regTail) continue; // this warp won't have to do anything     
 
         if(THID == 0){
-            base += min(WARPS_EACH_BLK, regTail-base);
+            base += WARPS_EACH_BLK;
+            if(regTail<base)
+                base = regTail;
+            // base += min(WARPS_EACH_BLK, regTail-base);
         }     
         
         unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
