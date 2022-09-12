@@ -60,7 +60,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
 
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int start, end, regnpref, regTail;
+    unsigned int start, end, regnpref, regTail, v;
     
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
@@ -73,7 +73,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     
     if(warp_id > 0)
         if(warp_id-1<bufTail){
-            prefv[warp_id] = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
+            prefv[warp_id] = readFromBuffer(shBuffer, glBuffer, warp_id-1);
         }
     if(THID==0){
         npref = min(WARPS_EACH_BLK-1, bufTail-base);
