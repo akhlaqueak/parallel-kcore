@@ -41,14 +41,13 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
     __shared__ unsigned int initTail;
-    __shared__ unsigned int buffv[32];
-    __shared__ unsigned int ends[32];
+    __shared__ unsigned int prefv[32];
     __shared__ int npref;
 
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int regTail;
-    unsigned int i, start, end, vv;
+    unsigned int regTail, regnpref;
+    unsigned int start, end, v;
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
         initTail = bufTail;
@@ -65,9 +64,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
 
     if(warp_id > 0)
         if(warp_id-1<bufTail){
-            buffv[warp_id] = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
-            // starts[warp_id] = d_p.neighbors_offset[v];
-            // ends[warp_id] = d_p.neighbors_offset[v+1];
+            prefv[warp_id] = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
         }
     if(THID==0){
         npref = min(WARPS_EACH_BLK-1, bufTail-base);
@@ -87,15 +84,13 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
         if(warp_id <= npref){
-            // start = starts[warp_id];
-            // end = ends[warp_id];
-            vv = buffv[warp_id];
+            v = prefv[warp_id];
         }
-        //todo check this condition
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
-        i = npref;
+        regnpref = npref;
         regTail = bufTail;
         __syncthreads();
+        if(warp_id > regnpref) continue; 
 
 
         if(warp_id == 0){
@@ -109,18 +104,14 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                 int j = base + lane_id - 1;
                 npref = min(WARPS_EACH_BLK-1, regTail-base);
                 if(j < regTail){
-                    buffv[lane_id] = readFromBuffer(shBuffer, glBuffer, initTail, j);
-                    // starts[lane_id] = d_p.neighbors_offset[v];
-                    // ends[lane_id] = d_p.neighbors_offset[v+1];
+                    prefv[lane_id] = readFromBuffer(shBuffer, glBuffer, initTail, j);
                 }
             }
             continue; // warp0 doesn't process nodes. 
         }
 
-        if(warp_id > i) continue; 
-        // since warp0 is absent, therefore warp with i==regTail will also process
-        start = d_p.neighbors_offset[vv];
-        end = d_p.neighbors_offset[vv+1];
+        start = d_p.neighbors_offset[v];
+        end = d_p.neighbors_offset[v+1];
         while(true){
             __syncwarp();
 
