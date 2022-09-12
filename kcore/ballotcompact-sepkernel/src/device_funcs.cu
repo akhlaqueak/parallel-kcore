@@ -75,8 +75,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         __syncthreads(); //syncthreads must be executed by all the threads
         if(base == bufTail) break;
         i = base + warp_id;
-        regTail = bufTail;
-        
+        regTail = bufTail;        
         __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
 
         if(i >= regTail) continue; // this warp won't have to do anything     
