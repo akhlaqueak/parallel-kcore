@@ -10,7 +10,7 @@ import statistics as stat
 
 folders = ["atomic", "atomic-sepkernel", "atomic-sepkernel-prefetched", "ballotcompact-sepkernel", "fastcompact", "fastcompact-warponly", "ballotcompact", \
         "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels", "cpu", 
-        "atomic-linked-list-separate-kernels", "compact-linked-list-separate-kernels"]
+        "atomic-linked-list-separate-kernels", "compact-linked-list-separate-kernels", "ballotcompact-warponly-sep-kernels-prefetched"]
 
 datasets = ["Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
     "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
