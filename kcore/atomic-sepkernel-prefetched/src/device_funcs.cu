@@ -93,7 +93,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         }
         //todo check this condition
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
-        i = base + warp_id;
+        i = npref;
         regTail = bufTail;
         __syncthreads();
 
@@ -117,7 +117,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             continue; // warp0 doesn't process nodes. 
         }
 
-        if(warp_id > npref) continue; 
+        if(warp_id > i) continue; 
         // since warp0 is absent, therefore warp with i==regTail will also process
         start = d_p.neighbors_offset[vv];
         end = d_p.neighbors_offset[vv+1];
