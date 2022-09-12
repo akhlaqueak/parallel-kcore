@@ -56,9 +56,9 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     unsigned int i, regTail;
     
     if(THID==0){
-        bufTail = 0;
         base = 0; 
         glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
+        bufTail = bufTails[blockIdx.x];
     }
 
     __syncthreads();
