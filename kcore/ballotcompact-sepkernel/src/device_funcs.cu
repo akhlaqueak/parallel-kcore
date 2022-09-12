@@ -53,19 +53,17 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     __shared__ unsigned int* glBuffer;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int i;
+    unsigned int i, regTail;
     
     if(THID==0){
-        bufTail = bufTails[blockIdx.x];
-        base = 0;
+        base = 0; 
         glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
+        bufTail = bufTails[blockIdx.x];
     }
+    predicate[THID] = 0;
 
     __syncthreads();
     
-
-    
-    predicate[THID] = 0;
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
     // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
@@ -76,25 +74,22 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
         if(base == bufTail) break;
-
         i = base + warp_id;
-        
-        __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of
+        regTail = bufTail;        
+        __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of i
 
+        
         if(THID == 0){
             base += WARPS_EACH_BLK;
-            if(bufTail < base )
-                base = bufTail;
-        }
+            if(regTail<base)
+            base = regTail;
+            // base += min(WARPS_EACH_BLK, regTail-base);
+        }     
+        if(i >= regTail) continue; // this warp won't have to do anything     
         
-        if(i >= bufTail) continue; // this warp won't have to do anything     
-        
-        
-        unsigned int v, start, end;
-
-        v = readFromBuffer(shBuffer, glBuffer, i);
-        start = d_p.neighbors_offset[v];
-        end = d_p.neighbors_offset[v+1];
+        unsigned int v = readFromBuffer(shBuffer, glBuffer, i);
+        unsigned int start = d_p.neighbors_offset[v];
+        unsigned int end = d_p.neighbors_offset[v+1];
 
 
         while(true){
@@ -132,6 +127,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
         // if(glBuffer!=NULL) free(glBuffer);
     }
+
 }
 
 

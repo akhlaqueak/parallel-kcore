@@ -135,7 +135,7 @@ def repeatedSimulations(datasets, folder):
         print("Running Simulation No. ", i+1)
         exec, ver = runSimulation(datasets, folder)
         for ds in datasets:
-            execTime[ds].append(int(exec[ds]))
+            execTime[ds].append(float(exec[ds]))
             verResult[ds].append(ver[ds])
     print("###---------------###")
     print("###- Execution Time -###")
