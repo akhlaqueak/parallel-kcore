@@ -64,7 +64,7 @@ void find_kcore(string data_file,bool write_to_disk){
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
 
     cout<<"new limit is: "<<limit<<endl;
-
+    auto start = chrono::steady_clock::now();
 	cout<<"Entering in while"<<endl;
 	while(count < data_graph.V){
         selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, bufTails, level, data_graph.V, glBuffers);
@@ -79,15 +79,17 @@ void find_kcore(string data_file,bool write_to_disk){
     }
 
 	get_results_from_gpu(data_graph, data_pointers);
+
+
+    auto end = chrono::steady_clock::now();
+    cout << "Elapsed Time: "
+    << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+
     free_graph_gpu_memory(data_pointers);
     cudaEventRecord(event_stop);
     cudaEventSynchronize(event_stop);
     cudaFree(glBuffers);
 
-
-    float time_milli_sec = 0;
-    cudaEventElapsedTime(&time_milli_sec, event_start, event_stop);
-    cout<<"Elapsed Time: "<<time_milli_sec<<endl;
 
     
     if(write_to_disk){
