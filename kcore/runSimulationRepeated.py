@@ -20,7 +20,7 @@ OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
 VERIFY = True
 VERBOSE = False
-NITERATIONS = 10
+NITERATIONS = 5
 
 def verify(datasets):
     difference = {}
