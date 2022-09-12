@@ -41,6 +41,7 @@ void find_kcore(string data_file,bool write_to_disk){
     unsigned int* blockCounter  = NULL;
     unsigned int* glBuffers     = NULL;
     unsigned int* bufTails       = NULL;
+    unsigned int count = 0;
 
     cudaMallocManaged(&global_count,sizeof(unsigned int));
     cudaMallocManaged(&blockCounter,sizeof(unsigned int));
@@ -65,19 +66,16 @@ void find_kcore(string data_file,bool write_to_disk){
     cout<<"new limit is: "<<limit<<endl;
 
 	cout<<"Entering in while"<<endl;
-	while(global_count[0] < data_graph.V){
+	while(count < data_graph.V){
         selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, bufTails, level, data_graph.V, glBuffers);
   
         PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, bufTails, glBuffers);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
-        chkerr(cudaDeviceSynchronize());
-        if(level==1) 
-        for(int i=0; i<BLK_NUMS; i++){
-            cout<<bufTails[i]<<" ";
-        }
-        cout<<"*********Completed level: "<<level<<", global_count: "<<global_count[0]<<" *********"<<endl;
+        // chkerr(cudaDeviceSynchronize());
+        chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));
+
+        cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level += 1;
-        blockCounter[0] = 0;
     }
 
 	get_results_from_gpu(data_graph, data_pointers);
