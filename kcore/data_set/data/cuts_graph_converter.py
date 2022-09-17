@@ -1,6 +1,22 @@
 import os
 import time
 import sys
+
+# This file converts the graphs available at 
+# 1. konect.cc
+# 2. stanford snap
+# 3. https://sparse.tamu.edu/
+
+# it removes cycles in the graph, and create the graph in 
+# (first line is number of vertices, followed by edge at every line)
+
+# V
+# source destination
+# source destination
+# source destination
+# source destination
+# source destination
+
 def convert_format(arg):
     in_file = arg[1]
     graph = in_file.split('.')[0] + ".g"
@@ -18,7 +34,7 @@ def convert_format(arg):
         if line[0] in comment_ch:
             continue
         s, e = line.split()
-        if s == e:
+        if s == e: # it's a self-loop.
             continue
         out_lines.append(line)
         max_node = max(max_node, int(s), int(e))
