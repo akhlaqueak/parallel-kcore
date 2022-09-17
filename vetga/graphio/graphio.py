@@ -254,7 +254,7 @@ class GraphIO(object):
             print(f"Finished converting directed to undirected by inserting {len(src_n)} new edges.")
 
         # Reproducing src and dst from key pairs
-        src, dst = GraphIO.split(np.array(list(g.keys())))
+        # src, dst = GraphIO.split(np.array(list(g.keys())))
 
         return np.append(src, src_n), np.append(dst, dst_n)
 
