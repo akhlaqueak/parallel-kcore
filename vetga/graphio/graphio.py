@@ -261,7 +261,7 @@ class GraphIO(object):
         # Reproducing src and dst from key pairs
         src, dst = GraphIO.split(np.array(list(g)))
 
-        return np.append(src, src_n), np.append(dst, dst_n)
+        return src, dst
 
     @staticmethod
     def single_directed(src, dst, verbose=0):
