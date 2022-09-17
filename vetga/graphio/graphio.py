@@ -240,31 +240,32 @@ class GraphIO(object):
         """
         if verbose > 0:
             print("Converting directed edges to undirected ...")
-
-        # Remove duplicates pairs from src and dst
         g = set(zip(src, dst))
         n1 = len(g)
         g.update(set(zip(dst, src)))
         n2 = len(g)
-        # g1 = set()
-        # for s, d in g:
-        #     if (d, s) not in g:
-        #         g1.add((d, s),)
-        # g.update(g1)
-        # src_n = np.array([], dtype=src.dtype)
-        # dst_n = np.array([], dtype=dst.dtype)
-        # for k in g:
-        #     if (k[1], k[0]) not in g:
-        #         src_n = np.append(src_n, k[1])
-        #         dst_n = np.append(dst_n, k[0])
-
         if verbose > 0:
             print(f"Finished converting directed to undirected by inserting {n2 - n1} new edges.")
 
         # Reproducing src and dst from key pairs
-        src, dst = GraphIO.split(np.array(list(g)))
+        return GraphIO.split(np.array(list(g)))
 
-        return src, dst
+        # Remove duplicates pairs from src and dst
+        # g = {(x, dst[i]): 1 for i, x in np.ndenumerate(src)}
+        # src_n = np.array([], dtype=src.dtype)
+        # dst_n = np.array([], dtype=dst.dtype)
+        # for k in g.keys():
+        #     if (k[1], k[0]) not in g:
+        #         src_n = np.append(src_n, k[1])
+        #         dst_n = np.append(dst_n, k[0])
+
+        # if verbose > 0:
+        #     print(f"Finished converting directed to undirected by inserting {len(src_n)} new edges.")
+
+        # # Reproducing src and dst from key pairs
+        # src, dst = GraphIO.split(np.array(list(g.keys())))
+
+        # return np.append(src, src_n), np.append(dst, dst_n)
 
     @staticmethod
     def single_directed(src, dst, verbose=0):
