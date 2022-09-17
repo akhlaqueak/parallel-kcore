@@ -242,11 +242,11 @@ class GraphIO(object):
             print("Converting directed edges to undirected ...")
 
         # Remove duplicates pairs from src and dst
-        g = {(x, dst[i]): 1 for i, x in np.ndenumerate(src)}
+        g = set(zip(src, dst))
         print(len(g))
         src_n = np.array([], dtype=src.dtype)
         dst_n = np.array([], dtype=dst.dtype)
-        for k in g.keys():
+        for k in g:
             if (k[1], k[0]) not in g:
                 src_n = np.append(src_n, k[1])
                 dst_n = np.append(dst_n, k[0])
