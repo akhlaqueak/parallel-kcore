@@ -243,11 +243,14 @@ class GraphIO(object):
 
         # Remove duplicates pairs from src and dst
         g = set(zip(src, dst))
-        g1 = set()
-        for s, d in g:
-            if (d, s) not in g:
-                g1.add((d, s),)
-        g.update(g1)
+        n1 = len(g)
+        g.update(set(zip(dst, src)))
+        n2 = len(g)
+        # g1 = set()
+        # for s, d in g:
+        #     if (d, s) not in g:
+        #         g1.add((d, s),)
+        # g.update(g1)
         # src_n = np.array([], dtype=src.dtype)
         # dst_n = np.array([], dtype=dst.dtype)
         # for k in g:
@@ -256,7 +259,7 @@ class GraphIO(object):
         #         dst_n = np.append(dst_n, k[0])
 
         if verbose > 0:
-            print(f"Finished converting directed to undirected by inserting {len(g1)} new edges.")
+            print(f"Finished converting directed to undirected by inserting {n2 - n1} new edges.")
 
         # Reproducing src and dst from key pairs
         src, dst = GraphIO.split(np.array(list(g)))
