@@ -243,6 +243,7 @@ class GraphIO(object):
 
         # Remove duplicates pairs from src and dst
         g = {(x, dst[i]): 1 for i, x in np.ndenumerate(src)}
+        print(len(g))
         src_n = np.array([], dtype=src.dtype)
         dst_n = np.array([], dtype=dst.dtype)
         for k in g.keys():
