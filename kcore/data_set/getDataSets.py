@@ -51,7 +51,7 @@ def KonnectDataset(url):
     # dataset extracted file: dataset/out.dblp-author
     zipfile = url.parse("/")[-1]
     sp.run(["tar", "-xvf", zipfile])
-    extfile = zipfile.parse(".")[2]
+    extfile = zipfile.split(".")[2]
     extfile = extfile + "/out." + extfile
     data = np.loadtxt(extfile, comments="%")
     
@@ -59,18 +59,18 @@ def SnapDataset(url):
     # URL: https://snap.stanford.edu/data/as-skitter.txt.gz
     # dataset zip file: as-skitter.txt.gz
     # extract file: as-skitter.txt
-    zipfile = url.parse("/")[-1]
+    zipfile = url.split("/")[-1]
     sp.run(["gunzip", zipfile])
-    extfile = zipfile.parse(".")[0] + ".txt"   
+    extfile = zipfile.split(".")[0] + ".txt"   
     data = np.loadtxt(extfile, comments="#")
 
 def HerokuappDataset(url):
-    # URL: https://suitesparse-collection-website.herokuapp.com/MM/SNAP/soc-LiveJournal1.tar.gz
+    # URL: https://suitessplit-collection-website.herokuapp.com/MM/SNAP/soc-LiveJournal1.tar.gz
     # zipfile: soc-LiveJournal1.tar.gz
     # extract fiel: soc-LiveJournal1/soc-LiveJournal1.mat
-    zipfile = url.parse("/")[-1]
+    zipfile = url.split("/")[-1]
     sp.run(["tar", "-xvf", zipfile])
-    extfile = zipfile.parse(".")[0]
+    extfile = zipfile.split(".")[0]
     extfile = extfile + "/" + extfile + ".mat"
     data = np.loadtxt(extfile, comments="%")
     np.delete(data, 1)
