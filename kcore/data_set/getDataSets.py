@@ -1,4 +1,3 @@
-from bz2 import _WriteTextMode
 import os
 import time
 import sys
