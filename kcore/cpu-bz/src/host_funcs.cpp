@@ -36,7 +36,6 @@ void find_kcore(string data_file, bool write_to_disk){
     for(int v=0;v<G.V;v++){
         md = max(G.degrees[v], md);
     }
-    cout<<"Max degree "<<md<<endl;
     
     unsigned int bin[md+1] = {0}; // initializes all zeros.
     for(int v=0;v<G.V;v++){
@@ -59,6 +58,7 @@ void find_kcore(string data_file, bool write_to_disk){
     }
     bin[0] = 0;
 
+    cout<<"Max degree "<<md<<endl;
     for(unsigned int i=0;i<G.V;i++){
         unsigned int v = vert[i];
         unsigned int j = G.neighbors_offset[v];
