@@ -31,7 +31,7 @@ void find_kcore(string data_file, bool write_to_disk){
 
     // BZ Algorithm implementation 
 
-    auto start = chrono::steady_clock::now();
+    auto clkstart = chrono::steady_clock::now();
     unsigned int md = 0;
     for(int v=0;v<G.V;v++){
         md = max(G.degrees[v], md);
@@ -49,7 +49,7 @@ void find_kcore(string data_file, bool write_to_disk){
 // 18 bin[d] := start;
 // 19 inc(start, num);
 // 20 end;
-    unsigned int start = 1;
+    unsigned int  start = 1;
     for(unsigned int d=0; d<md;d++){
         unsigned int num = bin[d];
         bin[d] = start;
@@ -96,7 +96,7 @@ void find_kcore(string data_file, bool write_to_disk){
 
     auto end = chrono::steady_clock::now();
     cout << "Elapsed Time: "
-    << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+    << chrono::duration_cast<chrono::milliseconds>(end - clkstart).count() << endl;
 
     
     if(write_to_disk){
