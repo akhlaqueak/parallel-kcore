@@ -71,7 +71,7 @@ def HerokuappDataset(url):
     zipfile = url.split("/")[-1]
     sp.run(["tar", "-xvf", zipfile])
     extfile = zipfile.split(".")[0]
-    extfile = extfile + "/" + extfile + ".mat"
+    extfile = extfile + "/" + extfile + ".mtx"
     data = np.loadtxt(extfile, comments="%")
     np.delete(data, 1)
     print(data.shape)
