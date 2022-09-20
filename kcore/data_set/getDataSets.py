@@ -1,3 +1,4 @@
+from bz2 import _WriteTextMode
 import os
 import time
 import sys
@@ -8,6 +9,16 @@ import numpy as np
 # 2. stanford snap
 # 3. https://sparse.tamu.edu/
 DSLOC = "data/"
+def writeTxtFile(data, txtfile):
+    data = data[data[:, 0]!=data[:,1]] # removing self loops
+    V = np.max(data) + 1
+    np.savetxt(txtfile, data, fmt='%i', header=str(V))
+    print(data.shape)
+def downloadFile(zipfile, extfile):
+    if not os.path.isfile(zipfile):
+        sp.run(["wget", url])
+    if not os.path.isfile(extfile):
+        sp.run(["tar", "-xvf", zipfile])
 def KonnectDataset(url):
     # URL: http://konect.cc/files/download.tsv.dblp-author.tar.bz2
     # dataset zip file: download.tsv.dblp-author.tar.bz2
@@ -16,15 +27,9 @@ def KonnectDataset(url):
     extfile = zipfile.split(".")[2]
     txtfile = DSLOC + extfile + ".txt"
     extfile = extfile + "/out." + extfile
-    if not os.path.isfile(zipfile):
-        sp.run(["wget", url])
-    if not os.path.isfile(extfile):
-        sp.run(["tar", "-xvf", zipfile])
-    data = np.loadtxt(extfile, comments="%", usecols=(0, 1))
-    data = data[data[:, 0]!=data[:,1]] # removing self loops
-    V = np.max(data) + 1
-    np.savetxt(txtfile, data, fmt='%i', header=str(V))
-    print(data.shape)
+    downloadFile(zipfile, extfile)
+    data = np.loadtxt(extfile, comments="%", usecols=(0, 1), dtype=int)
+    writeTxtFile(data, txtfile)
     
 def SnapDataset(url):
     # URL: https://snap.stanford.edu/data/as-skitter.txt.gz
@@ -33,15 +38,10 @@ def SnapDataset(url):
     zipfile = url.split("/")[-1]
     extfile = zipfile.split(".")[0] + ".txt"
     txtfile = DSLOC + extfile
-    if not os.path.isfile(zipfile):
-        sp.run(["wget", url])    
-    if not os.path.isfile(extfile):
-        sp.run(["gunzip", zipfile])
-    data = np.loadtxt(extfile, comments="#", usecols=(0, 1))
-    data = data[data[:, 0]!=data[:,1]] # removing self loops
-    V = np.max(data) + 1
-    np.savetxt(txtfile, data, fmt='%i', header=str(V))
-    print(data.shape)
+    downloadFile(zipfile, extfile)
+    data = np.loadtxt(extfile, comments="#", usecols=(0, 1), dtype=int)
+    writeTxtFile(data, txtfile)
+
 
 def HerokuappDataset(url):
     # URL: https://suitessplit-collection-website.herokuapp.com/MM/SNAP/soc-LiveJournal1.tar.gz
@@ -51,15 +51,9 @@ def HerokuappDataset(url):
     extfile = zipfile.split(".")[0]
     txtfile = DSLOC + extfile + ".txt"
     extfile = extfile + "/" + extfile + ".mtx"
-    if not os.path.isfile(zipfile):
-        sp.run(["wget", url])
-    if not os.path.isfile(extfile):
-        sp.run(["tar", "-xvf", zipfile])
-    data = np.loadtxt(extfile, comments="%", usecols=(0, 1))
-    data = data[data[:, 0]!=data[:,1]] # removing self loops
-    V = np.max(data) + 1
-    np.savetxt(txtfile, data, fmt='%i', header=str(V))
-    print(data.shape)
+    downloadFile(zipfile, extfile)
+    data = np.loadtxt(extfile, comments="%", usecols=(0, 1), dtype=int)
+    writeTxtFile(data, txtfile)
 
 def readFile(file):
     with open(file, "r") as f:
