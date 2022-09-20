@@ -19,7 +19,7 @@ datasets = ["amazon0601.txt",   "as-skitter.txt",   "dblp-author.txt",     "pate
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
 VERIFY = False
-VERBOSE = False
+VERBOSE = True
 
 def verify(datasets):
     for dataset in datasets: 
