@@ -2,7 +2,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define DS_LOC string("../data_set/data/ours_format/")
+#define DS_LOC string("../data_set/data/")
 #define OUTPUT_LOC string("../output/")
 
 #include <iostream>
