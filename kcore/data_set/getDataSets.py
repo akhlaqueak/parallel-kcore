@@ -78,13 +78,13 @@ def HerokuappDataset(url):
 
 def readFile(file):
     with open(file, "r") as f:
-        return f.readlines()
+        return f.read().splitlines()
 
 if __name__ == "__main__":
     urls = readFile(sys.argv[1])
     for url in urls:
         if DOWNLOAD:
-            sp.run(["wget", url.strip()]) 
+            sp.run(["wget", url]) 
         if "konect.cc" in url:
             KonnectDataset(url)
         elif "snap.stanford.edu" in url:
