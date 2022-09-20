@@ -38,6 +38,8 @@ void find_kcore(string data_file, bool write_to_disk){
     }
     
     unsigned int bin[md+1] = {0}; // initializes all zeros.
+    for(int i=0;i<=md;i++)
+        bin[i] = 0;
     for(int v=0;v<G.V;v++){
         bin[G.degrees[v]]++;
     }
