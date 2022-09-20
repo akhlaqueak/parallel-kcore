@@ -34,7 +34,7 @@ def processFile(zipfile, extfile, txtfile):
 def KonnectDataset(url):
     # URL: http://konect.cc/files/download.tsv.dblp-author.tar.bz2
     # dataset zip file: download.tsv.dblp-author.tar.bz2
-    # dataset extracted file: dataset/out.dblp-author
+    # dataset extracted file: dblp-author/out.dblp-author
     zipfile = url.split("/")[-1]
     extfile = zipfile.split(".")[2]
     txtfile = DSLOC + extfile + ".txt"

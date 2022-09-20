@@ -12,7 +12,7 @@
 #define THID threadIdx.x
 #define WARP_SIZE 32
 #define UINT unsigned int
-#define DS_LOC string("../data_set/data/ours_format/")
+#define DS_LOC string("../data_set/data/")
 #define OUTPUT_LOC string("../output/")
 
 #include <iostream>

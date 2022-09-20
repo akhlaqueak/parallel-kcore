@@ -19,7 +19,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
  * source destination
  * 
  */
-
+    cin>>s;
     infile>>V;
 
 
