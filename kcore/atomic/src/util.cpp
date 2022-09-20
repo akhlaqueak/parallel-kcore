@@ -19,7 +19,8 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
  * source destination
  * 
  */
-    infile>>s; // to read # in the first line... 
+    char dumy;
+    infile>>dumy; // to read # in the first line... 
     infile>>V;
 
 
