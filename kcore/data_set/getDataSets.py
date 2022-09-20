@@ -50,6 +50,8 @@ def KonnectDataset(url):
     # dataset zip file: download.tsv.dblp-author.tar.bz2
     # dataset extracted file: dataset/out.dblp-author
     zipfile = url.split("/")[-1]
+    if not os.path.isfile(zipfile):
+        sp.run(["wget", url])
     sp.run(["tar", "-xvf", zipfile])
     extfile = zipfile.split(".")[2]
     extfile = extfile + "/out." + extfile
@@ -61,6 +63,8 @@ def SnapDataset(url):
     # dataset zip file: as-skitter.txt.gz
     # extract file: as-skitter.txt
     zipfile = url.split("/")[-1]
+    if not os.path.isfile(zipfile):
+        sp.run(["wget", url])    
     sp.run(["gunzip", zipfile])
     extfile = zipfile.split(".")[0] + ".txt"   
     data = np.loadtxt(extfile, comments="#")
@@ -72,9 +76,11 @@ def HerokuappDataset(url):
     # extract fiel: soc-LiveJournal1/soc-LiveJournal1.mat
     zipfile = url.split("/")[-1]
     sp.run(["tar", "-xvf", zipfile])
+    if not os.path.isfile(zipfile):
+        sp.run(["wget", url])
     extfile = zipfile.split(".")[0]
     extfile = extfile + "/" + extfile + ".mtx"
-    data = np.loadtxt(extfile, comments="%")
+    data = np.loadtxt(extfile, comments="%", usecols=(0, 1))
     np.delete(data, 1)
     print(data.shape)
 
@@ -85,8 +91,6 @@ def readFile(file):
 if __name__ == "__main__":
     urls = readFile(sys.argv[1])
     for url in urls:
-        if DOWNLOAD:
-            sp.run(["wget", url]) 
         if "konect.cc" in url:
             KonnectDataset(url)
         elif "snap.stanford.edu" in url:
