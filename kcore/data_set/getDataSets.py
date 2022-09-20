@@ -84,7 +84,7 @@ if __name__ == "__main__":
     urls = readFile(sys.argv[1])
     for url in urls:
         if DOWNLOAD:
-            sp.run(["wget", url]) 
+            sp.run(["wget", url.strip()]) 
         if "konect.cc" in url:
             KonnectDataset(url)
         elif "snap.stanford.edu" in url:
