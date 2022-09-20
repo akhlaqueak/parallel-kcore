@@ -54,6 +54,7 @@ def KonnectDataset(url):
     extfile = zipfile.split(".")[2]
     extfile = extfile + "/out." + extfile
     data = np.loadtxt(extfile, comments="%")
+    print(data.shape)
     
 def SnapDataset(url):
     # URL: https://snap.stanford.edu/data/as-skitter.txt.gz
@@ -63,6 +64,7 @@ def SnapDataset(url):
     sp.run(["gunzip", zipfile])
     extfile = zipfile.split(".")[0] + ".txt"   
     data = np.loadtxt(extfile, comments="#")
+    print(data.shape)
 
 def HerokuappDataset(url):
     # URL: https://suitessplit-collection-website.herokuapp.com/MM/SNAP/soc-LiveJournal1.tar.gz
