@@ -14,7 +14,7 @@ def writeTxtFile(data, txtfile):
     np.savetxt(txtfile, data, fmt='%i', header=str(V))
     print(data.shape)
 def downloadFile(zipfile, extfile):
-    if not os.path.isfile(zipfile):
+    if not (os.path.isfile(zipfile) or os.path.isfile(extfile)):
         sp.run(["wget", url])
     if not os.path.isfile(extfile):
         sp.run(["tar", "-xvf", zipfile])
