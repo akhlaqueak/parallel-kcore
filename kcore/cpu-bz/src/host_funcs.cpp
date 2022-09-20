@@ -36,6 +36,7 @@ void find_kcore(string data_file, bool write_to_disk){
     for(int v=0;v<G.V;v++){
         md = max(G.degrees[v], md);
     }
+    cout<<"Max degree "<<md<<endl;
     
     unsigned int bin[md+1] = {0}; // initializes all zeros.
     for(int v=0;v<G.V;v++){
