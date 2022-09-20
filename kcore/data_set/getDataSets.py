@@ -49,7 +49,7 @@ def KonnectDataset(url):
     # URL: http://konect.cc/files/download.tsv.dblp-author.tar.bz2
     # dataset zip file: download.tsv.dblp-author.tar.bz2
     # dataset extracted file: dataset/out.dblp-author
-    zipfile = url.parse("/")[-1]
+    zipfile = url.split("/")[-1]
     sp.run(["tar", "-xvf", zipfile])
     extfile = zipfile.split(".")[2]
     extfile = extfile + "/out." + extfile
