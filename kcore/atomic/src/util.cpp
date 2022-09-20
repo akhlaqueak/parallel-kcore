@@ -49,8 +49,8 @@ void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::s
         if(degrees[i]!=0)
             // not writing zero degree nodes, because certain nodes in dataset are not present... 
             // our algo treats them isloated nodes, but nxcore doesn't recognize them
-           out<<'"'<<i<<'"'<<": "<<degrees[i]<<", ";
-    out.seekp(2, ios_base::end);
+           out<<'"'<<i<<'"'<<": "<<degrees[i]<<", "<<endl;
+    out.seekp(-2, ios_base::end);
     out<<" }";
     out.close();
 }
