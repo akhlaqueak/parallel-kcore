@@ -45,8 +45,8 @@ void find_kcore(string data_file, bool write_to_disk){
     bin[0] = 1;
     partial_sum(bin, bin+md, bin+1);
 
-    unsigned int pos[G.V+1];
-    unsigned int vert[G.E];
+    unsigned int pos[G.E+1];
+    unsigned int vert[G.E+1];
     for(int v=0;v<G.V;v++){
         pos[v] = bin[G.degrees[v]];
         vert[pos[v]] = v;
