@@ -1,3 +1,4 @@
+from genericpath import isfile
 import os
 import time
 import sys
@@ -13,11 +14,23 @@ def writeTxtFile(data, txtfile):
     V = np.max(data) + 1
     np.savetxt(txtfile, data, fmt='%i', header=str(V))
     print(data.shape)
-def downloadFile(zipfile, extfile):
+
+def processFile(zipfile, extfile, txtfile):
     if not (os.path.isfile(zipfile) or os.path.isfile(extfile)):
         sp.run(["wget", url])
     if not os.path.isfile(extfile):
         sp.run(["tar", "-xvf", zipfile])
+    if os.path.isfile(txtfile):
+        return
+    ch = "#"
+    try:
+        if "mtx" in extfile:
+            ch = "%"
+        data = np.loadtxt(extfile, comments=ch, usecols=(0, 1), dtype=int)
+        writeTxtFile(data, txtfile)
+    except:
+        print("Exception occured in", extfile)
+
 def KonnectDataset(url):
     # URL: http://konect.cc/files/download.tsv.dblp-author.tar.bz2
     # dataset zip file: download.tsv.dblp-author.tar.bz2
@@ -26,9 +39,8 @@ def KonnectDataset(url):
     extfile = zipfile.split(".")[2]
     txtfile = DSLOC + extfile + ".txt"
     extfile = extfile + "/out." + extfile
-    downloadFile(zipfile, extfile)
-    data = np.loadtxt(extfile, comments="%", usecols=(0, 1), dtype=int)
-    writeTxtFile(data, txtfile)
+    processFile(zipfile, extfile, txtfile)
+
     
 def SnapDataset(url):
     # URL: https://snap.stanford.edu/data/as-skitter.txt.gz
@@ -37,9 +49,8 @@ def SnapDataset(url):
     zipfile = url.split("/")[-1]
     extfile = zipfile.split(".")[0] + ".txt"
     txtfile = DSLOC + extfile
-    downloadFile(zipfile, extfile)
-    data = np.loadtxt(extfile, comments="#", usecols=(0, 1), dtype=int)
-    writeTxtFile(data, txtfile)
+    processFile(zipfile, extfile, txtfile)
+
 
 
 def HerokuappDataset(url):
@@ -50,9 +61,7 @@ def HerokuappDataset(url):
     extfile = zipfile.split(".")[0]
     txtfile = DSLOC + extfile + ".txt"
     extfile = extfile + "/" + extfile + ".mtx"
-    downloadFile(zipfile, extfile)
-    data = np.loadtxt(extfile, comments="%", usecols=(0, 1), dtype=int)
-    writeTxtFile(data, txtfile)
+    processFile(zipfile, extfile, txtfile)
 
 def readFile(file):
     with open(file, "r") as f:
@@ -61,6 +70,7 @@ def readFile(file):
 if __name__ == "__main__":
     urls = readFile(sys.argv[1])
     for url in urls:
+        print("processing... ", url)
         if "konect.cc" in url:
             KonnectDataset(url)
         elif "snap.stanford.edu" in url:
