@@ -9,14 +9,17 @@ folders = ["atomic", "atomic-sepkernel", "atomic-sepkernel-prefetched", "ballotc
         "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels", "cpu", 
         "atomic-linked-list-separate-kernels", "compact-linked-list-separate-kernels", "ballotcompact-warponly-sep-kernels-prefetched"]
 
-datasets = ["Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
-    "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
-    ]
+# datasets = ["Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
+#     "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
+#     ]
+
+datasets = ["amazon0601.txt",   "as-skitter.txt",   "dblp-author.txt",     "patentcite.txt",        "uk-2002.txt",  "web-BerkStan.txt",  "wiki-Talk.txt",
+'arabic-2005.txt', 'cit-Patents.txt',  'indochina-2004.txt' , 'soc-LiveJournal1.txt',  'uk-2005.txt',  'web-Google.txt']
 
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
-VERIFY = True
-VERBOSE = True
+VERIFY = False
+VERBOSE = False
 
 def verify(datasets):
     for dataset in datasets: 
