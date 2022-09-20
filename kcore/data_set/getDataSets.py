@@ -50,11 +50,12 @@ def KonnectDataset(url):
     # dataset zip file: download.tsv.dblp-author.tar.bz2
     # dataset extracted file: dataset/out.dblp-author
     zipfile = url.split("/")[-1]
-    if not os.path.isfile(zipfile):
-        sp.run(["wget", url])
-    sp.run(["tar", "-xvf", zipfile])
     extfile = zipfile.split(".")[2]
     extfile = extfile + "/out." + extfile
+    if not os.path.isfile(zipfile):
+        sp.run(["wget", url])
+    if not os.path.isfile(extfile):
+        sp.run(["tar", "-xvf", zipfile])
     data = np.loadtxt(extfile, comments="%")
     print(data.shape)
     
@@ -63,10 +64,11 @@ def SnapDataset(url):
     # dataset zip file: as-skitter.txt.gz
     # extract file: as-skitter.txt
     zipfile = url.split("/")[-1]
+    extfile = zipfile.split(".")[0] + ".txt"   
     if not os.path.isfile(zipfile):
         sp.run(["wget", url])    
-    sp.run(["gunzip", zipfile])
-    extfile = zipfile.split(".")[0] + ".txt"   
+    if not os.path.isfile(extfile):
+        sp.run(["gunzip", zipfile])
     data = np.loadtxt(extfile, comments="#")
     print(data.shape)
 
@@ -75,11 +77,12 @@ def HerokuappDataset(url):
     # zipfile: soc-LiveJournal1.tar.gz
     # extract fiel: soc-LiveJournal1/soc-LiveJournal1.mat
     zipfile = url.split("/")[-1]
-    sp.run(["tar", "-xvf", zipfile])
-    if not os.path.isfile(zipfile):
-        sp.run(["wget", url])
     extfile = zipfile.split(".")[0]
     extfile = extfile + "/" + extfile + ".mtx"
+    if not os.path.isfile(zipfile):
+        sp.run(["wget", url])
+    if not os.path.isfile(extfile):
+        sp.run(["tar", "-xvf", zipfile])
     data = np.loadtxt(extfile, comments="%", usecols=(0, 1))
     np.delete(data, 1)
     print(data.shape)
