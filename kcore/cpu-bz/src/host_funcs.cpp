@@ -58,10 +58,8 @@ void find_kcore(string data_file, bool write_to_disk){
 
     unsigned int pos[G.E];
     unsigned int vert[G.E];
-    // cout<<"Max degree "<<md<<" V: "<<G.V<<" E: "<<G.E<<endl;
     for(int v=0;v<G.V;v++){
         pos[v] = bin[G.degrees[v]];
-        // cout<<pos[v]<<endl;
         vert[pos[v]] = v;
         bin[G.degrees[v]]++;
     }

@@ -44,7 +44,7 @@ void find_kcore(string data_file, bool write_to_disk){
             
         count+=tail;
 
-        cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
+        // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
 
     }
     auto end = chrono::steady_clock::now();
