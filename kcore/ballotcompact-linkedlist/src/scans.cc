@@ -80,7 +80,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
         if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
             // printf("Req %d", THID);
             atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
-            __threadfence_block();
+            // __threadfence_block();   //with atomic operations it's not required.
             allocateMemoryMutex(tail, head, lock, total);
         }   
     }  
@@ -117,7 +117,7 @@ __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, 
         
         if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
             allocateMemory(tail, head);
-            atomicAdd(total, 1);
+            atomicAdd(total, 1); // total is only for reporting how many nodes created
         }
     }
 
