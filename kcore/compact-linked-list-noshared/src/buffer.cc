@@ -69,10 +69,10 @@ __device__ void allocateMemory(Node** tail, Node** head){
 __device__ void allocateMemoryMutex(Node** tail, Node** head, volatile unsigned int* lock){
     
     if(atomicExch((unsigned int*)lock, 1) == 0){        
-        printf("mutex %d %d\n", blockIdx.x, THID);
+        // printf("mutex %d %d\n", blockIdx.x, THID);
         allocateMemory(tail, head);
         lock[0] = 0; // not necessary to do it atomically, since it's the only thread in critical section
-        __threadfence_block(); // it ensures the writes are realized to shared/global mem
+        // __threadfence_block(); // it ensures the writes are realized to shared/global mem
     }
     while(lock[0]!=0);
 }    
