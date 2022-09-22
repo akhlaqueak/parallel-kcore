@@ -28,7 +28,7 @@ __device__ void advanceNode(Node** head){
 
 __device__ unsigned int readFromBuffer(Node* head, unsigned int loc){
     assert(head!=NULL); 
-    unsigned int v = 55;
+    unsigned int v;
     if(loc < head->limit)
         v = head->data[loc%BUFF_SIZE];
     else
