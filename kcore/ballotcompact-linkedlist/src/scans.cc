@@ -79,7 +79,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0; // don't want to do atomicAdd for zero
         if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
             // printf("Req %d", THID);
-            atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
+            // atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
             // __threadfence_block();   //with atomic operations it's not required.
             allocateMemoryMutex(tail, head, lock, total);
         }   
