@@ -146,13 +146,14 @@ def repeatedSimulations(datasets, folder):
             print(t, end=" ")
         print(stat.mean(execTime[ds]))
     print("###---------------###")
-    print("###- Verification Difference -###")
-    for ds in datasets:
-        print(ds, end=" ")
-        for t in verResult[ds]:
-            print(t, end=" ")
-        print(stat.mean(verResult[ds]))
-    print("###---------------###")
+    if VERIFY: 
+        print("###- Verification Difference -###")
+        for ds in datasets:
+            print(ds, end=" ")
+            for t in verResult[ds]:
+                print(t, end=" ")
+            print(stat.mean(verResult[ds]))
+        print("###---------------###")
         
 
 if __name__ == "__main__":
