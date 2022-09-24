@@ -12,7 +12,7 @@
 #SBATCH --error=sim.err
 #SBATCH --output=sim.out
 #SBATCH --ntasks=2
-#--gres=gpu:1
+#SBATCH --gres=gpu:1
 # Tell the scheduler only need 10 minutes
 #
 #SBATCH --time=12:00:00
