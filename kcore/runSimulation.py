@@ -13,8 +13,11 @@ folders = ["atomic", "atomic-sepkernel", "atomic-sepkernel-prefetched", "ballotc
 #     "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
 #     ]
 
-datasets = ["amazon0601.txt",   "as-skitter.txt",   "dblp-author.txt",     "patentcite.txt",        "uk-2002.txt",  "web-BerkStan.txt",  "wiki-Talk.txt",
-'arabic-2005.txt', 'cit-Patents.txt',  'indochina-2004.txt' , 'soc-LiveJournal1.txt',  'uk-2005.txt',  'web-Google.txt']
+# datasets = ["amazon0601.txt",   "as-skitter.txt",   "dblp-author.txt",     "patentcite.txt",        "uk-2002.txt",  "web-BerkStan.txt",  "wiki-Talk.txt",
+# 'arabic-2005.txt', 'cit-Patents.txt',  'indochina-2004.txt' , 'soc-LiveJournal1.txt',  'uk-2005.txt',  'web-Google.txt']
+
+datasets = ['amazon0601.txt',   'cit-Patents.txt',     'in-2004.txt',         'patentcite.txt',        'uk-2002.txt',  'web-BerkStan.txt',  'wiki-Talk.txt', 'arabic-2005.txt',  'dblp-author.txt',     'indochina-2004.txt',  'sk-2005.txt',           'uk-2005.txt',  'web-Google.txt', 'as-skitter.txt',   'hollywood-2009.txt', 'it-2004.txt',         'soc-LiveJournal1.txt',  'wb-edu.txt',   'webbase-2001.txt']
+
 
 OUTPUT = "../output/"
 DATASET = "../data_set/data/ours_format/"
