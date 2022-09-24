@@ -22,6 +22,8 @@
 #
 #SBATCH --mail-type=END
 #SBATCH --mail-user=akhlaque.ak@gmail.com
+module load gcc
 alias python=python3
+
 module load cuda11.4/toolkit
 python runSimulationRepeated.py all 1
