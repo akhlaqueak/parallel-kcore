@@ -18,7 +18,7 @@ datasets = ['amazon0601.txt',   'cit-Patents.txt',     'in-2004.txt',         'p
 
 OUTPUT = "../output/"
 DATASET = "../data_set/data/"
-VERIFY = True
+VERIFY = False
 VERBOSE = False
 NITERATIONS = 3
 
