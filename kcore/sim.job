@@ -26,4 +26,4 @@ module load gcc
 alias python=python3
 
 module load cuda11.4/toolkit
-python runSimulationRepeated.py all 1
+python3 runSimulationRepeated.py all 1
