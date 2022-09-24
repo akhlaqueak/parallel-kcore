@@ -67,15 +67,15 @@ void find_kcore(string data_file,bool write_to_disk){
         level++;
     }
 
-	get_results_from_gpu(data_graph, data_pointers);
-
-
-
-
-
+    
+    
     auto end = chrono::steady_clock::now();
     cout << "Elapsed Time: "
     << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+    
+    
+    
+	get_results_from_gpu(data_graph, data_pointers);
     
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);

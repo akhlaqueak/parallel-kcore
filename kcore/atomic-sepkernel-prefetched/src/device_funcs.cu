@@ -41,7 +41,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
     __shared__ unsigned int initTail;
-    __shared__ unsigned int prefv[32];
+    __shared__ unsigned int prefv[WARPS_EACH_BLK];
     __shared__ int npref;
 
     unsigned int warp_id = THID / 32;
@@ -61,7 +61,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
 
     // if(THID == 0 && level == 1)
     //     printf("%d ", bufTail);
-
+// 0-th iteration
     if(warp_id > 0)
         if(warp_id-1<bufTail){
             prefv[warp_id] = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
