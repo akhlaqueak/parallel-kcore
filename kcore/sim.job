@@ -1,5 +1,5 @@
-# normal command for interactive session: srun --ntasks=2 --cpus-per-task=1 --mem-per-cpu=64000 --time=12:00:00 --partition=pascalnodes --job-name=GG --gres=gpu:1 --pty /bin/bash
 #!/bin/bash
+# normal command for interactive session: srun --ntasks=2 --cpus-per-task=1 --mem-per-cpu=64000 --time=12:00:00 --partition=pascalnodes --job-name=GG --gres=gpu:1 --pty /bin/bash
 #SBATCH --share
 #SBATCH --partition=pascalnodes
 #
