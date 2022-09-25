@@ -88,7 +88,7 @@ def repeatedSimulations(datasets):
             execTime[ds].append(exec[ds])
     print("###---------------###")
     print("###- Execution Time -###")
-    types = execTime[datasets[0]]
+    types = execTime[datasets[0]][0].keys()
     print("datasets ", types)
     for ds in datasets:
         print(ds, end=" ")
