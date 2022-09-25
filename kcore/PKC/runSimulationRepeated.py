@@ -24,7 +24,7 @@ def parseResult(output):
     # One of the line in output has this format
     # Elapsed Time: 69.8055
     line = [x for x in output.split("\n") if "PKC time" in x]
-    # print (output)
+    print (line[0].split(" "))
     return line[0].split(" ")[2]
 
 def parseDataSet(args):
