@@ -24,7 +24,7 @@ def parseResult(output):
     # One of the line in output has this format
     # Elapsed Time: 69.8055
     line = [x for x in output.split("\n") if "PKC time" in x]
-    print (output)
+    # print (output)
     return line[0].split(" ")[2]
 
 def parseDataSet(args):
@@ -77,11 +77,9 @@ def repeatedSimulations(datasets):
     
     for i in range(NITERATIONS):
         print("Running Simulation No. ", i+1)
-        exec, ver = runSimulation(datasets)
+        exec = runSimulation(datasets)
         for ds in datasets:
             execTime[ds].append(float(exec[ds]))
-            if VERIFY:
-                verResult[ds].append(ver[ds])
     print("###---------------###")
     print("###- Execution Time -###")
     
@@ -91,14 +89,7 @@ def repeatedSimulations(datasets):
             print(t, end=" ")
         print(stat.mean(execTime[ds]))
     print("###---------------###")
-    if VERIFY: 
-        print("###- Verification Difference -###")
-        for ds in datasets:
-            print(ds, end=" ")
-            for t in verResult[ds]:
-                print(t, end=" ")
-            print(stat.mean(verResult[ds]))
-        print("###---------------###")
+
         
 
 if __name__ == "__main__":
