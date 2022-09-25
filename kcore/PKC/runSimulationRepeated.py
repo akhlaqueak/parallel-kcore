@@ -91,7 +91,7 @@ def repeatedSimulations(datasets):
     types = execTime[datasets[0]][0].keys()
     print("datasets ")
     for type in types:
-        print(type[:-5], end=" ")
+        print(type[:-5].replace(" ", ""), end=" ")
     for ds in datasets:
         print(ds, end=" ")
         for t in execTime[ds]:
