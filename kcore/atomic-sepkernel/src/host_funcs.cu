@@ -74,10 +74,10 @@ void find_kcore(string data_file,bool write_to_disk){
         cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
+    auto end = chrono::steady_clock::now();
     kill(pid, SIGKILL);
     
     
-    auto end = chrono::steady_clock::now();
     cout << "Elapsed Time: "
     << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
     cout <<"MaxK: "<<level-1<<endl;
