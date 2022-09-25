@@ -89,9 +89,14 @@ def repeatedSimulations(datasets):
     print("###---------------###")
     print("###- Execution Time -###")
     types = execTime[datasets[0]][0].keys()
-    print("datasets ")
+    print("datasets ", end=" ")
     for type in types:
-        print(type[:-5].replace(" ", ""), end="\t")
+        tp = type[:-5].replace(" ", "")
+        for i in range(NITERATIONS):
+            print(tp + i, end=" ")
+        print(tp+"avg")
+
+    print()
     for ds in datasets:
         print(ds, end=" ")
         for t in types:
