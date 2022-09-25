@@ -32,14 +32,13 @@ int main(int argc, char *argv[]){
     }
     std::string data_graph_file = argv[1];
     bool write_to_disk = true;
-    char * const args[] = {"atomi.mem", NULL};
-    int pid = fork();
-    if(pid == 0){
-        execv("../mem/mem.sh", args);
-    }
-    else {
-        find_kcore(data_graph_file,write_to_disk);
-        kill(pid, SIGKILL);
-    }
+    // char * const args[] = {"atomi.mem", NULL};
+    // int pid = fork();
+    // if(pid == 0){
+    //     execv("../mem/mem.sh", args);
+    // }
+    // else {
+    find_kcore(data_graph_file,write_to_disk);
+
     return 0;
 }
