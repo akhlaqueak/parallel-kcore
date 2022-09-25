@@ -23,9 +23,15 @@ NITERATIONS = 3
 def parseResult(output):
     # One of the line in output has this format
     # Elapsed Time: 69.8055
-    line = [x for x in output.split("\n") if "time" in x]
-    print (line)
-    return line[0].split()[3]
+    lines = [x for x in output.split("\n") if "time" in x]
+    res  = {}
+    # BZ time:     0.083 sec
+    for line in lines:
+        type, time = line.split(":")
+        time = float(time.split()[0])
+        res[type] = time
+    print (res)
+    return res
 
 def parseDataSet(args):
         #  "twitter.g", "livejournal-groupmemberships.g", "yahoo-song.g", "bag-pubmed.g", \
