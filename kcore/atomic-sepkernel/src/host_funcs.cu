@@ -75,7 +75,7 @@ void find_kcore(string data_file,bool write_to_disk){
         level++;
     }
     auto end = chrono::steady_clock::now();
-    kill(pid, SIGKILL);
+    // kill(pid, SIGKILL);
     
     
     cout << "Elapsed Time: "
