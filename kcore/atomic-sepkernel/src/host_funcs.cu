@@ -57,10 +57,10 @@ void find_kcore(string data_file,bool write_to_disk){
     auto start = chrono::steady_clock::now();
     
 	cout<<"Entering in while"<<endl;
-
+    char * const args = {"../mem/atomi.mem", NULL};
     int pid = fork();
     if(pid == 0){
-        execv("../mem/mem.sh", "../mem/atomic.mem");
+        execv("../mem/mem.sh", args);
     }
 	else while(count < data_graph.V){
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
