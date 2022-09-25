@@ -17,36 +17,8 @@ datasets = ['amazon0601.txt',   'cit-Patents.txt',     'in-2004.txt',         'p
 OUTPUT = "../output/"
 DATASET = "../data_set/data/"
 VERIFY = False
-VERBOSE = False
+VERBOSE = True
 NITERATIONS = 3
-
-def verify(datasets):
-    difference = {}
-    for dataset in datasets: 
-        nx_kcore = {}
-        print("Verifying ", dataset, "... ", flush=True, end=" ")
-        try:
-            file = open(OUTPUT + "nx-kcore-" + dataset, 'r')
-            nx_kcore = json.load(file)
-            file.close()
-        except IOError:
-            G = nx.read_adjlist(DATASET + dataset)
-            nx_kcore = nx.core_number(G)
-            # save the file for future use... 
-            json.dump(nx_kcore, open(OUTPUT + "nx-kcore-" + dataset, 'w'))
-
-        pkc_kcore = json.load(open(OUTPUT + "pkc-kcore-" + dataset, 'r'))
-
-        if nx_kcore == pkc_kcore:
-            difference[dataset] = 0
-            print(" Passed!")
-        else:
-            print(" Failed!", end=" ")
-            print("The difference is: ", flush=True, end=" ")
-            diff = set(nx_kcore.items()) ^ set(pkc_kcore.items())
-            print (len(diff)/2, " items")
-            difference[dataset] = len(diff)/2
-    return difference
 
 def parseResult(output):
     # One of the line in output has this format
@@ -83,8 +55,9 @@ def runSimulation(datasets):
         # OMP_NUM_THREADS=32 ./pkc.exe ../data_set/data/in-2004.txt 
         output = sp.run([ "./pkc.exe", "../data_set/data/" + ds], stdout=PIPE, stderr=PIPE)
         text = output.stdout.decode()
+
         if(VERBOSE): 
-            print(text)
+            print("output: ", text)
         time = parseResult(text) # decode is converting byte string to regular
         results[ds] = time
         print("Completed")
