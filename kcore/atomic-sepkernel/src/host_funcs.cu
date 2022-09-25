@@ -72,7 +72,7 @@ void find_kcore(string data_file,bool write_to_disk){
     auto end = chrono::steady_clock::now();
     cout << "Elapsed Time: "
     << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
-    
+    cout <<"MaxK: "<<level-1<<endl;
     
     
 	get_results_from_gpu(data_graph, data_pointers);
