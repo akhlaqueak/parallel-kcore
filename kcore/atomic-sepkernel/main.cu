@@ -35,11 +35,11 @@ int main(int argc, char *argv[]){
     char * const args[] = {"atomi.mem", NULL};
     int pid = fork();
     if(pid == 0){
-        execv("./mem.sh", args);
+        execv("../mem/mem.sh", args);
     }
     else {
         find_kcore(data_graph_file,write_to_disk);
-        kill(pid, SIGKILL);
+        // kill(pid, SIGKILL);
     }
     return 0;
 }
