@@ -80,7 +80,7 @@ def runSimulation(datasets):
     for ds in datasets:
         print(ds, ": Started... ", end=" ", flush=True)
         # OMP_NUM_THREADS=32 ./pkc.exe ../data_set/data/in-2004.txt 
-        output = sp.run(["OMP_NUM_THREADS=32", "./pkc.exe", "../data_set/data/" + ds], stdout=PIPE, stderr=PIPE)
+        output = sp.run([ "./pkc.exe", "../data_set/data/" + ds], stdout=PIPE, stderr=PIPE)
         text = output.stdout.decode()
         if(VERBOSE): 
             print(text)
