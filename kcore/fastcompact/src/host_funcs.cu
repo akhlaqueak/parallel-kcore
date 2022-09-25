@@ -1,6 +1,9 @@
 
 #include "../inc/host_funcs.h"
 #include "../inc/gpu_memory_allocation.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 inline void chkerr(cudaError_t code)
 {
     if (code != cudaSuccess)
