@@ -60,7 +60,7 @@ void find_kcore(string data_file,bool write_to_disk){
     int pid = fork();
     auto start = chrono::steady_clock::now();
     if(pid == 0){
-        execv("../mem/mem.sh", args);
+        execv("./mem.sh", args);
     }
 	else while(count < data_graph.V){
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
