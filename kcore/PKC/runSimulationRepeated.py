@@ -85,7 +85,7 @@ def repeatedSimulations(datasets):
         print("Running Simulation No. ", i+1)
         exec = runSimulation(datasets)
         for ds in datasets:
-            execTime[ds].append(float(exec[ds]))
+            execTime[ds].append(exec[ds])
     print("###---------------###")
     print("###- Execution Time -###")
     
@@ -93,7 +93,7 @@ def repeatedSimulations(datasets):
         print(ds, end=" ")
         for t in execTime[ds]:
             print(t, end=" ")
-        print(stat.mean(execTime[ds]))
+        # print(stat.mean(execTime[ds]))
     print("###---------------###")
 
         
