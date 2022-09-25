@@ -54,11 +54,11 @@ void find_kcore(string data_file,bool write_to_disk){
     
     cout<<"new limit is: "<<limit<<endl;
     
-    auto start = chrono::steady_clock::now();
     
 	cout<<"Entering in while"<<endl;
-    char * const args[] = {"../mem/atomi.mem", NULL};
+    char * const args[] = {"atomi.mem", NULL};
     int pid = fork();
+    auto start = chrono::steady_clock::now();
     if(pid == 0){
         execv("../mem/mem.sh", args);
     }
