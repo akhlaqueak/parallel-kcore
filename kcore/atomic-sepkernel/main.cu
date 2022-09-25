@@ -21,6 +21,10 @@
  * For small data graphs, there is no need to set the third argument.
  */
 #include "./inc/host_funcs.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 int main(int argc, char *argv[]){
     if (argc < 2) {
         cout<<"Please provide data file"<<endl;
@@ -28,8 +32,14 @@ int main(int argc, char *argv[]){
     }
     std::string data_graph_file = argv[1];
     bool write_to_disk = true;
-   
-    find_kcore(data_graph_file,write_to_disk);
-    
+    char * const args[] = {"atomi.mem", NULL};
+    int pid = fork();
+    if(pid == 0){
+        execv("./mem.sh", args);
+    }
+    else {
+        find_kcore(data_graph_file,write_to_disk);
+        kill(pid, SIGKILL);
+    }
     return 0;
 }

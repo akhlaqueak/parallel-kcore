@@ -1,9 +1,7 @@
 
 #include "../inc/host_funcs.h"
 #include "../inc/gpu_memory_allocation.h"
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
+
 inline void chkerr(cudaError_t code)
 {
     if (code != cudaSuccess)
@@ -56,13 +54,9 @@ void find_kcore(string data_file,bool write_to_disk){
     
     
 	cout<<"Entering in while"<<endl;
-    char * const args[] = {"atomi.mem", NULL};
-    int pid = fork();
+
     auto start = chrono::steady_clock::now();
-    if(pid == 0){
-        execv("./mem.sh", args);
-    }
-	else while(count < data_graph.V){
+    while(count < data_graph.V){
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
         // chkerr(cudaDeviceSynchronize());
         selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, data_graph.V, bufTails, glBuffers);
@@ -75,7 +69,6 @@ void find_kcore(string data_file,bool write_to_disk){
         level++;
     }
     auto end = chrono::steady_clock::now();
-    // kill(pid, SIGKILL);
     
     
     cout << "Elapsed Time: "
