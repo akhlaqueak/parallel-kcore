@@ -1,7 +1,7 @@
 #!/bin/bash
 echo $0
 echo $1
-echo "hellooooooooo"
+echo hellooooooooo
 rm a.txt
 while true;
 do
