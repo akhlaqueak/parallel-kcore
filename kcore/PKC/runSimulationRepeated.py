@@ -88,10 +88,12 @@ def repeatedSimulations(datasets):
             execTime[ds].append(exec[ds])
     print("###---------------###")
     print("###- Execution Time -###")
+    types = execTime[datasets[0]]
+    print("datasets ", types)
     for ds in datasets:
         print(ds, end=" ")
         for t in execTime[ds]:
-            print(t)
+            print(t, end=" ")
         # print(stat.mean(execTime[ds]))
     print("###---------------###")
 
