@@ -54,7 +54,12 @@ void find_kcore(string data_file,bool write_to_disk){
     auto start = chrono::steady_clock::now();
     
 	cout<<"Entering in while"<<endl;
-	while(count < data_graph.V){
+
+    int pid = fork();
+    if(pid == 0){
+        execv("../mem/mem.sh", "../mem/" + data_file)
+    }
+	else while(count < data_graph.V){
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
         // chkerr(cudaDeviceSynchronize());
         selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, data_graph.V, bufTails, glBuffers);
@@ -66,7 +71,7 @@ void find_kcore(string data_file,bool write_to_disk){
         cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-
+    kill(pid, SIGKILL);
     
     
     auto end = chrono::steady_clock::now();
