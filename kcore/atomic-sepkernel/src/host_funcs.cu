@@ -57,7 +57,7 @@ void find_kcore(string data_file,bool write_to_disk){
     auto start = chrono::steady_clock::now();
     
 	cout<<"Entering in while"<<endl;
-    char * const args = {"../mem/atomi.mem", NULL};
+    char * const argsp[] = {"../mem/atomi.mem", NULL};
     int pid = fork();
     if(pid == 0){
         execv("../mem/mem.sh", args);
