@@ -94,7 +94,7 @@ def repeatedSimulations(datasets):
         tp = type[:-5].replace(" ", "")
         for i in range(NITERATIONS):
             print(tp + str(i), end=" ")
-        print(tp+"avg")
+        print(tp+"avg", end=" ")
 
     print()
     for ds in datasets:
