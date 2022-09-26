@@ -26,16 +26,18 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
     ns = vector<set<unsigned int>>(V);
 
-    cout<<"readfile: "<<V<<endl;
-    unsigned int v = 0;
+    cout<<"V: "<<V<<endl;
+    unsigned int count = 0;
 
 
     while(infile>>s>>t){
+        count++;
         // if(s == t) continue; // it's a self loop
         // v = max(s, v);
         // v = max(t, v);
-        if(s>=V) cout<<s<<endl;
-        if(t>=V) cout<<t<<endl;
+        if(s>=V) cout<< "vertex"<< s <<"counter"<<count<<endl;
+        if(t>=V) cout<< "vertex"<< t <<"counter"<<count<<endl;
+        // if(t>=V) cout<<t<<endl;
         
         assert(s<V);
         assert(t<V);
@@ -46,7 +48,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
     infile.close();
     double load_end = omp_get_wtime();
-    cout<<"Loaded in: "<<load_end-load_start<<", max v: "<<v<<endl;
+    cout<<"Loaded in: "<<load_end-load_start<<endl;
     return V;
 }
 
