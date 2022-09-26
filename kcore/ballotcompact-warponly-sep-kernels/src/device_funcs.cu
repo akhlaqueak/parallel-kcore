@@ -12,7 +12,6 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int *bufTails
     __shared__ unsigned int temp[BLK_DIM];
     __shared__ unsigned int addresses[BLK_DIM];
     __shared__ unsigned int bufTail;
-    __shared__ unsigned int* glBuffer;
     __shared__ unsigned int* shBuffer;
     if(THID==0){
         bufTail = 0;
@@ -50,7 +49,6 @@ __global__ void processNodes(G_pointers d_p, unsigned int *global_count, int lev
     __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
-    __shared__ unsigned int *shBuffer;
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
     __shared__ unsigned int* glBuffer;

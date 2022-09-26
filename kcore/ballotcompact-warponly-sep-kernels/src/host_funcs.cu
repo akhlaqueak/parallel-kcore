@@ -69,7 +69,7 @@ void find_kcore(string data_file,bool write_to_disk){
 	while(count < data_graph.V){
         selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, bufTails, level, data_graph.V, glBuffers);
   
-        PKC<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, bufTails, glBuffers);
+        processNodes<<<BLK_NUMS, BLK_DIM>>>(data_pointers, global_count, level, data_graph.V, bufTails, glBuffers);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         // chkerr(cudaDeviceSynchronize());
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));

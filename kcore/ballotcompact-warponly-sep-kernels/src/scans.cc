@@ -78,7 +78,6 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
 
 __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
         unsigned int* glBuffer, unsigned int* bufTail){
-    const unsigned int lane_id = THID & 31;
     __shared__ unsigned int bTail;
     
     addresses[THID] = predicate[THID];
