@@ -103,6 +103,7 @@ def parseDataSet(args):
 def runFolder(datasets):
 
     results = {}
+    mem = {}
     for ds in datasets:
         print(ds, ": Started... ", end=" ", flush=True)
         memp = sp.Popen("../mem/mem.sh", stdout=PIPE, stderr=PIPE)
@@ -111,14 +112,14 @@ def runFolder(datasets):
         memtrace, errtrace = memp.communicate()
         memtrace = list(map(int, memtrace.split())) # split and convert to integers
 
-        print(max(memtrace))
+        mem[ds] = max(memtrace)
         text = output.stdout.decode()
         if(VERBOSE): 
             print(text)
         time = parseResult(text) # decode is converting byte string to regular
         results[ds] = time
         print("Completed")
-    return results
+    return results, mem
 
 def parseFolder(args):
     folder = []
@@ -147,25 +148,28 @@ def runSimulation(datasets, folder):
     os.chdir(folder)
     sp.run(["make"])
     print("Executing in ", folder)
-    execTime = runFolder(datasets)
+    execTime, mem = runFolder(datasets)
     if VERIFY:
         verResult = verify(datasets)
     os.chdir("../")
 
-    return execTime, verResult
+    return execTime, mem, verResult
 
 def repeatedSimulations(datasets, folder):
     execTime = {}
     verResult = {}
+    mem = {}
     for ds in datasets:
         execTime[ds] = []
         verResult[ds] = []
+        mem[ds] = []
     
     for i in range(NITERATIONS):
         print("Running Simulation No. ", i+1)
         exec, ver = runSimulation(datasets, folder)
         for ds in datasets:
             execTime[ds].append(float(exec[ds]))
+            mem[ds].append(mem[ds])
             if VERIFY:
                 verResult[ds].append(ver[ds])
     print("###---------------###")
@@ -175,7 +179,8 @@ def repeatedSimulations(datasets, folder):
         print(ds, end=" ")
         for t in execTime[ds]:
             print(t, end=" ")
-        print(stat.mean(execTime[ds]))
+        print('{0:.1g}'.format(stat.mean(execTime[ds])))
+        print('{0:.1g}'.format(stat.mean(mem[ds])))
     print("###---------------###")
     if VERIFY: 
         print("###- Verification Difference -###")
