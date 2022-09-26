@@ -61,18 +61,10 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     unsigned int i;
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
-        initTail = bufTail;
         base = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
-
-    
-
-    // if(THID == 0 && level == 1)
-    //     printf("%d ", bufTail);
-
-
 
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
