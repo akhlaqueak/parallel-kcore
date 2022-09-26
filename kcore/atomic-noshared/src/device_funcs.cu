@@ -55,7 +55,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
-    __shared__ unsigned int initTail;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
