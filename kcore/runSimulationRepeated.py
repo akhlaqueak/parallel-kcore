@@ -166,7 +166,7 @@ def repeatedSimulations(datasets, folder):
     
     for i in range(NITERATIONS):
         print("Running Simulation No. ", i+1)
-        exec, ver = runSimulation(datasets, folder)
+        exec, mem, ver = runSimulation(datasets, folder)
         for ds in datasets:
             execTime[ds].append(float(exec[ds]))
             mem[ds].append(mem[ds])
