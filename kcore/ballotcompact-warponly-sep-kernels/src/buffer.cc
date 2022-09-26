@@ -17,7 +17,7 @@ __device__ inline void writeToBuffer(unsigned int* glBuffer, unsigned int loc, u
 }
 
 
-__device__ inline unsigned int readFromBuffer(unsigned int* shBuffer,   unsigned int* glBuffer, unsigned int loc){
+__device__ inline unsigned int readFromBuffer( unsigned int* glBuffer, unsigned int loc){
     assert(loc < GLBUFFER_SIZE);
     return glBuffer[loc]; 
 }
