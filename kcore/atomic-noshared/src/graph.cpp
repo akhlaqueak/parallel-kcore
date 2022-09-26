@@ -68,7 +68,7 @@ void Graph::readFile(string input_file){
 
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
-    cout<<"neighbors allocated: "<<V<<endl;
+    cout<<"neighbors allocated: "<<E<<endl;
 
     #pragma omp parallel for
     for(int i=0;i<V;i++){
