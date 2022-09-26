@@ -10,7 +10,6 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
     __shared__ unsigned int bufTail; 
     
     if(THID == 0){
-        // bufTail = bufTails + blockIdx.x;
         bufTail = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE;
     }
@@ -31,7 +30,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 
     __syncthreads();
 
-    if(THID == 0) // don't want to write for 0
+    if(THID == 0) 
     {
         bufTails [blockIdx.x] = bufTail;
     }
@@ -62,7 +61,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     }
 
     
-    __syncthreads();
 
     // if(THID == 0 && level == 1)
     //     printf("%d ", bufTail);

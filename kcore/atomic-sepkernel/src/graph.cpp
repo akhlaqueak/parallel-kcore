@@ -48,6 +48,7 @@ void Graph::writeSerialized(string input_file){
 void Graph::readFile(string input_file){
     vector< set<unsigned int> > ns;
     V = file_reader(input_file, ns);
+    cout<<"v: "<<V<<endl;
     degrees = new unsigned int[V];
 
 
