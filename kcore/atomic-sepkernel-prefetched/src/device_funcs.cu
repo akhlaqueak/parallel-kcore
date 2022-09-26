@@ -23,7 +23,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
         if(v >= V) continue;
 
         if(degrees[v] == level){
-            unsigned int loc = atomicAdd(bufTail, 1);
+            unsigned int loc = atomicAdd(&bufTail, 1);
             writeToBuffer(glBuffer, loc, v);
         }
     }
