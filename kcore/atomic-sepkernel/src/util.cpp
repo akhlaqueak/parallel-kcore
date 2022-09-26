@@ -24,7 +24,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
     infile>>V;
 
 
-    // ns = vector<set<unsigned int>>(V);
+    ns = vector<set<unsigned int>>(V);
 
     cout<<"V: "<<V<<endl;
     // unsigned int v = 0;
