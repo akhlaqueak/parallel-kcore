@@ -180,7 +180,7 @@ def repeatedSimulations(datasets, folder):
         for t in execTime[ds]:
             print(t, end=" ")
         print('{0:.1g}'.format(stat.mean(execTime[ds])), end=" ")
-        print('{0:.1g}'.format(stat.mean(memtraces[ds])))
+        print(max(memtraces[ds]))
     print("###---------------###")
     if VERIFY: 
         print("###- Verification Difference -###")
