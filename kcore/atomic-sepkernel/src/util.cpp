@@ -34,6 +34,8 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
         // if(s == t) continue; // it's a self loop
         // v = max(s, v);
         // v = max(t, v);
+        assert(s<=V);
+        assert(t<=V);
 
         ns[s].insert(t);
         ns[t].insert(s);
