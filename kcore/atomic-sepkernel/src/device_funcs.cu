@@ -7,10 +7,10 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
                  unsigned int* bufTails, unsigned int* glBuffers){
 
     __shared__ unsigned int* glBuffer; 
-    __shared__ unsigned int* bufTail; 
+    __shared__ unsigned int bufTail; 
     
     if(THID == 0){
-        bufTail = bufTails + blockIdx.x;
+        // bufTail = bufTails + blockIdx.x;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE;
     }
     __syncthreads();
@@ -23,9 +23,14 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
         if(v >= V) continue;
 
         if(degrees[v] == level){
-            unsigned int loc = atomicAdd(bufTail, 1);
+            unsigned int loc = atomicAdd(&bufTail, 1);
             writeToBuffer(glBuffer, loc, v);
         }
+    }
+
+    if(THID == 0 && bufTail > 0) // don't want to write for 0
+    {
+        bufTails [blockIdx.x] = bufTail;
     }
 }
 
