@@ -45,7 +45,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
-    __shared__ unsigned int initTail;
+    // __shared__ unsigned int initTail;
     __shared__ unsigned int prefv[WARPS_EACH_BLK];
     __shared__ int npref;
 
@@ -55,7 +55,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     unsigned int start, end, v;
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
-        initTail = bufTail;
+        // initTail = bufTail;
         base = 0;
         npref = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
