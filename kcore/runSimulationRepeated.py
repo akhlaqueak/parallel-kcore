@@ -158,18 +158,18 @@ def runSimulation(datasets, folder):
 def repeatedSimulations(datasets, folder):
     execTime = {}
     verResult = {}
-    mem = {}
+    memtraces = {}
     for ds in datasets:
         execTime[ds] = []
         verResult[ds] = []
-        mem[ds] = []
+        memtraces[ds] = []
     
     for i in range(NITERATIONS):
         print("Running Simulation No. ", i+1)
         exec, mem, ver = runSimulation(datasets, folder)
         for ds in datasets:
             execTime[ds].append(float(exec[ds]))
-            mem[ds].append(mem[ds])
+            memtraces[ds].append(mem[ds])
             if VERIFY:
                 verResult[ds].append(ver[ds])
     print("###---------------###")
