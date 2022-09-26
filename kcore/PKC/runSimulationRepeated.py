@@ -129,6 +129,7 @@ def repeatedSimulations(datasets):
                 sum += time
             print(sum/NITERATIONS, end=" ")
         # print(stat.mean(execTime[ds]))
+        print()
     print("###---------------###")
 
         
