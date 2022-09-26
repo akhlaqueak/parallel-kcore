@@ -41,8 +41,8 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
         // if(t>=V) cout<< "vertex"<< t <<"counter"<<count<<endl;
         // // if(t>=V) cout<<t<<endl;
         
-        // assert(s<V);
-        // assert(t<V);
+        assert(s<V);
+        assert(t<V);
 
         ns[s].insert(t);
         ns[t].insert(s);
