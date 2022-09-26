@@ -7,10 +7,10 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
                  unsigned int* bufTails, unsigned int* glBuffers){
 
     __shared__ unsigned int* glBuffer; 
-    __shared__ unsigned int* bufTail; 
+    __shared__ unsigned int bufTail; 
     
     if(THID == 0){
-        bufTail = bufTails + blockIdx.x;
+        bufTail = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE;
     }
     __syncthreads();
@@ -27,6 +27,11 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
             writeToBuffer(glBuffer, loc, v);
         }
     }
+
+    __syncthreads();
+    if(THID==0){
+        bufTails[blockIdx.x] = bufTail;
+    }
 }
 
 
@@ -36,7 +41,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
 
-    __shared__ unsigned int shBuffer[MAX_NV];
+    // __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
@@ -64,7 +69,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
 // 0-th iteration
     if(warp_id > 0)
         if(warp_id-1<bufTail){
-            prefv[warp_id] = readFromBuffer(shBuffer, glBuffer, initTail, warp_id-1);
+            prefv[warp_id] = readFromBuffer(glBuffer, warp_id-1);
         }
     if(THID==0){
         npref = min(WARPS_EACH_BLK-1, bufTail-base);
@@ -104,7 +109,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                 int j = base + lane_id - 1;
                 npref = min(WARPS_EACH_BLK-1, regTail-base);
                 if(j < regTail){
-                    prefv[lane_id] = readFromBuffer(shBuffer, glBuffer, initTail, j);
+                    prefv[lane_id] = readFromBuffer(glBuffer, j);
                 }
             }
             continue; // warp0 doesn't process nodes. 
@@ -128,7 +133,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
+                    writeToBuffer(glBuffer, loc, u);
                 }
 
                 if(a <= level){
