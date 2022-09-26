@@ -58,7 +58,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 
 
 __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
-        unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
+        unsigned int* glBuffer, unsigned int* bufTail){
     
     const unsigned int lane_id = THID & 31;
     addresses[THID] = predicate[THID];
@@ -72,12 +72,12 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
 
     address += bTail;
     if(predicate[THID])
-        writeToBuffer(shBuffer, glBuffer, address, temp[THID]);
+        writeToBuffer(glBuffer, address, temp[THID]);
     predicate[THID] = 0;
 }
 
 __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
-        unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
+        unsigned int* glBuffer, unsigned int* bufTail){
     const unsigned int lane_id = THID & 31;
     __shared__ unsigned int bTail;
     
@@ -89,6 +89,6 @@ __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, 
     __syncthreads();
 
     if(predicate[THID])
-        writeToBuffer(shBuffer, glBuffer, addresses[THID] + bTail, temp[THID]);
+        writeToBuffer(glBuffer, addresses[THID] + bTail, temp[THID]);
     predicate[THID] = 0;
 }

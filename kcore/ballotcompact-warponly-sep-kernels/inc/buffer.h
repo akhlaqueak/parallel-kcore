@@ -3,10 +3,12 @@
 
 #include "./common.h"
 
-__device__ void writeToBuffer(unsigned int* shBuffer,    unsigned int* glBuffer, unsigned int loc, unsigned int v);
+__device__ unsigned int ldg (const unsigned int * p);
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer,  unsigned int* glBuffer, unsigned int loc);
+__device__ inline void writeToBuffer(unsigned int* glBuffer, unsigned int loc, unsigned int v);
 
 
+__device__ inline unsigned int readFromBuffer(unsigned int* shBuffer,   unsigned int* glBuffer,
+ unsigned int loc);
 
 #endif //BUFFER_H

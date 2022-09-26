@@ -29,7 +29,7 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int *bufTails
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         if(predicate[THID]) temp[THID] = v;
 
-        compactWarp(predicate, addresses, temp, shBuffer, glBuffer, &bufTail);        
+        compactWarp(predicate, addresses, temp, glBuffer, &bufTail);        
         
         __syncthreads();
             
@@ -44,7 +44,7 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int *bufTails
 
 
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, 
+__global__ void processNodes(G_pointers d_p, unsigned int *global_count, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers){
     
     __shared__ volatile unsigned int addresses[BLK_DIM];
@@ -57,6 +57,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int i;
+    unsigned int regTail;
     
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
@@ -77,7 +78,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         if(base == bufTail) break;
 
         i = base + warp_id;
-        
+        regTail = bufTail;        
         __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of
 
         if(THID == 0){
@@ -86,12 +87,12 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
                 base = bufTail;
         }
         
-        if(i >= bufTail) continue; // this warp won't have to do anything     
+        if(i >= regTail) continue; // this warp won't have to do anything     
         
         
         unsigned int v, start, end;
 
-        v = readFromBuffer(shBuffer, glBuffer, i);
+        v = readFromBuffer(glBuffer, i);
         start = d_p.neighbors_offset[v];
         end = d_p.neighbors_offset[v+1];
 
@@ -99,7 +100,7 @@ __global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V
         while(true){
             // __syncwarp();
 
-            compactWarp(predicate, addresses, temp, shBuffer, glBuffer, &bufTail);
+            compactWarp(predicate, addresses, temp, glBuffer, &bufTail);
             if(start >= end) break;
 
             unsigned int j = start + lane_id;

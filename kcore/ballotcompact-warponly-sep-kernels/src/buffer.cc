@@ -11,18 +11,15 @@ __device__ unsigned int ldg (const unsigned int * p)
     return out;
 }
 
-__device__ void writeToBuffer(unsigned int* shBuffer,    unsigned int* glBuffer, unsigned int loc, unsigned int v){
-    assert(loc < GLBUFFER_SIZE + MAX_NV);
-    if(loc < MAX_NV)
-        shBuffer[loc] = v;
-    else
-        glBuffer[loc-MAX_NV] = v;
+__device__ inline void writeToBuffer(unsigned int* glBuffer, unsigned int loc, unsigned int v){
+    assert(loc < GLBUFFER_SIZE);
+    glBuffer[loc] = v;
 }
 
 
-__device__ unsigned int readFromBuffer(unsigned int* shBuffer,   unsigned int* glBuffer, unsigned int loc){
-    assert(loc < GLBUFFER_SIZE + MAX_NV);
-    return ( loc < MAX_NV ) ? shBuffer[loc] : glBuffer[loc-MAX_NV]; 
+__device__ inline unsigned int readFromBuffer(unsigned int* shBuffer,   unsigned int* glBuffer, unsigned int loc){
+    assert(loc < GLBUFFER_SIZE);
+    return glBuffer[loc]; 
 }
 
 
