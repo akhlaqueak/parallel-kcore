@@ -109,7 +109,9 @@ def runFolder(datasets):
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         memp.kill()
         memtrace, errtrace = memp.communicate()
-        print(memtrace.decode())
+        memtrace = list(map(int, memtrace.split())) # split and convert to integers
+
+        print(max(memtrace))
         text = output.stdout.decode()
         if(VERBOSE): 
             print(text)
