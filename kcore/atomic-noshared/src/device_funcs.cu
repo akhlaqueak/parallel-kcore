@@ -98,7 +98,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         }
         //bufTail is incremented in the code below:
 
-        unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
+        unsigned int v = readFromBuffer(glBuffer, initTail, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
 
