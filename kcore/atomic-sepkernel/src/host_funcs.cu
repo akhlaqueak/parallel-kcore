@@ -21,6 +21,8 @@ void find_kcore(string data_file,bool write_to_disk){
     cout<<"graph loading complete..."<<endl;
     G_pointers data_pointers;
 
+    return;
+
  
 
     cout<<"start copying graph to gpu..."<<endl;
