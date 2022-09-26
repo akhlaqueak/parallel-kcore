@@ -85,7 +85,7 @@ def runSimulation(datasets):
         text = output.stderr.decode()
 
         if(VERBOSE): 
-            print("output: ", text)
+            print("output: ", text, output.stdout.decode())
         print ("======================================================")
         time = parseResult(text) # decode is converting byte string to regular
         results[ds] = time
