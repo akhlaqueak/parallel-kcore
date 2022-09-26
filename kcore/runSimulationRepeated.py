@@ -29,7 +29,6 @@ datasets = [
 'patentcite.txt', \
 # 'sk-2005.txt', \
 'soc-LiveJournal1.txt', \
-'soc-Pokec.txt', \
 'trackers.txt', \
 'uk-2002.txt', \
 'uk-2005.txt', \
