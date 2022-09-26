@@ -48,7 +48,7 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
         ns[t].insert(s);
     }
 
-    cout<<"max v: "<<v<<endl;
+    // cout<<"max v: "<<v<<endl;
 
     infile.close();
     double load_end = omp_get_wtime();
