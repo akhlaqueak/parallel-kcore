@@ -2,12 +2,12 @@
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 // #include "buffer.cc"
-__device__ void writeToBuffer(unsigned int* glBuffer, unsigned int loc, unsigned int v){
+__device__ inline void writeToBuffer(unsigned int* glBuffer, unsigned int loc, unsigned int v){
     assert(loc < GLBUFFER_SIZE);
     glBuffer[loc] = v;
 }
 
-__device__ unsigned int readFromBuffer(unsigned int* glBuffer, unsigned int initTail, unsigned int loc){
+__device__ inline unsigned int readFromBuffer(unsigned int* glBuffer, unsigned int loc){
     assert(loc < GLBUFFER_SIZE);
     return glBuffer[loc];
 }
@@ -98,7 +98,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         }
         //bufTail is incremented in the code below:
 
-        unsigned int v = readFromBuffer(glBuffer, initTail, i);
+        unsigned int v = readFromBuffer(glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
 
