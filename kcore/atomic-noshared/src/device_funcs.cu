@@ -119,7 +119,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(glBuffer, initTail, loc, u);
+                    writeToBuffer(glBuffer, loc, u);
                 }
 
                 if(a <= level){
