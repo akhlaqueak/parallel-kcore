@@ -107,9 +107,9 @@ def runFolder(datasets):
         print(ds, ": Started... ", end=" ", flush=True)
         memp = sp.Popen("../mem/mem.sh", stdout=PIPE, stderr=PIPE)
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
-        memtrace = memp.stdout.readlines()
         memp.kill()
-        print(memtrace)
+        memtrace, errtrace = memp.communicate()
+        print(memtrace, errtrace)
         text = output.stdout.decode()
         if(VERBOSE): 
             print(text)
