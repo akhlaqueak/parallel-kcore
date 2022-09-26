@@ -32,7 +32,9 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
     while(infile>>s>>t){
         if(s == t) continue; // it's a self loop
-        v = max({s, t, v});
+        v = max(s, v);
+        v = max(t, v);
+
         ns[s].insert(t);
         ns[t].insert(s);
     }
