@@ -4,7 +4,7 @@
 
 #include "./buffer.cc"
 #include "./scans.cc"
-__device__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
+__global__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
     unsigned int *degrees, unsigned int V, unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTail, unsigned int level, unsigned int* total){
 
 
