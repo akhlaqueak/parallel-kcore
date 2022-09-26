@@ -60,7 +60,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 
 
 __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
-                            unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr, 
+                            Node** tail, Node** head, unsigned int* bufTailPtr, 
                             volatile unsigned int* lock, unsigned int* total){
     
     // __syncwarp();
@@ -90,7 +90,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
     address += bTail;
     
     if(predicate[THID])
-        writeToBuffer(shBuffer, tail[0], address, temp[THID]);
+        writeToBuffer(tail[0], address, temp[THID]);
         
         // reset for next iteration
     predicate[THID] = 0;
@@ -101,7 +101,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
 
 
 __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
-    unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTailPtr, unsigned int* total){
+    Node** tail, Node** head, unsigned int* bufTailPtr, unsigned int* total){
 
 
     __shared__ unsigned int bTail;
@@ -127,7 +127,7 @@ __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, 
     addresses[THID] += bTail;
     
     if(predicate[THID])
-        writeToBuffer(shBuffer, tail[0], addresses[THID], temp[THID]);
+        writeToBuffer(tail[0], addresses[THID], temp[THID]);
     
     __syncthreads();
             

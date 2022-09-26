@@ -5,7 +5,7 @@
 #include "./buffer.cc"
 #include "./scans.cc"
 __global__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
-    unsigned int *degrees, unsigned int V, unsigned int* shBuffer, Node** tail, Node** head, unsigned int* bufTail, unsigned int level, unsigned int* total){
+    unsigned int *degrees, unsigned int V, Node** tail, Node** head, unsigned int* bufTail, unsigned int level, unsigned int* total){
 
 
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
@@ -18,27 +18,14 @@ __global__ void selectNodesAtLevel(bool* predicate, volatile unsigned int* addre
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         temp[THID] = v;
 
-        compactBlock(predicate, addresses, temp, shBuffer, tail, head, bufTail, total);        
+        compactBlock(predicate, addresses, temp, tail, head, bufTail, total);        
         __syncthreads();
             
     }
 }
-__device__ void syncBlocks(volatile unsigned int* blockCounter){
-    
-    if (THID==0)
-    {
-        atomicAdd((unsigned int*)blockCounter, 1);
-        __threadfence();
-        while(blockCounter[0]<BLK_NUMS){
-            // number of blocks can't be greater than SMs, else it'll cause infinite loop... 
-            // printf("%d ", blockCounter[0]);
-        };// busy wait until all blocks increment
-    }   
-    __syncthreads();
-}
 
 
-__global__ void PKC(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned int* blockCounter, unsigned int* total){
+__global__ void processNodes(G_pointers d_p, unsigned int *global_count, int level, int V, volatile unsigned int* blockCounter, unsigned int* total){
     
     
     __shared__ Node* tail;

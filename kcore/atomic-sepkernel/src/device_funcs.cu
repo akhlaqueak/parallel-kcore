@@ -105,7 +105,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             if(j >= end) continue;
 
             unsigned int u = d_p.neighbors[j];
-            if(ldg(d_p.degrees+u) > level){
+            if(*(d_p.degrees+u) > level){
                 
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
