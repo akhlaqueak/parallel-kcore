@@ -26,6 +26,8 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
 
     ns = vector<set<unsigned int>>(V);
 
+    cout<<"readfile: "<<V<<endl;
+
     while(infile>>s>>t){
         if(s == t) continue; // it's a self loop
         ns[s].insert(t);
