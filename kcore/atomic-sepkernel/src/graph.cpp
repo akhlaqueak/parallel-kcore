@@ -52,18 +52,23 @@ void Graph::readFile(string input_file){
     degrees = new unsigned int[V];
 
 
+    cout<<"degree allocated: "<<V<<endl;
     
     #pragma omp parallel for
     for(int i=0;i<V;++i){
         degrees[i] = ns[i].size();
     }
-
+    cout<<"degree populated: "<<V<<endl;
     neighbors_offset = new unsigned int[V+1];
+    cout<<"neighbors offset allocated: "<<V<<endl;
+
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
+    cout<<"Error in partial sum: "<<V<<endl;
 
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
+    cout<<"neighbors allocated: "<<V<<endl;
 
     #pragma omp parallel for
     for(int i=0;i<V;i++){
@@ -71,6 +76,8 @@ void Graph::readFile(string input_file){
         for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
             neighbors[j] = *it;
     }
+    cout<<"It's last line: "<<V<<endl;
+
 }
 
 Graph::Graph(std::string input_file){
