@@ -27,16 +27,19 @@ unsigned  int file_reader(std::string input_file, vector<set<unsigned int>> &ns)
     ns = vector<set<unsigned int>>(V);
 
     cout<<"readfile: "<<V<<endl;
+    int v = 0;
+
 
     while(infile>>s>>t){
         if(s == t) continue; // it's a self loop
+        v = max({s, t, v});
         ns[s].insert(t);
         ns[t].insert(s);
     }
 
     infile.close();
     double load_end = omp_get_wtime();
-    cout<<"Loaded in: "<<load_end-load_start<<endl;
+    cout<<"Loaded in: "<<load_end-load_start<<", max v: "<<v<<endl;
     return V;
 }
 
