@@ -105,7 +105,7 @@ def runFolder(datasets):
     results = {}
     for ds in datasets:
         print(ds, ": Started... ", end=" ", flush=True)
-        memp = sp.Popen("../mem/mem.sh", "../mem/trace.txt")
+        memp = sp.Popen("../mem/mem.sh")
         output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
         memp.kill()
         text = output.stdout.decode()
