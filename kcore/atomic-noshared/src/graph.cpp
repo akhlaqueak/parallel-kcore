@@ -35,9 +35,9 @@ void Graph::writeSerialized(string input_file){
         for(int i=0;i<V;i++)
             file<<degrees[i]<<endl;
         for(int i=0;i<V+1;i++)
-            file<<neighbors_offset[i]<<endl;
+            file<<neighbors_offset[i]<<' ';
         for(int i=0;i<E;i++)
-            file<<neighbors[i]<<endl;
+            file<<neighbors[i]<<' ';
         file.close();
     }
     else{
@@ -114,6 +114,7 @@ void Graph::readFile(string input_file){
         index = neighbors_offset[s] + tempOffset[s];
         tempOffset[s]++;
         neighbors[index] = t;
+
         index = neighbors_offset[t] + tempOffset[t];
         neighbors[index] = s;
         tempOffset[t]++;
