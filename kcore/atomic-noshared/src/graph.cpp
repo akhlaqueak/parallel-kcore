@@ -129,13 +129,13 @@ void Graph::readFile(string input_file){
     }
     cout<<"************"<<endl;
 
-    for(int i=0;i<V;i++){
-        cout<<degrees[i]<<' ';
-    }
-    cout<<"************"<<endl;
-    for(int i=0;i<E;i++){
-        cout<<neighbors[i]<<' ';
-    }
+    // for(int i=0;i<V;i++){
+    //     cout<<degrees[i]<<' ';
+    // }
+    // cout<<"************"<<endl;
+    // for(int i=0;i<E;i++){
+    //     cout<<neighbors[i]<<' ';
+    // }
     delete [] tempOffset;
 }
 
