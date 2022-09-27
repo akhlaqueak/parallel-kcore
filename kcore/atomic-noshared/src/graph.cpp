@@ -79,7 +79,7 @@ void Graph::readFile(string input_file){
         edges.push_back({s, t});
     }
     degrees = new unsigned int[V];
-    unsigned int* tempOffset = new unsigned int[V];
+    unsigned int* tempOffset = new unsigned int[V+1];
 
 
     cout<<"degree allocated: "<<V<<endl;
@@ -107,6 +107,11 @@ void Graph::readFile(string input_file){
     neighbors = new unsigned int[E];
     cout<<"neighbors allocated: "<<E<<endl;
 
+    for(int i=0;i<=V;i++){
+        tempOffset[i] = neighbors_offset[i];
+    }
+
+    cout<<"temp offset done"<<tempOffset[V]<<endl;
     // #pragma omp parallel for
     for(auto &edge : edges){
         s = edge.first;
@@ -114,15 +119,13 @@ void Graph::readFile(string input_file){
         // cout<<s<<","<<t<<":";
         assert(s<V);
         assert(t<V);
-        index = neighbors_offset[s] + tempOffset[s];
+        index = tempOffset[s]++;
         assert(index<E);
         neighbors[index] = t;
-        tempOffset[s]++;
 
-        index = neighbors_offset[t] + tempOffset[t];
+        index = tempOffset[t]++;
         assert(index<E);
         neighbors[index] = s;
-        tempOffset[t]++;
     }
     cout<<"It's last line: "<<V<<endl;
 
