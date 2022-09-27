@@ -75,7 +75,7 @@ void Graph::readFile(string input_file){
         assert(s<V);
         assert(t<V);
         if(s == t) continue; // to remove self loop
-        edges.insert(make_pair(s, t));
+        edges.push_back({s, t});
     }
     degrees = new unsigned int[V];
     unsigned int* tempOffset = new unsigned int[V];
