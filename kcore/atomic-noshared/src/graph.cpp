@@ -144,7 +144,7 @@ Graph::Graph(std::string input_file){
     cout<<"Reading normal file... "<<endl;
 
     readFile(input_file);
-    writeSerialized(input_file);
+    // writeSerialized(input_file);
 }
 
 Graph::~Graph(){
