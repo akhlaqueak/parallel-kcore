@@ -120,6 +120,10 @@ void Graph::readFile(string input_file){
         tempOffset[t]++;
     }
     cout<<"It's last line: "<<V<<endl;
+
+    for(int i=0;i<V;i++){
+        sort(neighbors + neighbors_offset[i], neighbors+neighbors_offset[i+1]);
+    }
     delete [] tempOffset;
 }
 
