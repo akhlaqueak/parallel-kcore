@@ -54,7 +54,7 @@ void Graph::readFile(string input_file){
         cout<<"load graph file failed "<<endl;
         exit(-1);
     }
-    unsigned int V, s, t;
+    unsigned int s, t;
 
 /**
  * @brief Dataset format:
