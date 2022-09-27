@@ -68,6 +68,7 @@ void Graph::readFile(string input_file){
     char dumy;
     infile>>dumy; // to read # in the first line... 
     infile>>V;
+    V++;
 
     vector<pair<unsigned int, unsigned int>> edges;
 
@@ -114,6 +115,8 @@ void Graph::readFile(string input_file){
     for(auto &edge : edges){
         s = edge.first;
         t = edge.second;
+        assert(s<V);
+        assert(t<V);
         index = neighbors_offset[s] + tempOffset[s];
         assert(index<E);
         neighbors[index] = t;
