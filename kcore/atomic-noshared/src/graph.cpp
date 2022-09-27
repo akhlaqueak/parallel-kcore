@@ -46,38 +46,78 @@ void Graph::writeSerialized(string input_file){
 }
 
 void Graph::readFile(string input_file){
-    vector< set<unsigned int> > ns;
-    V = file_reader(input_file, ns);
-    cout<<"v: "<<V<<endl;
+
+    double load_start = omp_get_wtime();
+    ifstream infile;
+    infile.open(DS_LOC + input_file);
+    if(!infile){
+        cout<<"load graph file failed "<<endl;
+        exit(-1);
+    }
+    unsigned int V, s, t;
+
+/**
+ * @brief Dataset format:
+ * # Number of nodes
+ * source destination
+ * source destination
+ * source destination
+ * source destination
+ * 
+ */
+    char dumy;
+    infile>>dumy; // to read # in the first line... 
+    infile>>V;
+
+    vector<pair<unsigned int, unsigned int>> edges;
+
+    while(infile>>s>>t){
+        assert(s<V);
+        assert(t<V);
+        if(s == t) continue; // to remove self loop
+        edges.insert({s, t});
+    }
     degrees = new unsigned int[V];
+    unsigned int* tempOffset = new unsigned int[V];
 
 
     cout<<"degree allocated: "<<V<<endl;
     
     #pragma omp parallel for
     for(int i=0;i<V;++i){
-        degrees[i] = ns[i].size();
+        degrees[i] = 0;
+        tempOffset[i] = 0;
     }
-    cout<<"degree populated: "<<V<<endl;
+
+    cout<<"degrees initialized: "<<V<<endl;
+    for(auto &edge : edges){
+        degrees[edge.first]++;
+        degrees[edge.second]++;
+    }
+
     neighbors_offset = new unsigned int[V+1];
     cout<<"neighbors offset allocated: "<<V<<endl;
 
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
-    cout<<"Error in partial sum: "<<V<<endl;
+    cout<<"in partial sum: "<<V<<endl;
 
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
     cout<<"neighbors allocated: "<<E<<endl;
 
-    #pragma omp parallel for
-    for(int i=0;i<V;i++){
-        auto it = ns[i].begin();
-        for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
-            neighbors[j] = *it;
+    int index = 0;
+    // #pragma omp parallel for
+    for(auto &edge : edges){
+        s = edge.first;
+        t = edge.second;
+        index = neighbors_offset[s] + tempOffset[s]++;
+        neighbors[index] = t;
+        index = neighbors_offset[t] + tempOffset[t]++;
+        neighbors[index] = s;
     }
     cout<<"It's last line: "<<V<<endl;
-
+    delete [] tempOffset;
 }
 
 Graph::Graph(std::string input_file){
