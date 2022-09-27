@@ -106,6 +106,9 @@ void Graph::readFile(string input_file){
     neighbors = new unsigned int[E];
     cout<<"neighbors allocated: "<<E<<endl;
 
+    for(int i=0;i<E;i++)
+        neighbors[i] = 0;
+
     int index;
     // #pragma omp parallel for
     for(auto &edge : edges){
