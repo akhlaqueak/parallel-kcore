@@ -111,7 +111,7 @@ void Graph::readFile(string input_file){
     for(auto &edge : edges){
         s = edge.first;
         t = edge.second;
-        cout<<s<<","<<t<<":";
+        // cout<<s<<","<<t<<":";
         assert(s<V);
         assert(t<V);
         index = neighbors_offset[s] + tempOffset[s];
