@@ -112,6 +112,7 @@ void Graph::readFile(string input_file){
     }
 
     cout<<"temp offset done"<<tempOffset[V]<<endl;
+    unsigned int index;
     // #pragma omp parallel for
     for(auto &edge : edges){
         s = edge.first;
