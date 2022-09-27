@@ -115,10 +115,12 @@ void Graph::readFile(string input_file){
         s = edge.first;
         t = edge.second;
         index = neighbors_offset[s] + tempOffset[s];
+        assert(index<E);
         neighbors[index] = t;
         tempOffset[s]++;
 
         index = neighbors_offset[t] + tempOffset[t];
+        assert(index<E);
         neighbors[index] = s;
         tempOffset[t]++;
     }
