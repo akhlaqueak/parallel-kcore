@@ -109,9 +109,9 @@ void Graph::readFile(string input_file){
 
     // #pragma omp parallel for
     for(auto &edge : edges){
-        cout<<s<<","<<t<<":";
         s = edge.first;
         t = edge.second;
+        cout<<s<<","<<t<<":";
         assert(s<V);
         assert(t<V);
         index = neighbors_offset[s] + tempOffset[s];
