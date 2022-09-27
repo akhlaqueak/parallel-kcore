@@ -124,18 +124,12 @@ void Graph::readFile(string input_file){
     }
     cout<<"It's last line: "<<V<<endl;
 
-    for(int i=0;i<V;i++){
-        sort(neighbors + neighbors_offset[i], neighbors+neighbors_offset[i+1]);
-    }
+    // for(int i=0;i<V;i++){
+    //     sort(neighbors + neighbors_offset[i], neighbors+neighbors_offset[i+1]);
+    // }
     cout<<"************"<<endl;
 
-    // for(int i=0;i<V;i++){
-    //     cout<<degrees[i]<<' ';
-    // }
-    // cout<<"************"<<endl;
-    // for(int i=0;i<E;i++){
-    //     cout<<neighbors[i]<<' ';
-    // }
+
     delete [] tempOffset;
 }
 
