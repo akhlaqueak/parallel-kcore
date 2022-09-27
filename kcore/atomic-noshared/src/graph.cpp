@@ -121,7 +121,7 @@ void Graph::readFile(string input_file){
 }
 
 Graph::Graph(std::string input_file){
-    if(readSerialized(input_file)) return;
+    // if(readSerialized(input_file)) return;
     cout<<"Reading normal file... "<<endl;
 
     readFile(input_file);
