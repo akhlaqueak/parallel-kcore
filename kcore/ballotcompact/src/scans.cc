@@ -58,8 +58,9 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 
 
 
-__device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
-        unsigned int* shBuffer, unsigned int* glBuffer, unsigned int* bufTail){
+__device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, 
+        unsigned int* temp, unsigned int* shBuffer, unsigned int* glBuffer, 
+        unsigned int* bufTail){
     const unsigned int lane_id = THID & 31;
     addresses[THID] = predicate[THID];
     unsigned int address = scanWarpBallot(addresses, EXCLUSIVE);
