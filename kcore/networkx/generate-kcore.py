@@ -7,7 +7,7 @@ datasets = ['amazon0601.txt', \
 'web-Google.txt', \
 'hollywood-2009.txt', \
 'in-2004.txt', \
-'as-Skitter .txt', \
+'as-Skitter.txt', \
 'wiki-Talk.txt', \
 'wikipedia-link-de.txt', \
 'patentcite.txt', \
