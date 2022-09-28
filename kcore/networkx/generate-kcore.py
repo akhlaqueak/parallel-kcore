@@ -22,7 +22,7 @@ datasets = ['amazon0601.txt', \
 for ds in datasets:
     print("Starting time", ds, time.time())
     tick = time.time()
-    G = nx.read_edgelist("./data_set/data/" + ds)
+    G = nx.read_edgelist("../data_set/data/" + ds)
     tock = time.time()
     print("Time in loading", ds, tock-tick)
     
