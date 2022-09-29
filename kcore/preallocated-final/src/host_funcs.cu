@@ -2,10 +2,8 @@
 #include "../inc/host_funcs.h"
 #include "../inc/gpu_memory_allocation.h"
 
-void find_kcore(string data_file,bool write_to_disk){
-    cout<<"Loading Started"<<endl;    
-    Graph data_graph(data_file);
-    cout<<"Loading Done"<<endl;
+int find_kcore(Graph data_graph,bool write_to_disk){
+
     G_pointers data_pointers;
 
 
@@ -47,12 +45,12 @@ void find_kcore(string data_file,bool write_to_disk){
     auto end = chrono::steady_clock::now();
     
     
-    cout << "Elapsed Time: "
-    << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
-    cout <<"MaxK: "<<level-1<<endl;
+    // cout << "Elapsed Time: "
+    // << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+    // cout <<"MaxK: "<<level-1<<endl;
     
     
-	get_results_from_gpu(data_graph, data_pointers);
+	// get_results_from_gpu(data_graph, data_pointers);
     
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);
@@ -61,5 +59,7 @@ void find_kcore(string data_file,bool write_to_disk){
         data_graph.writeKCoreToDisk(data_file);
         cout<<"Writing kcore to disk completed... "<<endl;
     }
+
+    return chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
 }

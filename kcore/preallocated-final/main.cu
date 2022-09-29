@@ -24,15 +24,29 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
+#define REP 3
 
 int main(int argc, char *argv[]){
     if (argc < 2) {
         cout<<"Please provide data file"<<endl;
         exit(-1);
     }
-    std::string data_graph_file = argv[1];
+    std::string data_file = argv[1];
     bool write_to_disk = false;
-    find_kcore(data_graph_file,write_to_disk);
+
+    cout<<"Loading Started"<<endl;    
+    Graph data_graph(data_file);
+    cout<<"Loading Done"<<endl;
+    
+    vector<int> et;
+    for(int i=0;i<REP; i++){
+        int t = find_kcore(data_graph, write_to_disk);
+        et.append(t);
+    }
+    cout << "Elapsed Time: ";
+
+    for(auto t: et)
+        cout<<t<<" "<<endl;
 
     return 0;
 }
