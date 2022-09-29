@@ -52,7 +52,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
-    unsigned int i
+    unsigned int i;
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
         base = 0;
