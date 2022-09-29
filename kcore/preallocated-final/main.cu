@@ -91,7 +91,7 @@ int main(int argc, char *argv[]){
 
     for(auto t: et)
         cout<<t<<" ";
-    cout<<accumulate(et.begin(), et.end(), 0)/et.size();
+    cout<<(double)accumulate(et.begin(), et.end(), 0)/et.size();
     cout<<endl;
     return 0;
 }
