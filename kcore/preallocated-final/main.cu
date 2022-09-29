@@ -59,11 +59,11 @@ int find_kcore(Graph data_graph,bool write_to_disk){
     
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);
-    if(write_to_disk){
-        cout<<"Writing kcore to disk started... "<<endl;
-        data_graph.writeKCoreToDisk(data_file);
-        cout<<"Writing kcore to disk completed... "<<endl;
-    }
+    // if(write_to_disk){
+    //     cout<<"Writing kcore to disk started... "<<endl;
+    //     data_graph.writeKCoreToDisk(data_file);
+    //     cout<<"Writing kcore to disk completed... "<<endl;
+    // }
 
     return chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
