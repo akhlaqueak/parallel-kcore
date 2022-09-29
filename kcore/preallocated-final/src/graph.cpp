@@ -76,7 +76,6 @@ void Graph::readFile(string input_file){
     }
     V++; // vertices index start from zero, so number of vertices are 1 greater than largest vertex ID
     degrees = new unsigned int[V];
-    cout<<"loaded.."<<V<<endl;
     unsigned int* tempOffset = new unsigned int[V];
 
     #pragma omp parallel for
@@ -84,6 +83,7 @@ void Graph::readFile(string input_file){
         degrees[i] = 0;
         tempOffset[i] = 0;
     }
+    cout<<"loaded.."<<V<<endl;
 
     for(auto &edge : edges){
         degrees[edge.first]++;
