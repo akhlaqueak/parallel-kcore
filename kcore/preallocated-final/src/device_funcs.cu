@@ -43,7 +43,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 __global__ void processNodes(G_pointers d_p, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
-#ifdef SHBUFFER
+#if SHBUFFER
     __shared__ unsigned int shBuffer[MAX_NV];
 #endif
     __shared__ unsigned int bufTail;
