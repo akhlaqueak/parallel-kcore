@@ -65,86 +65,85 @@ void Graph::readFile(string input_file){
  * source destination
  * 
  */
-    char dumy;
-    infile>>dumy; // to read # in the first line... 
-    infile>>V;
-    V++;
 
     vector<pair<unsigned int, unsigned int>> edges;
 
     while(infile>>s>>t){
-        assert(s<V);
-        assert(t<V);
         if(s == t) continue; // to remove self loop
+        V = max(s,V);
+        V = max(t,V);
         edges.push_back({s, t});
     }
+    V++; // vertices index start from zero, so number of vertices are 1 greater than largest vertex ID
     degrees = new unsigned int[V];
-    unsigned int* tempOffset = new unsigned int[V+1];
+    unsigned int* tempOffset = new unsigned int[V];
 
-
-    cout<<"degree allocated: "<<V<<endl;
-    
     #pragma omp parallel for
     for(int i=0;i<V;++i){
         degrees[i] = 0;
         tempOffset[i] = 0;
     }
 
-    cout<<"degrees initialized: "<<V<<endl;
     for(auto &edge : edges){
         degrees[edge.first]++;
         degrees[edge.second]++;
     }
 
     neighbors_offset = new unsigned int[V+1];
-    cout<<"neighbors offset allocated: "<<V<<endl;
 
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
-    cout<<"in partial sum: "<<V<<endl;
 
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
-    cout<<"neighbors allocated: "<<E<<endl;
 
     for(int i=0;i<=V;i++){
         tempOffset[i] = neighbors_offset[i];
     }
 
-    cout<<"temp offset done"<<tempOffset[V]<<endl;
     unsigned int index;
     // #pragma omp parallel for
     for(auto &edge : edges){
         s = edge.first;
         t = edge.second;
-        // cout<<s<<","<<t<<":";
-        assert(s<V);
-        assert(t<V);
+
         index = tempOffset[s]++;
-        assert(index<E);
         neighbors[index] = t;
 
         index = tempOffset[t]++;
-        assert(index<E);
         neighbors[index] = s;
     }
-    cout<<"It's last line: "<<V<<endl;
 
     // for(int i=0;i<V;i++){
     //     sort(neighbors + neighbors_offset[i], neighbors+neighbors_offset[i+1]);
     // }
-    cout<<"************"<<endl;
-
-
     delete [] tempOffset;
 }
 
+void write_kcore_to_disk(unsigned int *degrees, unsigned long long int V, std::string file){
+    // writing in json dictionary format
+    std::ofstream out(OUTPUT_LOC + string("pkc-kcore-") + file);
+    // first entry is read as zero degree node by networkx, 
+    // to make it compatible just insert this dummy entry
+    out<<"{ ";
+    // out<<'"'<<V<<'"'<<": "<<0; 
+    
+    for(unsigned long long int i=0;i<V;++i)
+        if(degrees[i]!=0)
+            // not writing zero degree nodes, because certain nodes in dataset are not present... 
+            // our algo treats them isloated nodes, but nxcore doesn't recognize them
+           out<<'"'<<i<<'"'<<": "<<degrees[i]<<", "<<endl;
+    out.seekp(-3, ios_base::end);
+    out<<" }";
+    out.close();
+}
+
 Graph::Graph(std::string input_file){
-    // if(readSerialized(input_file)) return;
+    if(readSerialized(input_file)) return;
     cout<<"Reading normal file... "<<endl;
 
     readFile(input_file);
-    // writeSerialized(input_file);
+    writeSerialized(input_file);
 }
 
 Graph::~Graph(){
