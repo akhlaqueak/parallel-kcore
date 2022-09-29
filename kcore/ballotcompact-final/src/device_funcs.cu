@@ -3,10 +3,8 @@
 #include "stdio.h"
 #include "buffer.cc"
 #include "scans.cc"
-
-
-__global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int *bufTails, int level, int V, 
-    unsigned int* glBuffers){
+__global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, unsigned int V, 
+                 unsigned int* bufTails, unsigned int* glBuffers){
 
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
@@ -43,9 +41,11 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int *bufTails
 
 
 
-__global__ void processNodes(G_pointers d_p, unsigned int *global_count, int level, int V, 
-                    unsigned int* bufTails, unsigned int* glBuffers){
-    
+
+__global__ void processNodes(G_pointers d_p, int level, int V, 
+                    unsigned int* bufTails, unsigned int* glBuffers, 
+                    unsigned int *global_count){
+                          
     __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
