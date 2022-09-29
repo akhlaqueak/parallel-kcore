@@ -67,7 +67,7 @@ void Graph::readFile(string input_file){
  */
 
     vector<pair<unsigned int, unsigned int>> edges;
-
+    V = 0;
     while(infile>>s>>t){
         if(s == t) continue; // to remove self loop
         V = max(s,V);
@@ -76,6 +76,7 @@ void Graph::readFile(string input_file){
     }
     V++; // vertices index start from zero, so number of vertices are 1 greater than largest vertex ID
     degrees = new unsigned int[V];
+    cout<<"loaded.."<<V<<endl;
     unsigned int* tempOffset = new unsigned int[V];
 
     #pragma omp parallel for
