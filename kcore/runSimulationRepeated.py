@@ -136,11 +136,8 @@ def parseFolder(args):
             print("Please provide valid folder: ", [(x, y) for x, y in enumerate(folders)])
     elif arg == "all":
         folder = folders
-    elif arg in folders:
-        folder.append(arg) 
     else:
-        print("Please provide valid folder: ", [(x, y) for x, y in enumerate(folders)])
-        exit(0)
+        folder.append(arg) 
     return folder[0]
 
 def runSimulation(datasets, folder):
