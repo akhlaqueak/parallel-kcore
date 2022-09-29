@@ -42,8 +42,8 @@ datasets = [
 OUTPUT = "../output/"
 DATASET = "../data_set/data/"
 VERIFY = False
-VERBOSE = False
-NITERATIONS = 1
+VERBOSE = True
+NITERATIONS = 3
 
 def verify(datasets):
     difference = {}
