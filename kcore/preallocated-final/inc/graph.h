@@ -16,7 +16,7 @@ public:
     bool readSerialized(string input_file);
     void writeSerialized(string input_file);
     void readFile(string input_file);
-    void writeKCoreToDisk(std::string file)
+    void writeKCoreToDisk(std::string file);
     ~Graph();
 };
 #endif //CUTS_GRAPH_H
