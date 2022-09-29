@@ -61,4 +61,4 @@ for ds in datasets:
     text = output.stdout.decode()
     if(VERBOSE): 
         print(text)
-    print("MEM: ", mem)
+    print(ds, " MEM: ", mem)
