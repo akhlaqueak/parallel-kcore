@@ -38,7 +38,6 @@ __device__ unsigned int readFromBuffer(unsigned int* shBuffer, unsigned int* glB
         v = shBuffer[loc-initTail];
     else 
         v = glBuffer[loc-MAX_NV];
-
     return v; 
 }
 

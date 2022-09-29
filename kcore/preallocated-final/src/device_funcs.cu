@@ -48,11 +48,11 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
 #endif
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
-    __shared__ unsigned int base;
+    __shared__ unsigned int base, initTail;;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
-    unsigned int i, initTail;
+    unsigned int i
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
         base = 0;
