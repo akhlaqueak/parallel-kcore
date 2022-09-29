@@ -83,7 +83,6 @@ void Graph::readFile(string input_file){
         degrees[i] = 0;
         tempOffset[i] = 0;
     }
-    cout<<"loaded.."<<V<<endl;
 
     for(auto &edge : edges){
         degrees[edge.first]++;
@@ -91,6 +90,7 @@ void Graph::readFile(string input_file){
     }
 
     neighbors_offset = new unsigned int[V+1];
+    cout<<"loaded.."<<V<<endl;
 
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
