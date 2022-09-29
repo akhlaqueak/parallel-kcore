@@ -44,7 +44,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
 #ifdef SHBUFFER
-    __shared__ unsigned int shBuffer[MAX_NV]
+    __shared__ unsigned int shBuffer[MAX_NV];
 #endif
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
