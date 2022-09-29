@@ -8,14 +8,16 @@ import networkx as nx
 from subprocess import PIPE
 import statistics as stat
 
-folders = ["atomic", "atomic-sepkernel", "atomic-sepkernel-prefetched", "atomic-noshared", "ballotcompact-sepkernel",       "fastcompact", "fastcompact-warponly", "ballotcompact", "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels", "cpu",        "atomic-linked-list-separate-kernels", "compact-linked-list-separate-kernels", 
-        "ballotcompact-warponly-sep-kernels-prefetched"]
+# folders = ["atomic", "atomic-sepkernel", "atomic-sepkernel-prefetched", "atomic-noshared", "ballotcompact-sepkernel",       "fastcompact", "fastcompact-warponly", "ballotcompact", "ballotcompact-warponly", "ballotcompact-linkedlist", "ballotcompact-warponly-sep-kernels", "cpu",        "atomic-linked-list-separate-kernels", "compact-linked-list-separate-kernels", 
+        # "ballotcompact-warponly-sep-kernels-prefetched"]
 
 # datasets = ["Enron.g", "wikipedia-link-de.g", "trackers.g", "soc-Journal.g", \
 #     "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
 #     ]
 # datasets = ['amazon0601.txt',   'cit-Patents.txt',     'in-2004.txt',         'patentcite.txt',        'uk-2002.txt',  'web-BerkStan.txt',  'wiki-Talk.txt', 'arabic-2005.txt',  'dblp-author.txt',     'indochina-2004.txt',  'uk-2005.txt',  'web-Google.txt', 'as-skitter.txt',   'hollywood-2009.txt', 'it-2004.txt',         'soc-LiveJournal1.txt',  'wb-edu.txt',   'webbase-2001.txt']
 # datasets = ['amazon0601.txt',   'cit-Patents.txt',     'in-2004.txt',         'patentcite.txt']
+
+folders = ['preallocated-final']
 
 datasets = [
 'amazon0601.txt', \
