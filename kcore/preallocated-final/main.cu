@@ -83,6 +83,7 @@ int main(int argc, char *argv[]){
     
     vector<int> et;
     for(int i=0;i<REP; i++){
+        cout<<"Running iteration: "<<i+1<<endl;
         int t = find_kcore(data_graph, write_to_disk);
         et.push_back(t);
     }
