@@ -90,10 +90,10 @@ void Graph::readFile(string input_file){
     }
 
     neighbors_offset = new unsigned int[V+1];
-    cout<<"loaded.."<<V<<endl;
 
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
+    cout<<"loaded.."<<V<<endl;
 
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
