@@ -7,7 +7,7 @@
 #include "../inc/gpu_memory_allocation.h"
 #include "../inc/device_funcs.h"
 
-int find_kcore(Graph data_graph,bool write_to_disk){
+int find_kcore(Graph &data_graph,bool write_to_disk){
 
     G_pointers data_pointers;
 
