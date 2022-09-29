@@ -15,32 +15,33 @@ import statistics as stat
 #     "dblp-author.g", "patentcite.g", "soc-pokec-relationships.g", "wikiTalk.g", "twitter_mpi.g"\
 #     ]
 # datasets = ['amazon0601.txt',   'cit-Patents.txt',     'in-2004.txt',         'patentcite.txt',        'uk-2002.txt',  'web-BerkStan.txt',  'wiki-Talk.txt', 'arabic-2005.txt',  'dblp-author.txt',     'indochina-2004.txt',  'uk-2005.txt',  'web-Google.txt', 'as-skitter.txt',   'hollywood-2009.txt', 'it-2004.txt',         'soc-LiveJournal1.txt',  'wb-edu.txt',   'webbase-2001.txt']
-datasets = ['amazon0601.txt',   'cit-Patents.txt',     'in-2004.txt',         'patentcite.txt']
 
 # folders = ['preallocated-final']
 
-# datasets = [
-# 'amazon0601.txt', \
-# 'arabic-2005.txt', \
-# 'as-skitter.txt', \
-# 'dblp-author.txt', \
-# 'hollywood-2009.txt', \
-# 'in-2004.txt', \
-# 'indochina-2004.txt', \
-# 'it-2004.txt', \
-# 'patentcite.txt', \
-# # 'sk-2005.txt', \
-# 'soc-LiveJournal1.txt', \
-# 'trackers.txt', \
-# 'uk-2002.txt', \
-# 'uk-2005.txt', \
-# 'wb-edu.txt', \
-# 'webbase-2001.txt', \
-# 'web-BerkStan.txt', \
-# 'web-Google.txt', \
-# 'wikipedia-link-de.txt', \
-# 'wiki-Talk.txt', \
-# ]
+datasets = [
+'amazon0601.txt', \
+'arabic-2005.txt', \
+'as-skitter.txt', \
+'dblp-author.txt', \
+'hollywood-2009.txt', \
+'in-2004.txt', \
+'indochina-2004.txt', \
+'it-2004.txt', \
+'patentcite.txt', \
+# 'sk-2005.txt', \
+'soc-LiveJournal1.txt', \
+'trackers.txt', \
+'uk-2002.txt', \
+'uk-2005.txt', \
+'wb-edu.txt', \
+'webbase-2001.txt', \
+'web-BerkStan.txt', \
+'web-Google.txt', \
+'wikipedia-link-de.txt', \
+'wiki-Talk.txt', \
+]
+# datasets = ['amazon0601.txt',   'cit-Patents.txt',     'in-2004.txt',         'patentcite.txt']
+
 OUTPUT = "../output/"
 DATASET = "../data_set/data/"
 VERIFY = False
