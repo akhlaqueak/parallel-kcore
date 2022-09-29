@@ -44,11 +44,12 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
 #if SHBUFFER
-    __shared__ unsigned int shBuffer[MAX_NV];
+    __shared__ unsigned int shBuffer[MAX_NV], initTail;
+    if(THID == 0) initTail = bufTails[blockIdx.x];
 #endif
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
-    __shared__ unsigned int base, initTail;;
+    __shared__ unsigned int base;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
@@ -56,7 +57,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
         base = 0;
-        initTail = bufTail;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
