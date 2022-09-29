@@ -28,7 +28,6 @@ datasets = [
 'indochina-2004.txt', \
 'it-2004.txt', \
 'patentcite.txt', \
-# 'sk-2005.txt', \
 'soc-LiveJournal1.txt', \
 'trackers.txt', \
 'uk-2002.txt', \
