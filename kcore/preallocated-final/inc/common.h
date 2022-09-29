@@ -14,6 +14,7 @@
 #define UINT unsigned int
 #define DS_LOC string("../data_set/data/")
 #define OUTPUT_LOC string("../output/")
+#define REP 3
 
 #include <iostream>
 #include <vector>

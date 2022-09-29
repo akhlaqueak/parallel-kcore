@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
-#define REP 3
 
 
 #include "../inc/gpu_memory_allocation.h"
@@ -90,7 +89,7 @@ int main(int argc, char *argv[]){
     cout << "Elapsed Time: ";
 
     for(auto t: et)
-        cout<<t<<" "<<;
+        cout<<t<<" ";
     cout<<endl;
     return 0;
 }
