@@ -4,7 +4,6 @@
 #define REP 3
 
 
-#include "../inc/host_funcs.h"
 #include "../inc/gpu_memory_allocation.h"
 
 int find_kcore(Graph data_graph,bool write_to_disk){
