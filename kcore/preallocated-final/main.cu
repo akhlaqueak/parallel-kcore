@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
     vector<int> et;
     for(int i=0;i<REP; i++){
         int t = find_kcore(data_graph, write_to_disk);
-        et.append(t);
+        et.push_back(t);
     }
     cout << "Elapsed Time: ";
 
