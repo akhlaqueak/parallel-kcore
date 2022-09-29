@@ -2,7 +2,7 @@
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 #include "buffer.cc"
-
+#define SHBUFFER 1
 
 __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, unsigned int V, 
                  unsigned int* bufTails, unsigned int* glBuffers){
@@ -43,17 +43,20 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 __global__ void processNodes(G_pointers d_p, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
-
+#ifdef SHBUFFER
+    __shared__ unsigned int shBuffer[MAX_NV]
+#endif
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
-    unsigned int i;
+    unsigned int i, initTail;
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
         base = 0;
+        initTail = bufTail;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
@@ -102,7 +105,11 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(glBuffer, loc, u);
+                    #if SHBUFFER
+                        writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
+                    #else
+                        writeToBuffer(glBuffer, loc, u);
+                    #endif
                 }
 
                 if(a <= level){
