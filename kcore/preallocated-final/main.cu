@@ -87,7 +87,7 @@ int main(int argc, char *argv[]){
         int t = find_kcore(data_graph, write_to_disk);
         et.push_back(t);
     }
-    cout << "Elapsed Time: ";
+    cout << data_file << "Elapsed Time: ";
 
     for(auto t: et)
         cout<<t<<" ";
