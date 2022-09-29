@@ -54,6 +54,8 @@ void Graph::readFile(string input_file){
         cout<<"load graph file failed "<<endl;
         exit(-1);
     }
+
+
     unsigned int s, t;
 
 /**
@@ -65,59 +67,41 @@ void Graph::readFile(string input_file){
  * source destination
  * 
  */
+    char ch;
+    infile>>ch; // just to eat #
+    infile>>V; // read number of nodes... 
 
-    vector<pair<unsigned int, unsigned int>> edges;
-    V = 0;
+
+    ns = vector<set<unsigned int>>(V);
+
     while(infile>>s>>t){
-        if(s == t) continue; // to remove self loop
-        V = max(s,V);
-        V = max(t,V);
-        edges.push_back({s, t});
+        if(s==t) continue; // remove self loops
+        ns[s].insert(t);
+        ns[t].insert(s);
     }
-    V++; // vertices index start from zero, so number of vertices are 1 greater than largest vertex ID
+
+    infile.close();
+    
     degrees = new unsigned int[V];
-    unsigned int* tempOffset = new unsigned int[V];
 
     #pragma omp parallel for
     for(int i=0;i<V;++i){
-        degrees[i] = 0;
-        tempOffset[i] = 0;
-    }
-
-    for(auto &edge : edges){
-        degrees[edge.first]++;
-        degrees[edge.second]++;
+        degrees[i] = ns[i].size();
     }
 
     neighbors_offset = new unsigned int[V+1];
-
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
 
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
 
+    #pragma omp parallel for
     for(int i=0;i<V;i++){
-        tempOffset[i] = neighbors_offset[i];
+        auto it = ns[i].begin();
+        for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
+            neighbors[j] = *it;
     }
-
-    unsigned int index;
-    // #pragma omp parallel for
-    for(auto &edge : edges){
-        s = edge.first;
-        t = edge.second;
-
-        index = tempOffset[s]++;
-        neighbors[index] = t;
-
-        index = tempOffset[t]++;
-        neighbors[index] = s;
-    }
-
-    // for(int i=0;i<V;i++){
-    //     sort(neighbors + neighbors_offset[i], neighbors+neighbors_offset[i+1]);
-    // }
-    delete [] tempOffset;
 }
 
 void Graph::writeKCoreToDisk(std::string file){

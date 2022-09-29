@@ -91,8 +91,8 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         if(warp_id <= npref){
             v = prefv[warp_id];
         }
-        if(base == bufTail) break; // all the threads will evaluate to true at same iteration
         regnpref = npref;
+        if(base == bufTail) break; // all the threads will evaluate to true at same iteration
         regTail = bufTail;
         __syncthreads();
         if(warp_id > regnpref) continue; 
