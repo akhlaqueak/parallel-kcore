@@ -47,7 +47,8 @@ VERIFY = False
 VERBOSE = True
 
 os.chdir(sys.argv[1])
-
+sp.run(["git", "pull"])
+sp.run(["make"])
 for ds in datasets:
 
     print(ds, ": Started... ", end=" ", flush=True)
