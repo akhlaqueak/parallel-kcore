@@ -1,7 +1,4 @@
 
-#include "../inc/buffer.h"
-
-
 __device__ inline unsigned int ldg (const unsigned int * p)
 {
     unsigned int out;
