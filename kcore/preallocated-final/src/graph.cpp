@@ -98,7 +98,7 @@ void Graph::readFile(string input_file){
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
 
-    for(int i=0;i<=V;i++){
+    for(int i=0;i<V;i++){
         tempOffset[i] = neighbors_offset[i];
     }
 
