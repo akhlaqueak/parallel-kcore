@@ -72,7 +72,7 @@ void Graph::readFile(string input_file){
     infile>>V; // read number of nodes... 
 
 
-    ns = vector<set<unsigned int>>(V);
+    vector<set<unsigned int>> ns(V);
 
     while(infile>>s>>t){
         if(s==t) continue; // remove self loops
