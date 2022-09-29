@@ -42,7 +42,7 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
                         bufTails, glBuffers, global_count);
 
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
-        cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
+        // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
 	cout<<"K-core Computation Done"<<endl;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]){
     cout << "Elapsed Time: ";
 
     for(auto t: et)
-        cout<<t<<" "<<endl;
-
+        cout<<t<<" "<<;
+    cout<<endl;
     return 0;
 }
