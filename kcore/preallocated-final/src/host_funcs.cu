@@ -58,7 +58,7 @@ void find_kcore(string data_file,bool write_to_disk){
     free_graph_gpu_memory(data_pointers);
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
-        data_graph.writeToDisk(data_file);
+        data_graph.writeKCoreToDisk(data_file);
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 
