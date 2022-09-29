@@ -2,7 +2,8 @@
 
 #ifndef CUTS_GRAPH_H
 #define CUTS_GRAPH_H
-#include "./util.h"
+#include "./common.h"
+
 class Graph{
 public:
     unsigned int V;
