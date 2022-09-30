@@ -35,8 +35,10 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
             
     }
 
-    if(THID == 0)
+    if(THID == 0){
         bufTails[blockIdx.x] = bufTail;
+        printf("%d ", bufTail);
+    }
 }
 
 
