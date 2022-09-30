@@ -97,11 +97,11 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
 
         if(THID == 0){
             base += WARPS_EACH_BLK;
-            if(regTail < base )
-                base = bufTail;
+            if(regtail < base )
+                base = regtail;
         }
         __syncthreads();
-        if(i >= bufTail) continue; // this warp won't have to do anything 
+        if(i >= regtail) continue; // this warp won't have to do anything 
 
         
         unsigned int v = readFromBuffer(head[0], i);
