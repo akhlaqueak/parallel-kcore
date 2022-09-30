@@ -121,7 +121,7 @@ void Graph::readFile(string input_file){
         rec[i].second = i;
     }
 
-    sort(rec.begin(), rec.end(), [](auto x, auto y){x.first < y.first});
+    sort(rec.begin(), rec.end(), [](auto x, auto y){return x.first < y.first;});
 
     cout<<"Max Degree"<<rec[0].second;
     
