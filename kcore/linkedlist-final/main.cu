@@ -33,8 +33,6 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
     cudaMemset(global_count, 0, sizeof(unsigned int));
     cout<<"sl done"<<endl;
        
-    size_t limit = 10*1024*1024*1024ULL; //10GB
-    chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
 
 	cout<<"K-core Computation Started"<<endl;
 
@@ -90,7 +88,10 @@ int main(int argc, char *argv[]){
     cout<<"Loading Started"<<endl;    
     Graph data_graph(data_file);
     cout<<"Loading Done"<<endl;
-    
+ 
+    size_t limit = 10*1024*1024*1024ULL; //10GB
+    chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
+       
     vector<int> et;
     for(int i=0;i<REP; i++){
         cout<<"Running iteration: "<<i+1<<endl;
