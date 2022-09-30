@@ -24,9 +24,10 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
     chkerr(cudaMalloc(&global_count, sizeof(unsigned int)));
     chkerr(cudaMalloc(&bufTails, sizeof(unsigned int)*BLK_NUMS));
     cudaMemset(global_count, 0, sizeof(unsigned int));
+    cout<<"x"<<endl;
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
-    
-    
+    cout<<"y"<<endl;
+       
     
 	cout<<"K-core Computation Started"<<endl;
 
