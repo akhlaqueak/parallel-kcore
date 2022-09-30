@@ -92,7 +92,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
         __syncthreads();
         
         if(THID==0 && head[0]!=NULL){
-                printf("%d.%d.", regbase, head[0]->limit);
+                // printf("%d.%d.", regbase, head[0]->limit);
             if(regbase >= head[0]->limit){
                 deleteHead(head);
             }
@@ -149,7 +149,10 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
 
     if(THID == 0 && bufTail!=0){
         atomicAdd(global_count, bufTail); // atomic since contention among blocks
-        if(head[0]!=NULL) free(head[0]);
+        if(head[0]!=NULL) {
+            print("/");
+            free(head[0]);
+        }
     }
 
 }
