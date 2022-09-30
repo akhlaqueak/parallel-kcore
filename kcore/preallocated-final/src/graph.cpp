@@ -1,5 +1,11 @@
 
 #include "../inc/graph.h"
+
+bool compareSet(const set<unsigned int> & lhs, const set<unsigned int> & rhs)
+{
+  return lhs.size() > rhs.size();
+}
+
 bool Graph::readSerialized(string input_file){
     ifstream file;
     file.open(string(OUTPUT_LOC) + string("serialized-") + input_file);
@@ -101,9 +107,12 @@ void Graph::readFile(string input_file){
         ns[p.first].insert(p.second);
         ns[p.second].insert(p.first);
     }
+
+    sort(ns.begin(), ns.end(), compareSet);
+
+    cout<<"Max Degree"<<ns[0].size();
     
     degrees = new unsigned int[V];
-
     #pragma omp parallel for
     for(int i=0;i<V;++i){
         degrees[i] = ns[i].size();
