@@ -135,13 +135,13 @@ void Graph::readFile(string input_file){
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
 
-    cout<<"x"<<endl;
     
 
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
 
     sort(rec.begin(), rec.end(), [](auto x, auto y){return x.first < y.first;});
+    cout<<"x"<<endl;
     #pragma omp parallel for
     for(int i=0;i<V;i++){
         int reci = rec[i].second;
