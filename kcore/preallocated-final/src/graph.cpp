@@ -141,11 +141,11 @@ void Graph::readFile(string input_file){
     neighbors = new unsigned int[E];
 
     sort(rec.begin(), rec.end(), [](auto x, auto y){return x.first < y.first;});
-    cout<<"x"<<endl;
     #pragma omp parallel for
     for(int i=0;i<V;i++){
         int reci = rec[i].second;
         auto it = ns[reci].begin();
+        cout<<i<<" "<<endl;
         for(int j=neighbors_offset[reci]; j < neighbors_offset[reci+1]; j++, it++)
             neighbors[j] = rec[*it].second;
     }
