@@ -37,7 +37,6 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
 
     if(THID == 0){
         bufTails[blockIdx.x] = bufTail;
-        printf("%d ", bufTail);
     }
 }
 
@@ -61,7 +60,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
     if(THID==0){
         tail = tails + blockIdx.x;
         head = heads + blockIdx.x;
-        bufTail = 0;
+        bufTail = bufTails[blockIdx.x];
         base = 0;
         lock = 0;
     }
