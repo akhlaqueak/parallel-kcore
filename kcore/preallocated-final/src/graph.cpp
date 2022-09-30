@@ -98,8 +98,8 @@ void Graph::readFile(string input_file){
     vector<set<unsigned int>> ns(V);
     
     for(auto &p : lines){
-        ns[p.first] = p.second;
-        ns[p.second] = p.first;
+        ns[p.first].insert(p.second);
+        ns[p.second].insert(p.first);
     }
     
     degrees = new unsigned int[V];
