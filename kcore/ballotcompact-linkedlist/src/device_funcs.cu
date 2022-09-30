@@ -50,9 +50,6 @@ __global__ void processNodes(G_pointers d_p, unsigned int *global_count, int lev
     }
     predicate[THID] = 0;
     
-    selectNodesAtLevel(predicate, addresses, temp, d_p.degrees, V, shBuffer, &tail, &head, &bufTail, level, total);
-    if(level == 1 && THID == 0) printf("%d ", bufTail);
-    predicate[THID] = 0;
 
     __syncthreads();
 
