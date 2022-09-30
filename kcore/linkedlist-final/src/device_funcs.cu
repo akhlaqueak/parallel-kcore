@@ -11,7 +11,8 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
     __shared__ unsigned int temp[BLK_DIM]; 
     __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ bool predicate[BLK_DIM];
-    __shared__ Node** head, tail;
+    __shared__ Node** head;
+    __shared__ Node** tail;
 
     if(THID == 0){
         head = heads + blockIdx.x;
