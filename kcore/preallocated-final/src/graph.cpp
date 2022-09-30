@@ -115,14 +115,13 @@ void Graph::readFile(string input_file){
     }
 
     sort(rec.begin(), rec.end(), degComp);
-    cout<<"y"<<endl;
     
     for(int i=0;i<V;i++){
         rec[i].second = i;
     }
 
 
-    cout<<"Max Degree"<<rec[0].second;
+    cout<<"Max Degree"<<rec[0].second<<endl;
     
     degrees = new unsigned int[V];
     #pragma omp parallel for
@@ -130,11 +129,13 @@ void Graph::readFile(string input_file){
         degrees[i] = rec[i].second;
     }
 
+    cout<<"y"<<endl;
     
     neighbors_offset = new unsigned int[V+1];
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
 
+    cout<<"x"<<endl;
     
 
     E = neighbors_offset[V];
