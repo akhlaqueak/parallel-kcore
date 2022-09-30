@@ -95,7 +95,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
         if(i >= bufTail) continue; // this warp won't have to do anything 
 
         
-        unsigned int v = readFromBuffer(shBuffer, head, i);
+        unsigned int v = readFromBuffer(head, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         // for(int j = start + lane_id; j<end ; j+=32){
