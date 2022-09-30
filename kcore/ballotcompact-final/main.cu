@@ -11,7 +11,7 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
     G_pointers data_pointers;
 
 
-    cout<<"Device Copy Started"<<endl;
+    cout<<"Device Copy Started "<<data_graph.V<<endl;
     malloc_graph_gpu_memory(data_graph, data_pointers);
     cout<<"Device Copy Done"<<endl;
 
