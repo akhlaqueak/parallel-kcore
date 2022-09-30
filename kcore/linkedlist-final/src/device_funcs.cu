@@ -19,6 +19,7 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
         head = heads + blockIdx.x;
         tail = tails + blockIdx.x;
         bufTail = bufTails[blockIdx.x];
+        lock = 0;
         // head[0] = NULL;
         // tail[0] = NULL;
         // bufTail = 0;
