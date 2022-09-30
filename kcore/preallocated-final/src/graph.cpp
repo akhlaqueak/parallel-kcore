@@ -109,11 +109,12 @@ void Graph::readFile(string input_file){
     }
 
     vector<pair<int, int>> rec(V);
-
+    cout<<"x"<<endl;
     for(int i=0;i<V;i++){
         rec[i].first = i;
         rec[i].second = ns[i].size();
     }
+    cout<<"y"<<endl;
 
     sort(rec.begin(), rec.end(), degComp);
     
