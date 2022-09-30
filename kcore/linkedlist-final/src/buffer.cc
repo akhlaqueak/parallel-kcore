@@ -23,6 +23,7 @@ __device__ void writeToBuffer(Node* tail, unsigned int loc, unsigned int v){
 __device__ void advanceNode(Node** head){
     Node* temp = head[0];
     head[0] = head[0]->next;
+    printf("-");
     free(temp);
 }
 
@@ -61,6 +62,7 @@ __device__ void allocateMemory(Node** tail, Node** head){
     }
 
     tail[0] = newNode;
+    printf("+");
 
     if(head[0]==NULL) 
         head[0] = newNode;
