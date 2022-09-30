@@ -145,7 +145,7 @@ void Graph::readFile(string input_file){
     for(int i=0;i<V;i++){
         int reci = rec[i].second;
         auto it = ns[reci].begin();
-        cout<<i<<" "<<endl;
+        cout<<i<<" "<<reci<<endl;
         for(int j=neighbors_offset[reci]; j < neighbors_offset[reci+1]; j++, it++)
             neighbors[j] = rec[*it].second;
     }
