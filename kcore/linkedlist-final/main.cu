@@ -45,7 +45,6 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
         // }
         selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
                         data_graph.V, bufTails, heads, tails);
-            cout<<"HI"<<endl;
         processNodes<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 
                         bufTails, global_count, heads, tails);
 
