@@ -21,7 +21,7 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
     Node** heads;
     Node** tails;
 
-    size_t limit = 5*1024*1024*1024ULL; //10GB
+    size_t limit = 10*1024*1024*1024ULL; //5GB
     chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
 
     cudaMallocManaged(&bufTails,sizeof(unsigned int)*BLK_NUMS);

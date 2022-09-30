@@ -66,21 +66,41 @@ void Graph::readFile(string input_file){
  * source destination
  * source destination
  * 
- */
-    char ch;
-    infile>>ch; // just to eat #
-    infile>>V; // read number of nodes... 
-
-
-    vector<set<unsigned int>> ns(V);
-
-    while(infile>>s>>t){
-        if(s==t) continue; // remove self loops
-        ns[s].insert(t);
-        ns[t].insert(s);
+ */// read number of nodes... 
+    string line;
+    vector<pair<int, int>> lines;
+    streampos oldpos;
+    while(true){
+        oldpos = infile.tellg();
+        // ignore all comments lines assumint they contain # or %
+        getline(infile, line);
+        if(line.find('#') == string::npos && line.find('%') == string::npos) break;
     }
 
+    if(input_file.find(".mtx")!=string::npos){
+        // first data line of mtx file is also ignored... 
+        infile.seekg(oldpos);
+    }
+
+
+
+    V = 0;
+    while(infile>>s>>t){
+        if(s==t) continue; // remove self loops
+        V = max(s, V);
+        V = max(t, V);
+        lines.push_back({s,t});
+    }
     infile.close();
+
+    V++; // vertices index starts from 0, so add 1 to number of vertices.
+
+    vector<set<unsigned int>> ns(V);
+    
+    for(auto &p : lines){
+        ns[p.first] = p.second;
+        ns[p.second] = p.first;
+    }
     
     degrees = new unsigned int[V];
 
