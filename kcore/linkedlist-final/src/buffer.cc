@@ -20,7 +20,7 @@ __device__ void writeToBuffer(Node* tail, unsigned int loc, unsigned int v){
     }
 }
 
-__device__ void advanceNode(Node** head){
+__device__ void deleteHead(Node** head){
     Node* temp = head[0];
     head[0] = head[0]->next;
     printf("-");

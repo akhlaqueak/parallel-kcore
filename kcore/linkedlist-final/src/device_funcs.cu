@@ -93,7 +93,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
         
         if(THID==0 && head[0]!=NULL)
             if(regbase >= head[0]->limit){
-                advanceNode(head);
+                deleteHead(head);
             }
         __syncthreads();
 
