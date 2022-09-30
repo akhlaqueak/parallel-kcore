@@ -148,7 +148,7 @@ Graph::Graph(std::string input_file){
     readFile(input_file);
     
     print<<"File Loaded in: " <<
-    chrono::duration_cast<chrono::milliseconds>(end - start).count();
+    chrono::duration_cast<chrono::milliseconds>(end - start).count()
     <<endl;
 
     writeSerialized(input_file);
