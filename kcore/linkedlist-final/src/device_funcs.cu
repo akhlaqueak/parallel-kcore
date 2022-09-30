@@ -17,7 +17,7 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
     if(THID == 0){
         head = heads + blockIdx.x;
         tail = tails + blockIdx.x;
-        bufTail = 0;
+        bufTail = bufTails[blockIdx.x];
     }
     __syncthreads();
     
@@ -30,7 +30,8 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         temp[THID] = v;
-
+    //     __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
+    // Node** tail, Node** head, unsigned int* bufTailPtr, unsigned int* total){
         compactBlock(predicate, addresses, temp, tail, head, &bufTail);        
         __syncthreads();
             
