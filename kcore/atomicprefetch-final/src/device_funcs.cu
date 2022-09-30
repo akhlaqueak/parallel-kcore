@@ -2,7 +2,7 @@
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 #include "buffer.cc"
-#define SHBUFFER 1
+#define SHBUFFER 0
 
 __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, unsigned int V, 
                  unsigned int* bufTails, unsigned int* glBuffers){
