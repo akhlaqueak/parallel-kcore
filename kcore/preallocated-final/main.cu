@@ -45,7 +45,7 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
         level++;
     }
 	cout<<"K-core Computation Done"<<endl;
-
+    cout<<"KMax: "<< level-1 <<endl;
     auto end = chrono::steady_clock::now();
     
     

@@ -144,7 +144,13 @@ Graph::Graph(std::string input_file){
     if(readSerialized(input_file)) return;
     cout<<"Reading normal file... "<<endl;
 
+    auto start = chrono::steady_clock::now();
     readFile(input_file);
+    
+    print<<"File Loaded in: " <<
+    chrono::duration_cast<chrono::milliseconds>(end - start).count();
+    <<endl;
+
     writeSerialized(input_file);
 }
 
