@@ -68,7 +68,7 @@ void Graph::readFile(string input_file){
  * 
  */// read number of nodes... 
     string line;
-    vector<pair<int, int>> lines;
+    vector<pair<unsigned int, unsigned int>> lines;
     streampos oldpos;
     while(true){
         oldpos = infile.tellg();
