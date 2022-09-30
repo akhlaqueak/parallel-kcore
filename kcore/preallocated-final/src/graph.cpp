@@ -117,7 +117,7 @@ void Graph::readFile(string input_file){
     sort(rec.begin(), rec.end(), degComp);
     cout<<"y"<<endl;
     
-    for(int i=0;i<V;++i){
+    for(int i=0;i<V;i++){
         rec[i].second = i;
     }
 
