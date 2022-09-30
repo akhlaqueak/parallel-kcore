@@ -42,6 +42,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     __syncthreads();
 
     if(warp_id==0)
+    // can't use ballot scan here... 
         scanWarpHellis(addresses, INCLUSIVE);
     __syncthreads();
 
@@ -62,7 +63,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
     
     const unsigned int lane_id = THID & 31;
     addresses[THID] = predicate[THID];
-    unsigned int address = scanWarpBallot(addresses, EXCLUSIVE);
+    unsigned int address = scanWarpHellis(addresses, EXCLUSIVE);
     unsigned int bTail;
     
     if(lane_id==WARP_SIZE-1){
