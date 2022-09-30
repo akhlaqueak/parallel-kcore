@@ -1,5 +1,4 @@
 
-#include "../inc/buffer.h"
 
 // __device__ inline unsigned int getWriteLoc(unsigned int* bufTail){
 //     return atomicAdd(bufTail, 1);
