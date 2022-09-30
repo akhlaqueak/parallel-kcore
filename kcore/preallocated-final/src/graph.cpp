@@ -1,9 +1,9 @@
 
 #include "../inc/graph.h"
 
-bool compareSet(const set<unsigned int> & lhs, const set<unsigned int> & rhs)
+bool degComp(const pair<unsigned int, unsigned int> & lhs, const pair<unsigned int, unsigned int> & rhs)
 {
-  return lhs.size() > rhs.size();
+  return lhs.second > rhs.second;
 }
 
 bool Graph::readSerialized(string input_file){
@@ -108,28 +108,44 @@ void Graph::readFile(string input_file){
         ns[p.second].insert(p.first);
     }
 
-    sort(ns.begin(), ns.end(), compareSet);
+    vector<pair<int, int>> rec(V);
 
-    cout<<"Max Degree"<<ns[0].size();
+    for(int i=0;i<V;i++){
+        rec[i].first = i;
+        rec[i].second = ns[i].size();
+    }
+
+    sort(rec.begin(), rec.end(), degComp);
+    
+    for(int i=0;i<V;++i){
+        rec[i].second = i;
+    }
+
+    sort(rec.begin(), rec.end(), [](auto x, auto y){x.first < y.first});
+
+    cout<<"Max Degree"<<rec[0].second;
     
     degrees = new unsigned int[V];
     #pragma omp parallel for
     for(int i=0;i<V;++i){
-        degrees[i] = ns[i].size();
+        degrees[i] = rec[i].second;
     }
 
     neighbors_offset = new unsigned int[V+1];
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
 
+    
+
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
 
     #pragma omp parallel for
     for(int i=0;i<V;i++){
-        auto it = ns[i].begin();
+        int reci = rec[i].first;
+        auto it = ns[reci].begin();
         for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
-            neighbors[j] = *it;
+            neighbors[j] = rec[*it];
     }
 }
 
