@@ -34,7 +34,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     const unsigned int warp_id = THID >> 5;
     
-    unsigned int val = scanWarpBallot(addresses, type);
+    unsigned int val = scanWarpHellis(addresses, type);
     __syncthreads();
 
     if(lane_id==31)
