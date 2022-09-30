@@ -43,23 +43,45 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 __global__ void processNodes(G_pointers d_p, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
-#if SHBUFFER
-    __shared__ unsigned int shBuffer[MAX_NV], initTail;
-    if(THID == 0) initTail = bufTails[blockIdx.x];
-#endif
+    // __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
+    // __shared__ unsigned int initTail;
+    __shared__ unsigned int prefv[WARPS_EACH_BLK];
+    __shared__ int npref;
+
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int regTail;
-    unsigned int i;
+    unsigned int regTail, regnpref;
+    unsigned int start, end, v;
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
+        // initTail = bufTail;
         base = 0;
+        npref = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
+    
+    __syncthreads();
+
+    // if(THID == 0 && level == 1)
+    //     printf("%d ", bufTail);
+// 0-th iteration
+    if(warp_id > 0)
+        if(warp_id-1<bufTail){
+            prefv[warp_id] = readFromBuffer(glBuffer, warp_id-1);
+        }
+    if(THID==0){
+        npref = min(WARPS_EACH_BLK-1, bufTail-base);
+    }
+
+    // if(THID == 0){
+    //     base += WARPS_EACH_BLK-1;
+    //     if(bufTail < base )
+    //         base = bufTail;
+    // }
 
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
@@ -68,28 +90,34 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
+        if(warp_id <= npref){
+            v = prefv[warp_id];
+        }
+        regnpref = npref;
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
-        i = base + warp_id;
         regTail = bufTail;
         __syncthreads();
+        if(warp_id > regnpref) continue; 
 
-        if(i >= regTail) continue; // this warp won't have to do anything            
 
-        if(THID == 0){
-            // base += min(WARPS_EACH_BLK, regTail-base)
-            // update base for next iteration
-            base += WARPS_EACH_BLK;
-            if(regTail < base )
-                base = regTail;
+        if(warp_id == 0){
+            if(lane_id == 0){
+                // update base for next iteration
+                base += npref;
+            } 
+            __syncwarp(); // so that other lanes can see updated base value
+            
+            if(lane_id > 0){
+                int j = base + lane_id - 1;
+                npref = min(WARPS_EACH_BLK-1, regTail-base);
+                if(j < regTail){
+                    prefv[lane_id] = readFromBuffer(glBuffer, j);
+                }
+            }
+            continue; // warp0 doesn't process nodes. 
         }
-        //bufTail is incremented in the code below:
-        #if SHBUFFER
-            unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
-        #else
-            unsigned int v = readFromBuffer(glBuffer, i);
-        #endif
-        unsigned int start = d_p.neighbors_offset[v];
-        unsigned int end = d_p.neighbors_offset[v+1];
+        start = d_p.neighbors_offset[v];
+        end = d_p.neighbors_offset[v+1];
 
 
         while(true){
