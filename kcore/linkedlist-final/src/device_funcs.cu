@@ -91,11 +91,12 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
         regtail = bufTail;
         __syncthreads();
         
-        if(THID==0 && head[0]!=NULL)
+        if(THID==0 && head[0]!=NULL){
+                printf("%d.%d.", regbase, head[0]->limit);
             if(regbase >= head[0]->limit){
-                printf("*");
                 deleteHead(head);
             }
+        }
         __syncthreads();
 
         if(THID == 0){
