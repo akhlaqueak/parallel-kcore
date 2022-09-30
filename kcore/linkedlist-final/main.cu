@@ -38,11 +38,11 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
 
     auto start = chrono::steady_clock::now();
     while(count < data_graph.V){
-        // for(int i=0;i<BLK_NUMS;i++){
-        //     heads[i] = NULL;
-        //     tails[i] = NULL;
-        //     bufTails[i] = 0;
-        // }
+        for(int i=0;i<BLK_NUMS;i++){
+            heads[i] = NULL;
+            tails[i] = NULL;
+            bufTails[i] = 0;
+        }
         selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
                         data_graph.V, bufTails, heads, tails);
         processNodes<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 

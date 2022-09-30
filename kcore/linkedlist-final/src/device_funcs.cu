@@ -15,13 +15,14 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
     __shared__ Node** tail;
 
     if(THID == 0){
-        // head = heads + blockIdx.x;
-        // tail = tails + blockIdx.x;
-        // bufTail = bufTails[blockIdx.x];
-        head[0] = NULL;
-        tail[0] = NULL;
-        bufTail = 0;
+        head = heads + blockIdx.x;
+        tail = tails + blockIdx.x;
+        bufTail = bufTails[blockIdx.x];
+        // head[0] = NULL;
+        // tail[0] = NULL;
+        // bufTail = 0;
     }
+    predicate[THID] = 0;
     __syncthreads();
     
     unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
@@ -61,7 +62,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
 
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int i;
+    unsigned int i, regbase, regtail;
     if(THID==0){
         tail = tails + blockIdx.x;
         head = heads + blockIdx.x;
@@ -84,15 +85,19 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
         __syncthreads(); //syncthreads must be executed by all the threads, so can't put after break or continue...
         if(base == bufTail) break;
         i = base + warp_id;
+        regbase = base;
+        regtail = bufTail;
+        __syncthreads();
         
         if(THID==0 && head[0]!=NULL)
-            if(base >= head[0]->limit){
+            if(regbase >= head[0]->limit){
                 advanceNode(head);
             }
+        __syncthreads();
 
         if(THID == 0){
             base += WARPS_EACH_BLK;
-            if(bufTail < base )
+            if(regTail < base )
                 base = bufTail;
         }
         __syncthreads();
