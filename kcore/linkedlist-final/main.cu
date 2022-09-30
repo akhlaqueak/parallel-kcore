@@ -10,7 +10,8 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
 
     G_pointers data_pointers;
 
-
+    size_t limit = 10*1024*1024*1024ULL; //10GB
+    chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
     cout<<"Device Copy Started "<<data_graph.V<<data_graph.E<<endl;
     malloc_graph_gpu_memory(data_graph, data_pointers);
     cout<<"Device Copy Done"<<endl;
@@ -26,12 +27,10 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
     cudaMallocManaged(&bufTails,sizeof(unsigned int)*BLK_NUMS);
     cudaMallocManaged(&heads,sizeof(Node*)*BLK_NUMS);
     cudaMallocManaged(&tails,sizeof(Node*)*BLK_NUMS);
-    cout<<"allocations done"<<endl;
 
     chkerr(cudaMalloc(&global_count, sizeof(unsigned int)));
     // chkerr(cudaMalloc(&bufTails, sizeof(unsigned int)*BLK_NUMS));
     cudaMemset(global_count, 0, sizeof(unsigned int));
-    cout<<"sl done"<<endl;
        
 
 	cout<<"K-core Computation Started"<<endl;
@@ -70,7 +69,7 @@ int find_kcore(Graph &data_graph,bool write_to_disk){
     //     data_graph.writeKCoreToDisk(data_file);
     //     cout<<"Writing kcore to disk completed... "<<endl;
     // }
-
+    cudaDeviceReset();
     return chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
 }
@@ -88,8 +87,7 @@ int main(int argc, char *argv[]){
     Graph data_graph(data_file);
     cout<<"Loading Done"<<endl;
  
-    size_t limit = 10*1024*1024*1024ULL; //10GB
-    chkerr(cudaDeviceSetLimit(cudaLimitMallocHeapSize, limit));
+
        
     vector<int> et;
     for(int i=0;i<REP; i++){
