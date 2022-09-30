@@ -30,8 +30,6 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         temp[THID] = v;
-    //     __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, unsigned int* temp,
-    // Node** tail, Node** head, unsigned int* bufTailPtr, unsigned int* total){
         compactBlock(predicate, addresses, temp, tail, head, &bufTail);        
         __syncthreads();
             
@@ -103,9 +101,8 @@ __global__ void processNodes(G_pointers d_p, int level, int V, unsigned int* buf
         // following while loop will keep all threads active until the continue condition
         while(true){
             __syncwarp();
-
             compactWarp(predicate, addresses, temp, 
-                        shBuffer, tail, head, &bufTail, &lock, total);
+                        tail, head, &bufTail, &lock);
             predicate[THID] = 0;
             __syncwarp();
 
