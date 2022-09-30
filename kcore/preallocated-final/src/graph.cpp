@@ -147,7 +147,7 @@ Graph::Graph(std::string input_file){
     auto start = chrono::steady_clock::now();
     readFile(input_file);
     
-    print<<"File Loaded in: " <<
+    cout<<"File Loaded in: " <<
     chrono::duration_cast<chrono::milliseconds>(end - start).count()
     <<endl;
 
