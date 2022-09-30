@@ -15,9 +15,12 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
     __shared__ Node** tail;
 
     if(THID == 0){
-        head = heads + blockIdx.x;
-        tail = tails + blockIdx.x;
-        bufTail = bufTails[blockIdx.x];
+        // head = heads + blockIdx.x;
+        // tail = tails + blockIdx.x;
+        // bufTail = bufTails[blockIdx.x];
+        head[0] = NULL;
+        tail[0] = NULL;
+        bufTail = 0;
     }
     __syncthreads();
     
@@ -36,6 +39,8 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
     }
 
     if(THID == 0){
+        heads[blockIdx.x] = head[0];
+        tails[blockIdx.x] = tail[0];
         bufTails[blockIdx.x] = bufTail;
     }
 }
