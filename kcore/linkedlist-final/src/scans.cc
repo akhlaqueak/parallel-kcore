@@ -78,8 +78,8 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
         unsigned int nv = address + predicate[THID]; // nv can be zero if no vertex was found in this warp
         bTail = nv>0? atomicAdd(bufTailPtr, nv) : 0; // don't want to do atomicAdd for zero
         if(allocationRequired(tail[0], bTail+nv)){ // adding nv since bTail is old value of bufTail
-            atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
-            __threadfence_block();
+            // atomicCAS((unsigned int*)lock, 2, 0); // resets the lock in case a memory was allocated before
+            // __threadfence_block();
             allocateMemoryMutex(tail, head, lock);
         }   
     }  

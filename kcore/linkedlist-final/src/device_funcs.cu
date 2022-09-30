@@ -13,6 +13,7 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
     __shared__ bool predicate[BLK_DIM];
     __shared__ Node** head;
     __shared__ Node** tail;
+    __shared__ volatile unsigned int lock;
 
     if(THID == 0){
         head = heads + blockIdx.x;
@@ -34,7 +35,7 @@ __global__ void selectNodesAtLevel(unsigned int* degrees, unsigned int level,
         // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         temp[THID] = v;
-        compactBlock(predicate, addresses, temp, tail, head, &bufTail);        
+        compactWarp(predicate, addresses, temp, tail, head, &bufTail, &lock);        
         __syncthreads();
             
     }
