@@ -66,6 +66,7 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
     const unsigned int lane_id = THID & 31;
     addresses[THID] = predicate[THID];
     unsigned int address = scanWarpHellis(addresses, EXCLUSIVE);
+    // unsigned int address = scanWarpBallot(addresses, EXCLUSIVE);
     unsigned int bTail;
     
     if(lane_id==WARP_SIZE-1){
