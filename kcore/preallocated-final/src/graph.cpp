@@ -173,7 +173,7 @@ Graph::Graph(std::string input_file){
     chrono::duration_cast<chrono::milliseconds>(end - start).count()
     <<endl;
 
-    writeSerialized(input_file);
+    writeSerialized(input_file + "-rec");
 }
 
 Graph::~Graph(){
