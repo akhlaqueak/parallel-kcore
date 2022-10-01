@@ -118,8 +118,13 @@ void Graph::readFile(string input_file){
     
     
     degrees = new unsigned int[V];
-    #pragma omp parallel for
+    unsigned int deg;
+    // #pragma omp parallel for
     for(int i=0;i<V;++i){
+        deg = lines[i].second;
+        if(deg == 0){
+            V = i; break;
+        }
         degrees[i] = lines[i].second;
     }
 
