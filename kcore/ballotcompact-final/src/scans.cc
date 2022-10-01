@@ -7,6 +7,7 @@ __device__ unsigned int scanWarpHellis(volatile unsigned int* addresses, unsigne
     for(int i=1; i<WARP_SIZE; i*=2){
         if(lane_id >= i)
             addresses[THID] += addresses[THID-i];
+        __syncwarp();
     }
 
     
