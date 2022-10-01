@@ -136,7 +136,6 @@ int kcore(Graph &data_graph){
 
     auto start = chrono::steady_clock::now();
     while(count < data_graph.V){
-        cout<<".";
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
 
         selectNodesAtLevel1<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 

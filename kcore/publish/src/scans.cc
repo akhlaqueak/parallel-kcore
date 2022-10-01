@@ -60,7 +60,7 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
 
 
 
-__device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
+__device__ void compactWarpHellis(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
         unsigned int* glBuffer, unsigned int* bufTail){
     
     const unsigned int lane_id = THID & 31;
@@ -79,7 +79,25 @@ __device__ void compactWarp(bool* predicate, volatile unsigned int* addresses, u
         writeToBuffer(glBuffer, address, temp[THID]);
     predicate[THID] = 0;
 }
+__device__ void compactWarpBallot(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
+        unsigned int* glBuffer, unsigned int* bufTail){
+    
+    const unsigned int lane_id = THID & 31;
+    addresses[THID] = predicate[THID];
+    // unsigned int address = scanWarpHellis(addresses, EXCLUSIVE);
+    unsigned int address = scanWarpBallot(addresses, EXCLUSIVE);
+    unsigned int bTail;
+    
+    if(lane_id==WARP_SIZE-1){
+        bTail = atomicAdd(bufTail, address + predicate[THID]);
+    }
+    bTail = __shfl_sync(0xFFFFFFFF, bTail, WARP_SIZE-1);
 
+    address += bTail;
+    if(predicate[THID])
+        writeToBuffer(glBuffer, address, temp[THID]);
+    predicate[THID] = 0;
+}
 __device__ void compactBlock(bool* predicate, volatile unsigned int* addresses, unsigned int* temp, 
         unsigned int* glBuffer, unsigned int* bufTail){
     __shared__ unsigned int bTail;

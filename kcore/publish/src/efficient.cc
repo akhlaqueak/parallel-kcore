@@ -1,90 +1,102 @@
 
-__global__ void selectNodesAtLevel2(unsigned int *degrees, unsigned int level, unsigned int V, 
+
+__global__ void selectNodesAtLevel4(unsigned int *degrees, unsigned int level, unsigned int V, 
                  unsigned int* bufTails, unsigned int* glBuffers){
 
-    __shared__ unsigned int* glBuffer; 
-    __shared__ unsigned int bufTail; 
-    
-    if(THID == 0){
+    __shared__ bool predicate[BLK_DIM];
+    __shared__ unsigned int temp[BLK_DIM];
+    __shared__ volatile unsigned int addresses[BLK_DIM];
+    __shared__ unsigned int bufTail;
+    __shared__ unsigned int* glBuffer;
+    if(THID==0){
         bufTail = 0;
-        glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE;
+        glBuffer = glBuffers+(blockIdx.x*GLBUFFER_SIZE);
     }
-    __syncthreads();
 
-    unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x; 
+    unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
+
     for(unsigned int base = 0; base < V; base += N_THREADS){
         
-        unsigned int v = base + global_threadIdx; 
+        unsigned int v = base + glThreadIdx; 
 
-        if(v >= V) continue;
+        // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
+        predicate[THID] = (v<V)? (degrees[v] == level) : 0;
+        if(predicate[THID]) temp[THID] = v;
 
-        if(degrees[v] == level){
-            unsigned int loc = atomicAdd(&bufTail, 1);
-            writeToBuffer(glBuffer, loc, v);
-        }
+        compactBlock(predicate, addresses, temp, glBuffer, &bufTail);        
+        
+        __syncthreads();
+            
     }
 
-    __syncthreads();
-
-    if(THID == 0) 
-    {
-        bufTails [blockIdx.x] = bufTail;
+    if(THID==0){
+        bufTails[blockIdx.x] = bufTail;
     }
 }
 
 
 
 
-__global__ void processNodes2(G_pointers d_p, int level, int V, 
+
+
+
+__global__ void processNodes4(G_pointers d_p, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
-    __shared__ unsigned int shBuffer[MAX_NV], initTail;
-    if(THID == 0) initTail = bufTails[blockIdx.x];
+                          
+    __shared__ volatile unsigned int addresses[BLK_DIM];
+    __shared__ bool predicate[BLK_DIM];
+    __shared__ unsigned int temp[BLK_DIM];
     __shared__ unsigned int bufTail;
-    __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
+    __shared__ unsigned int* glBuffer;
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int regTail;
     unsigned int i;
+    unsigned int regTail;
+    
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
         base = 0;
-        glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
-        assert(glBuffer!=NULL);
+        glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE; 
     }
 
+    predicate[THID] = 0;
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
+    // for that purpose e_processes is introduced, is incremented whenever a warp takes a job. 
     
-    // for(unsigned int i = warp_id; i<bufTail ; i +=warps_each_block ){
+    
+    // for(unsigned int i = warp_id; i<bufTail ; i = warp_id + base){
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
-        if(base == bufTail) break; // all the threads will evaluate to true at same iteration
-        i = base + warp_id;
-        regTail = bufTail;
-        __syncthreads();
+        if(base == bufTail) break;
 
-        if(i >= regTail) continue; // this warp won't have to do anything            
+        i = base + warp_id;
+        regTail = bufTail;        
+        __syncthreads(); // this call is necessary, so that following update to base is done after everyone get value of
 
         if(THID == 0){
-            // base += min(WARPS_EACH_BLK, regTail-base)
-            // update base for next iteration
             base += WARPS_EACH_BLK;
-            if(regTail < base )
-                base = regTail;
+            if(bufTail < base )
+                base = bufTail;
         }
-        //bufTail is incremented in the code below:
-        unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
+        
+        if(i >= regTail) continue; // this warp won't have to do anything     
+        
+        
+        unsigned int v, start, end;
 
-        unsigned int start = d_p.neighbors_offset[v];
-        unsigned int end = d_p.neighbors_offset[v+1];
+        v = readFromBuffer(glBuffer, i);
+        start = d_p.neighbors_offset[v];
+        end = d_p.neighbors_offset[v+1];
 
 
         while(true){
-            __syncwarp();
+            // __syncwarp();
 
+            compactWarpHellis(predicate, addresses, temp, glBuffer, &bufTail);
             if(start >= end) break;
 
             unsigned int j = start + lane_id;
@@ -93,12 +105,13 @@ __global__ void processNodes2(G_pointers d_p, int level, int V,
 
             unsigned int u = d_p.neighbors[j];
             if(*(d_p.degrees+u) > level){
-                
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
             
                 if(a == level+1){
-                    unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
+                    temp[THID] = u;
+                    predicate[THID] = 1;
+                    // unsigned int loc = atomicAdd(&bufTail, 1);
+                    // writeToBuffer(shBuffer, glBuffer, loc, u);
                 }
 
                 if(a <= level){
@@ -109,17 +122,20 @@ __global__ void processNodes2(G_pointers d_p, int level, int V,
         }
 
     }
+    __syncthreads();
 
-    if(THID == 0 && bufTail>0){
-        atomicAdd(global_count, bufTail); // atomic since contention among blocks
+    if(THID == 0 ){
+        if(bufTail>0) atomicAdd(global_count, bufTail); // atomic since contention among blocks
+        // if(glBuffer!=NULL) free(glBuffer);
     }
+
 }
 
 
-int kcoreSharedMem(Graph &data_graph){
+
+int kcoreEfficientScan(Graph &data_graph){
 
     G_pointers data_pointers;
-
 
     malloc_graph_gpu_memory(data_graph, data_pointers);
 
@@ -141,35 +157,23 @@ int kcoreSharedMem(Graph &data_graph){
     while(count < data_graph.V){
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
 
-        selectNodesAtLevel2<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
+        selectNodesAtLevel4<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
                         data_graph.V, bufTails, glBuffers);
 
-        processNodes2<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 
+        processNodes4<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 
                         bufTails, glBuffers, global_count);
 
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
         // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-	cout<<"Done"<<endl;
+	cout<<"Done "<<"Kmax: "<<level-1<<endl;
 
     auto end = chrono::steady_clock::now();
-    
-    
-    // cout << "Elapsed Time: "
-    // << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
-    // cout <<"MaxK: "<<level-1<<endl;
-    
-    
-	// get_results_from_gpu(data_graph, data_pointers);
-    
+
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);
-    // if(write_to_disk){
-    //     cout<<"Writing kcore to disk started... "<<endl;
-    //     data_graph.writeKCoreToDisk(data_file);
-    //     cout<<"Writing kcore to disk completed... "<<endl;
-    // }
+
 
     return chrono::duration_cast<chrono::milliseconds>(end - start).count();
 

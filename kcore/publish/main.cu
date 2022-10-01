@@ -32,13 +32,13 @@ int main(int argc, char *argv[]){
     t = kcorePrefetch(data_graph);
     cout<<"Vertex prefetching: "<< t <<endl;
     
-    // t = kcoreEfficientScan(data_graph);
-    // cout<<"Compaction using Efficient scan: "<< t <<endl;
+    t = kcoreEfficientScan(data_graph);
+    cout<<"Compaction using Efficient scan: "<< t <<endl;
     
-    // t = kcoreBallotScan(data_graph);
-    // cout<<"Compaction using Ballot scan: "<< t <<endl;
+    t = kcoreBallotScan(data_graph);
+    cout<<"Compaction using Ballot scan: "<< t <<endl;
     
-    // t = kcoreBallotScanPrefetch(data_graph);
-    // cout<<"Compaction using Ballot scan, vertex prefetching: "<< t <<endl;
+    t = kcoreBallotScanPrefetch(data_graph);
+    cout<<"Compaction using Ballot scan, vertex prefetching: "<< t <<endl;
     return 0;
 }
