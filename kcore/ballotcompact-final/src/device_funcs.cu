@@ -27,7 +27,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
         if(predicate[THID]) temp[THID] = v;
 
         compactBlock(predicate, addresses, temp, glBuffer, &bufTail);        
-        compactWarp(predicate, addresses, temp, glBuffer, &bufTail);        
+        // compactWarp(predicate, addresses, temp, glBuffer, &bufTail);        
         
         __syncthreads();
             
