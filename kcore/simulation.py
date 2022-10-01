@@ -61,14 +61,13 @@ sp.run(["make"])
 for ds in datasets:
 
     print(ds, ": Started... ", end=" ", flush=True)
-    memp = sp.Popen("../mem/mem.sh", stdout=PIPE, stderr=PIPE)
+    # memp = sp.Popen("../mem/mem.sh", stdout=PIPE, stderr=PIPE)
     output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
-    memp.kill()
-    memtrace, errtrace = memp.communicate()
-    memtrace = list(map(int, memtrace.split())) # split and convert to integers
-
-    mem = max(memtrace)
+    # memp.kill()
+    # memtrace, errtrace = memp.communicate()
+    # memtrace = list(map(int, memtrace.split())) # split and convert to integers
+    # mem = max(memtrace)
+    # print(ds, " MEM: ", mem)
     text = output.stdout.decode()
     if(VERBOSE): 
         print(text)
-    print(ds, " MEM: ", mem)
