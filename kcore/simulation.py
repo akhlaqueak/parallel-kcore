@@ -22,6 +22,7 @@ datasets = [
 'amazon0601.txt', \
 'arabic-2005.txt', \
 'as-skitter.txt', \
+'com-orkut.txt',\
 'dblp-author.txt', \
 'hollywood-2009.txt', \
 'in-2004.txt', \

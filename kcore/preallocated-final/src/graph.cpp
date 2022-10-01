@@ -108,6 +108,8 @@ void Graph::readFile(string input_file){
         ns[p.second].insert(p.first);
     }
 
+    lines.clear();
+
     vector<pair<int, int>> rec(V);
     for(int i=0;i<V;i++){
         rec[i].first = i;

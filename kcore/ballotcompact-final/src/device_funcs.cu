@@ -8,7 +8,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
-    __shared__ unsigned int addresses[BLK_DIM];
+    __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     if(THID==0){
