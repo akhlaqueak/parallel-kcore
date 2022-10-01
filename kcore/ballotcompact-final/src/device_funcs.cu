@@ -29,9 +29,11 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
         // compactBlock(predicate, addresses, temp, glBuffer, &bufTail);        
         compactWarp(predicate, addresses, temp, glBuffer, &bufTail);        
         
-        __syncthreads();
+        __syncwarp();
             
     }
+
+    __syncthreads();
     if(THID==0){
         bufTails[blockIdx.x] = bufTail;
     }
