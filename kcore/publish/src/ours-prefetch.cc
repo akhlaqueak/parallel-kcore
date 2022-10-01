@@ -1,5 +1,5 @@
 
-__global__ void selectNodesAtLevel2(unsigned int *degrees, unsigned int level, unsigned int V, 
+__global__ void selectNodesAtLevel3(unsigned int *degrees, unsigned int level, unsigned int V, 
                  unsigned int* bufTails, unsigned int* glBuffers){
 
     __shared__ unsigned int* glBuffer; 
@@ -35,24 +35,47 @@ __global__ void selectNodesAtLevel2(unsigned int *degrees, unsigned int level, u
 
 
 
-__global__ void processNodes2(G_pointers d_p, int level, int V, 
+__global__ void processNodes3(G_pointers d_p, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
-    __shared__ unsigned int shBuffer[MAX_NV], initTail;
-    if(THID == 0) initTail = bufTails[blockIdx.x];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
+    // __shared__ unsigned int initTail;
+    __shared__ unsigned int prefv[WARPS_EACH_BLK];
+    __shared__ int npref;
+
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
-    unsigned int regTail;
-    unsigned int i;
+    unsigned int regTail, regnpref;
+    unsigned int start, end, v;
     if(THID==0){
         bufTail = bufTails[blockIdx.x];
+        // initTail = bufTail;
         base = 0;
+        npref = 0;
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
+    
+    __syncthreads();
+
+    // if(THID == 0 && level == 1)
+    //     printf("%d ", bufTail);
+// 0-th iteration
+    if(warp_id > 0)
+        if(warp_id-1<bufTail){
+            prefv[warp_id] = readFromBuffer(glBuffer, warp_id-1);
+        }
+    if(THID==0){
+        npref = min(WARPS_EACH_BLK-1, bufTail-base);
+    }
+
+    // if(THID == 0){
+    //     base += WARPS_EACH_BLK-1;
+    //     if(bufTail < base )
+    //         base = bufTail;
+    // }
 
     // bufTail is being incrmented within the loop, 
     // warps should process all the nodes added during the execution of loop
@@ -61,25 +84,35 @@ __global__ void processNodes2(G_pointers d_p, int level, int V,
     // this for loop is a wrong choice, as many threads will exit from the loop checking the condition
     while(true){
         __syncthreads(); //syncthreads must be executed by all the threads
+        if(warp_id <= npref){
+            v = prefv[warp_id];
+        }
+        regnpref = npref;
         if(base == bufTail) break; // all the threads will evaluate to true at same iteration
-        i = base + warp_id;
         regTail = bufTail;
         __syncthreads();
+        if(warp_id > regnpref) continue; 
 
-        if(i >= regTail) continue; // this warp won't have to do anything            
 
-        if(THID == 0){
-            // base += min(WARPS_EACH_BLK, regTail-base)
-            // update base for next iteration
-            base += WARPS_EACH_BLK;
-            if(regTail < base )
-                base = regTail;
+        if(warp_id == 0){
+            if(lane_id == 0){
+                // update base for next iteration
+                base += npref;
+            } 
+            __syncwarp(); // so that other lanes can see updated base value
+            
+            if(lane_id > 0){
+                int j = base + lane_id - 1;
+                npref = min(WARPS_EACH_BLK-1, regTail-base);
+                if(j < regTail){
+                    prefv[lane_id] = readFromBuffer(glBuffer, j);
+                }
+            }
+            continue; // warp0 doesn't process nodes. 
         }
-        //bufTail is incremented in the code below:
-        unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
+        start = d_p.neighbors_offset[v];
+        end = d_p.neighbors_offset[v+1];
 
-        unsigned int start = d_p.neighbors_offset[v];
-        unsigned int end = d_p.neighbors_offset[v+1];
 
 
         while(true){
@@ -98,7 +131,8 @@ __global__ void processNodes2(G_pointers d_p, int level, int V,
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
+
+                        writeToBuffer(glBuffer, loc, u);
                 }
 
                 if(a <= level){
@@ -116,14 +150,11 @@ __global__ void processNodes2(G_pointers d_p, int level, int V,
 }
 
 
-int kcoreSharedMem(Graph &data_graph){
+int kcorePrefetch(Graph &data_graph){
 
     G_pointers data_pointers;
 
-
-    cout<<"Device Copy Started "<<data_graph.V<<data_graph.E<<endl;
     malloc_graph_gpu_memory(data_graph, data_pointers);
-    cout<<"Device Copy Done"<<endl;
 
     unsigned int level = 0;
     unsigned int count = 0;
@@ -137,42 +168,30 @@ int kcoreSharedMem(Graph &data_graph){
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
        
     
-	cout<<"K-core Computation Started"<<endl;
+	cout<<"K-core Computation Started";
 
     auto start = chrono::steady_clock::now();
     while(count < data_graph.V){
         cout<<".";
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
 
-        selectNodesAtLevel2<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
+        selectNodesAtLevel3<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
                         data_graph.V, bufTails, glBuffers);
 
-        processNodes2<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 
+        processNodes3<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 
                         bufTails, glBuffers, global_count);
 
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
         // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-	cout<<"Done"<<endl;
+	// cout<<"Done "<<"Kmax: "<<level-1<<endl;
 
     auto end = chrono::steady_clock::now();
-    
-    
-    // cout << "Elapsed Time: "
-    // << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
-    // cout <<"MaxK: "<<level-1<<endl;
-    
-    
-	// get_results_from_gpu(data_graph, data_pointers);
-    
+
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);
-    // if(write_to_disk){
-    //     cout<<"Writing kcore to disk started... "<<endl;
-    //     data_graph.writeKCoreToDisk(data_file);
-    //     cout<<"Writing kcore to disk completed... "<<endl;
-    // }
+
 
     return chrono::duration_cast<chrono::milliseconds>(end - start).count();
 

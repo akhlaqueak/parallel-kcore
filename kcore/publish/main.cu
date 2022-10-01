@@ -8,6 +8,7 @@
 #include "./src/scans.cc"
 #include "./src/ours.cc"
 #include "./src/ours-shared.cc"
+#include "./src/ours-prefetch.cc"
 
 
 int main(int argc, char *argv[]){
@@ -28,8 +29,8 @@ int main(int argc, char *argv[]){
     t = kcoreSharedMem(data_graph);
     cout<<"Using shared memory buffer: "<< t <<endl;
     
-    // t = kcorePrefetch(data_graph);
-    // cout<<"Vertex prefetching: "<< t <<endl;
+    t = kcorePrefetch(data_graph);
+    cout<<"Vertex prefetching: "<< t <<endl;
     
     // t = kcoreEfficientScan(data_graph);
     // cout<<"Compaction using Efficient scan: "<< t <<endl;

@@ -118,10 +118,7 @@ int kcore(Graph &data_graph){
 
     G_pointers data_pointers;
 
-
-    cout<<"Device Copy Started "<<data_graph.V<<data_graph.E<<endl;
     malloc_graph_gpu_memory(data_graph, data_pointers);
-    cout<<"Device Copy Done"<<endl;
 
     unsigned int level = 0;
     unsigned int count = 0;
@@ -135,10 +132,11 @@ int kcore(Graph &data_graph){
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
        
     
-	cout<<"K-core Computation Started"<<endl;
+	cout<<"K-core Computation Started";
 
     auto start = chrono::steady_clock::now();
     while(count < data_graph.V){
+        cout<<".";
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
 
         selectNodesAtLevel1<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
@@ -151,25 +149,13 @@ int kcore(Graph &data_graph){
         // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-	cout<<"K-core Computation Done"<<endl;
+	cout<<"Done "<<"Kmax: "<<level-1<<endl;
 
     auto end = chrono::steady_clock::now();
-    
-    
-    // cout << "Elapsed Time: "
-    // << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
-    // cout <<"MaxK: "<<level-1<<endl;
-    
-    
-	// get_results_from_gpu(data_graph, data_pointers);
-    
+
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);
-    // if(write_to_disk){
-    //     cout<<"Writing kcore to disk started... "<<endl;
-    //     data_graph.writeKCoreToDisk(data_file);
-    //     cout<<"Writing kcore to disk completed... "<<endl;
-    // }
+
 
     return chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
