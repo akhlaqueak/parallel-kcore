@@ -4,7 +4,7 @@ do
         # free: Display memory details. -m to show values in mibibytes.
         # grep: search for 'Mem'
         # awk: print the value of the third column "used memory"
-        nvidia-smi --query-gpu=memory.used --format=csv,nounits,noheader > log.txt
+        nvidia-smi --query-gpu=memory.used --format=csv,nounits,noheader
         sleep 0.01; 
 done
 
