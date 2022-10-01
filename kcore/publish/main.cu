@@ -26,8 +26,12 @@ int main(int argc, char *argv[]){
     cout<<"Done"<<endl;
     unsigned int t;
 
+    cout<<"V: "<< data_graph.V<<endl;
+    cout<<"E: "<< data_graph.E<<endl;
+
     cout<<"Computing ours... "<<endl;
     t = kcore(data_graph);
+    cout<<"Kmax: "<<data_graph.Kmax<<endl;
     cout<<"Done: "<< t << "ms" << endl;
 
     cout<<"Computing ours algo with using shared memory buffer... "<<endl;
