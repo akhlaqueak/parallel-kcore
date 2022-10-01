@@ -38,15 +38,15 @@ int main(int argc, char *argv[]){
     t = kcorePrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
 
-    cout<<"Computing using Efficient scan: "<< t <<endl;
+    cout<<"Computing using Efficient scan: "<<endl;
     t = kcoreEfficientScan(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
     
-    cout<<"Computing using Ballot scan: "<< t <<endl;
+    cout<<"Computing using Ballot scan: " <<endl;
     t = kcoreBallotScan(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
     
-    cout<<"Computing Ballot scan, vertex prefetching: "<< t <<endl;
+    cout<<"Computing Ballot scan, vertex prefetching: "<<endl;
     t = kcoreBallotScanPrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
     
