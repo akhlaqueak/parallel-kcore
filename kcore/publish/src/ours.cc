@@ -38,10 +38,6 @@ __global__ void selectNodesAtLevel1(unsigned int *degrees, unsigned int level, u
 __global__ void processNodes1(G_pointers d_p, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
-#if SHBUFFER
-    __shared__ unsigned int shBuffer[MAX_NV], initTail;
-    if(THID == 0) initTail = bufTails[blockIdx.x];
-#endif
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
