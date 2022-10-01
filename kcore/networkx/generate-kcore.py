@@ -26,7 +26,7 @@ datasets = [
 ]
 # datasets = ['patentcite.g']
 for ds in datasets:
-    try:
+    # try:
         now = time.strftime("%H:%M", time.localtime(time.time()))
         print("Starting time", ds, now)
         tick = time.time()
@@ -39,6 +39,6 @@ for ds in datasets:
         nxkcore = nx.core_number(G)
         tock = time.time()
         print("Excecution time: ", ds, tock-tick)
-    except:
+    # except:
         print("Failed... ", ds)
     # json.dump(nxkcore, open("./output/networkx-kcore-" + ds, 'w'))
