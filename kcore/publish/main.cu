@@ -9,6 +9,9 @@
 #include "./src/ours.cc"
 #include "./src/ours-shared.cc"
 #include "./src/ours-prefetch.cc"
+#include "./src/efficient.cc"
+#include "./src/ballot-prefetch.cc"
+#include "./src/ballot.cc"
 
 
 int main(int argc, char *argv[]){
