@@ -2,11 +2,12 @@
 
 enum{INCLUSIVE, EXCLUSIVE};
 __device__ unsigned int scanWarpHellis(volatile unsigned int* addresses, unsigned int type){
+    
     const unsigned int lane_id = THID & 31;
-
     for(int i=1; i<WARP_SIZE; i*=2){
         if(lane_id >= i)
             addresses[THID] += addresses[THID-i];
+        __syncwarp();
     }
 
     
@@ -34,7 +35,8 @@ __device__ void scanBlock(volatile unsigned int* addresses, unsigned int type){
     const unsigned int lane_id = THID & 31;
     const unsigned int warp_id = THID >> 5;
     
-    unsigned int val = scanWarpBallot(addresses, type);
+    // unsigned int val = scanWarpBallot(addresses, type);
+    unsigned int val = scanWarpHellis(addresses, type);
     __syncthreads();
 
     if(lane_id==31)
