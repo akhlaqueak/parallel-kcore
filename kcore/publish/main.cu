@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
 
     cout<<"Computing ours... "<<endl;
     t = kcore(data_graph);
-    cout<<"Kmax: "<<data_graph.Kmax<<endl;
+    cout<<"Kmax: "<<data_graph.kmax<<endl;
     cout<<"Done: "<< t << "ms" << endl;
 
     cout<<"Computing ours algo with using shared memory buffer... "<<endl;
