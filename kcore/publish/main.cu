@@ -29,28 +29,28 @@ int main(int argc, char *argv[]){
     cout<<"V: "<< data_graph.V<<endl;
     cout<<"E: "<< data_graph.E<<endl;
 
-    cout<<"Computing ours... "<<endl;
+    cout<<"Computing ours... ";
     t = kcore(data_graph);
     cout<<"Kmax: "<<data_graph.kmax<<endl;
     cout<<"Done: "<< t << "ms" << endl;
 
-    cout<<"Computing ours algo with using shared memory buffer... "<<endl;
+    cout<<"Computing ours algo with using shared memory buffer... ";
     t = kcoreSharedMem(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
     
-    cout<<"Computing ours algo with vertex prefetching... "<<endl;
+    cout<<"Computing ours algo with vertex prefetching... ";
     t = kcorePrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
 
-    cout<<"Computing using Efficient scan: "<<endl;
+    cout<<"Computing using Efficient scan: ";
     t = kcoreEfficientScan(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
     
-    cout<<"Computing using Ballot scan: " <<endl;
+    cout<<"Computing using Ballot scan: " ;
     t = kcoreBallotScan(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
     
-    cout<<"Computing Ballot scan, vertex prefetching: "<<endl;
+    cout<<"Computing Ballot scan, vertex prefetching: ";
     t = kcoreBallotScanPrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl;
     
