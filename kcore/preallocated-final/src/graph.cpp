@@ -110,46 +110,38 @@ void Graph::readFile(string input_file){
 
     lines.clear();
 
-    vector<pair<int, int>> rec(V);
     for(int i=0;i<V;i++){
-        rec[i].first = i;
-        rec[i].second = ns[i].size();
+        lines.push_back({i, ns[i].size()})
     }
 
-    sort(rec.begin(), rec.end(), degComp);
+    sort(lines.begin(), lines.end(), degComp); // sorts indices on basis of degree
     
-    for(int i=0;i<V;i++){
-        rec[i].second = i;
-    }
-    
-
-    cout<<"Max Degree"<<rec[0].second<<endl;
     
     degrees = new unsigned int[V];
     #pragma omp parallel for
     for(int i=0;i<V;++i){
-        degrees[i] = rec[i].second;
+        degrees[i] = lines[i].second;
     }
 
-    cout<<"y"<<endl;
-    
     neighbors_offset = new unsigned int[V+1];
     neighbors_offset[0] = 0;
     partial_sum(degrees, degrees+V, neighbors_offset+1);
 
-    
-
     E = neighbors_offset[V];
     neighbors = new unsigned int[E];
+    
+    unsigned int rec[V];
+    for(int i=0;i<V;i++){
+        rec[lines[i].first] = i;
+    }
 
-    sort(rec.begin(), rec.end(), [](auto x, auto y){return x.first < y.first;});
     #pragma omp parallel for
     for(int i=0;i<V;i++){
-        int reci = rec[i].second;
-        auto it = ns[reci].begin();
-        cout<<i<<" "<<reci<<endl;
-        for(int j=neighbors_offset[reci]; j < neighbors_offset[reci+1]; j++, it++)
-            neighbors[j] = rec[*it].second;
+        unsigned int v = lines[i].first;
+        auto it = ns[v].begin();
+        unsigned int recv = rec[v];
+        for(int j=neighbors_offset[v]; j < neighbors_offset[v+1]; j++, it++)
+            neighbors[j] = rec[*it];
     }
 }
 
