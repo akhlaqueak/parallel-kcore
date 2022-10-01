@@ -4,23 +4,23 @@ import time
 
 datasets = [
 'amazon0601.txt', \
-'web-Google.txt', \
-'dblp-author.txt', \
-'patentcite.txt', \
-'web-BerkStan.txt', \
 'wiki-Talk.txt', \
+'web-Google.txt', \
+'web-BerkStan.txt', \
 'as-skitter.txt', \
+'patentcite.txt', \
 'in-2004.txt', \
+'dblp-author.txt', \
 'wb-edu.txt', \
 'soc-LiveJournal1.txt', \
-'com-orkut.txt', \
-'hollywood-2009.txt', \
-'uk-2002.txt', \
 'wikipedia-link-de.txt', \
-'uk-2005.txt', \
-'indochina-2004.txt', \
+'hollywood-2009.txt', \
+'com-orkut.txt', \
 'trackers.txt', \
+'indochina-2004.txt', \
+'uk-2002.txt', \
 'arabic-2005.txt', \
+'uk-2005.txt', \
 'webbase-2001.txt', \
 'it-2004.txt', \
 ]
