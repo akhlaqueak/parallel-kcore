@@ -33,7 +33,6 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
             
     }
 
-    __syncthreads();
     if(THID==0){
         bufTails[blockIdx.x] = bufTail;
     }

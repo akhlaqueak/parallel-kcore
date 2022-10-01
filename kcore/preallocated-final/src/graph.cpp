@@ -111,7 +111,7 @@ void Graph::readFile(string input_file){
     lines.clear();
 
     for(int i=0;i<V;i++){
-        lines.push_back({i, ns[i].size()})
+        lines.push_back({i, ns[i].size()});
     }
 
     sort(lines.begin(), lines.end(), degComp); // sorts indices on basis of degree
