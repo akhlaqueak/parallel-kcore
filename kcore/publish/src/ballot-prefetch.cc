@@ -69,7 +69,7 @@ __global__ void processNodes6(G_pointers d_p, int level, int V,
     
     if(warp_id > 0)
         if(warp_id-1<bufTail){
-            prefv[warp_id] = readFromBuffer(shBuffer, glBuffer, warp_id-1);
+            prefv[warp_id] = readFromBuffer(glBuffer, warp_id-1);
         }
     if(THID==0){
         npref = min(WARPS_EACH_BLK-1, bufTail-base);
@@ -105,7 +105,7 @@ __global__ void processNodes6(G_pointers d_p, int level, int V,
                 int j = base + lane_id - 1;
                 npref = min(WARPS_EACH_BLK-1, regTail-base);
                 if(j < regTail){
-                    prefv[lane_id] = readFromBuffer(shBuffer, glBuffer, j);
+                    prefv[lane_id] = readFromBuffer(glBuffer, j);
                 }
             }
             continue; // warp0 doesn't process nodes. 
