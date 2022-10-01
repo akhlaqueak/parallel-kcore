@@ -119,7 +119,7 @@ void Graph::readFile(string input_file){
     for(int i=0;i<V;i++){
         rec[i].second = i;
     }
-
+    
 
     cout<<"Max Degree"<<rec[0].second<<endl;
     
