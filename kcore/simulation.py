@@ -39,7 +39,7 @@ datasets = [
 'wikipedia-link-de.txt', \
 'wiki-Talk.txt', \
 ]
-datasets = ['com-orkut.txt']
+# datasets = ['com-orkut.txt']
 
 OUTPUT = "../output/"
 DATASET = "../data_set/data/"
