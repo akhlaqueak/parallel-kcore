@@ -40,6 +40,7 @@ for ds in datasets:
         tock = time.time()
         print("Excecution time: ", ds, tock-tick)
     except Exception as e:
+        now = time.strftime("%H:%M", time.localtime(time.time()))
         print(str(e))
-        print("Failed... ", ds)
+        print(now, "Failed... ", ds)
     # json.dump(nxkcore, open("./output/networkx-kcore-" + ds, 'w'))
