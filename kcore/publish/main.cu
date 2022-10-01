@@ -20,28 +20,35 @@ int main(int argc, char *argv[]){
         exit(-1);
     }
     std::string data_file = argv[1];
-    bool write_to_disk = false;
 
-    cout<<"Loading Started"<<endl;    
+    cout<<"Graph loading Started... ";    
     Graph data_graph(data_file);
-    cout<<"Loading Done"<<endl;
+    cout<<"Done"<<endl;
     unsigned int t;
-    t = kcore(data_graph);
-    cout<<"Ours: "<< t <<endl;
 
+    cout<<"Computing ours... "<<endl;
+    t = kcore(data_graph);
+    cout<<"Done: "<< t << "ms" << endl;
+
+    cout<<"Computing ours algo with using shared memory buffer... "<<endl;
     t = kcoreSharedMem(data_graph);
-    cout<<"Using shared memory buffer: "<< t <<endl;
+    cout<<"Done: "<< t << "ms" << endl;
     
+    cout<<"Computing ours algo with vertex prefetching... "<<endl;
     t = kcorePrefetch(data_graph);
-    cout<<"Vertex prefetching: "<< t <<endl;
-    
+    cout<<"Done: "<< t << "ms" << endl;
+
+    cout<<"Computing using Efficient scan: "<< t <<endl;
     t = kcoreEfficientScan(data_graph);
-    cout<<"Compaction using Efficient scan: "<< t <<endl;
+    cout<<"Done: "<< t << "ms" << endl;
     
+    cout<<"Computing using Ballot scan: "<< t <<endl;
     t = kcoreBallotScan(data_graph);
-    cout<<"Compaction using Ballot scan: "<< t <<endl;
+    cout<<"Done: "<< t << "ms" << endl;
     
+    cout<<"Computing Ballot scan, vertex prefetching: "<< t <<endl;
     t = kcoreBallotScanPrefetch(data_graph);
-    cout<<"Compaction using Ballot scan, vertex prefetching: "<< t <<endl;
+    cout<<"Done: "<< t << "ms" << endl;
+    
     return 0;
 }

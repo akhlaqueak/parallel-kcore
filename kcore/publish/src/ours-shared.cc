@@ -135,7 +135,7 @@ int kcoreSharedMem(Graph &data_graph){
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
        
     
-	cout<<"K-core Computation Started";
+	// cout<<"K-core Computation Started";
 
     auto start = chrono::steady_clock::now();
     while(count < data_graph.V){
@@ -151,7 +151,7 @@ int kcoreSharedMem(Graph &data_graph){
         // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-	cout<<"Done"<<endl;
+	// cout<<"Done"<<endl;
 
     auto end = chrono::steady_clock::now();
     

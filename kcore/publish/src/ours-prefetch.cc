@@ -168,11 +168,10 @@ int kcorePrefetch(Graph &data_graph){
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
        
     
-	cout<<"K-core Computation Started";
+	// cout<<"K-core Computation Started";
 
     auto start = chrono::steady_clock::now();
     while(count < data_graph.V){
-        cout<<".";
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
 
         selectNodesAtLevel3<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 

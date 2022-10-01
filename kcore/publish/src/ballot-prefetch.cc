@@ -47,7 +47,6 @@ __global__ void processNodes6(G_pointers d_p, int level, int V,
     __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ bool predicate[BLK_DIM];
     __shared__ unsigned int temp[BLK_DIM];
-    __shared__ unsigned int *shBuffer;
     __shared__ unsigned int bufTail;
     __shared__ unsigned int base;
     __shared__ unsigned int* glBuffer;
@@ -171,7 +170,7 @@ int kcoreBallotScanPrefetch(Graph &data_graph){
     chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
        
     
-	cout<<"K-core Computation Started";
+	// cout<<"K-core Computation Started";
 
     auto start = chrono::steady_clock::now();
     while(count < data_graph.V){
@@ -187,7 +186,7 @@ int kcoreBallotScanPrefetch(Graph &data_graph){
         // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-	cout<<"Done "<<"Kmax: "<<level-1<<endl;
+	// cout<<"Done "<<"Kmax: "<<level-1<<endl;
 
     auto end = chrono::steady_clock::now();
 

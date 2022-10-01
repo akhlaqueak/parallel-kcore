@@ -17,7 +17,7 @@ bool Graph::readSerialized(string input_file){
         for(int i=0;i<E;i++)
             file>>neighbors[i];
         file.close();
-        cout<<input_file<<" MAXD: "<<*max_element(degrees, degrees+V)<<endl;
+        dmax = *max_element(degrees, degrees+V);
         return true;
     }else{
         cout<<"readSerialized: File couldn't open"<<endl;
