@@ -129,8 +129,9 @@ Graph::Graph(std::string input_file){
     readFile(input_file);
     auto end = chrono::steady_clock::now();
     
-    cout<< "Done "<< chrono::duration_cast<chrono::seconds>(end - start).count()  
-    <<endl;
+    cout<< "Done "<<endl;
+    cout<<"File loaded in " << chrono::duration_cast<chrono::seconds>(end - start).count()  
+    <<" sec"<<endl;
     // writeSerialized(input_file);
 }
 
