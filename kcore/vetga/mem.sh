@@ -1,3 +1,4 @@
+#!/bin/bash
 fn="memlog"
 rm $fn
 while true;
