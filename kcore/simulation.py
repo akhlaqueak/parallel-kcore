@@ -19,36 +19,27 @@ import statistics as stat
 # folders = ['preallocated-final']
 
 datasets = [
-# 'amazon0601.txt', \
-# 'arabic-2005.txt', \
-# 'as-skitter.txt', \
-# 'com-orkut.txt',\
-# 'dblp-author.txt', \
-# 'hollywood-2009.txt', \
-# 'in-2004.txt', \
-# 'indochina-2004.txt', \
-# 'it-2004.txt', \
-# 'patentcite.txt', \
-# 'soc-LiveJournal1.txt', \
-# 'trackers.txt', \
-# 'uk-2002.txt', \
-# 'uk-2005.txt', \
-# 'wb-edu.txt', \
-# 'webbase-2001.txt', \
-# 'web-BerkStan.txt', \
-# 'web-Google.txt', \
-# 'wikipedia-link-de.txt', \
-# 'wiki-Talk.txt', \
-
-
-'it-2004.txt', \
-'uk-2002.txt', \
-'uk-2005.txt', \
-'wb-edu.txt', \
-'webbase-2001.txt', \
+'amazon0601.txt', \
+'wiki-Talk.txt', \
 'web-Google.txt', \
+'web-BerkStan.txt', \
+'as-skitter.txt', \
+'patentcite.txt', \
+'in-2004.txt', \
+'dblp-author.txt', \
+'wb-edu.txt', \
+'soc-LiveJournal1.txt', \
+'wikipedia-link-de.txt', \
+'hollywood-2009.txt', \
+'com-orkut.txt', \
+'trackers.txt', \
+'indochina-2004.txt', \
+'uk-2002.txt', \
+'arabic-2005.txt', \
+'uk-2005.txt', \
+'webbase-2001.txt', \
+'it-2004.txt', \
 ]
-# datasets = ['com-orkut.txt']
 
 OUTPUT = "../output/"
 DATASET = "../data_set/data/"
