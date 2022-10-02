@@ -122,11 +122,16 @@ void Graph::writeKCoreToDisk(std::string file){
 }
 
 Graph::Graph(std::string input_file){
-    if(readSerialized(input_file)) return;
-    cout<<"Reading normal file... "<<endl;
-
+    // if(readSerialized(input_file)) return;
+    cout<<input_file<<" Loading graph... ";
+    
+    auto start = chrono::steady_clock::now();
     readFile(input_file);
-    writeSerialized(input_file);
+    auto end = chrono::steady_clock::now();
+    
+    cout<< "Done "<< chrono::duration_cast<chrono::seconds>(end - start).count()  
+    <<endl;
+    // writeSerialized(input_file);
 }
 
 Graph::~Graph(){
