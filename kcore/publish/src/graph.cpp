@@ -50,7 +50,7 @@ void Graph::readFile(string input_file){
 
     double load_start = omp_get_wtime();
     ifstream infile;
-    infile.open(DS_LOC + input_file);
+    infile.open(input_file);
     if(!infile){
         cout<<"load graph file failed "<<endl;
         exit(-1);
@@ -130,7 +130,7 @@ Graph::Graph(std::string input_file){
 }
 
 Graph::~Graph(){
-    cout<<"Deallocated... "<<endl;
+    // cout<<"Deallocated... "<<endl;
     delete [] neighbors;
     delete [] neighbors_offset;
     delete [] degrees;

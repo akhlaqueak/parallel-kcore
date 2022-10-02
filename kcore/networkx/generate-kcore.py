@@ -11,18 +11,18 @@ datasets = [
 'patentcite.txt', \
 'in-2004.txt', \
 'dblp-author.txt', \
-'wb-edu.txt', \
-'soc-LiveJournal1.txt', \
-'wikipedia-link-de.txt', \
-'hollywood-2009.txt', \
-'com-orkut.txt', \
-'trackers.txt', \
-'indochina-2004.txt', \
-'uk-2002.txt', \
-'arabic-2005.txt', \
-'uk-2005.txt', \
-'webbase-2001.txt', \
-'it-2004.txt', \
+# 'wb-edu.txt', \
+# 'soc-LiveJournal1.txt', \
+# 'wikipedia-link-de.txt', \
+# 'hollywood-2009.txt', \
+# 'com-orkut.txt', \
+# 'trackers.txt', \
+# 'indochina-2004.txt', \
+# 'uk-2002.txt', \
+# 'arabic-2005.txt', \
+# 'uk-2005.txt', \
+# 'webbase-2001.txt', \
+# 'it-2004.txt', \
 ]
 # datasets = ['patentcite.g']
 for ds in datasets:
