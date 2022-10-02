@@ -23,7 +23,6 @@ int main(int argc, char *argv[]){
 
     cout<<"Graph loading Started... ";    
     Graph data_graph(data_file);
-    cout<<"Done"<<endl;
     unsigned int t;
 
     cout<<"V: "<< data_graph.V<<endl;
@@ -32,7 +31,7 @@ int main(int argc, char *argv[]){
     // cout<<"Computing ours... ";
     t = kcore(data_graph);
     cout<<"Kmax: "<<data_graph.kmax<<endl;
-    cout<<"Our algo: "<< t << "ms" << endl<< endl;
+    cout<<"Our algo Done: "<< t << "ms" << endl<< endl;
 
     cout<<"Computing ours algo with using shared memory buffer... ";
     t = kcoreSharedMem(data_graph);
