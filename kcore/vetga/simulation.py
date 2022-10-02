@@ -47,8 +47,6 @@ DATASET = "../data_set/data/"
 VERIFY = False
 VERBOSE = True
 
-sp.run(["git", "pull"])
-sp.run(["make"])
 for ds in datasets:
 
     print(ds, ": Started... ", end=" ", flush=True)
