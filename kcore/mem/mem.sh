@@ -1,21 +1,21 @@
 #!/bin/bash
-while true;
-do
-        # free: Display memory details. -m to show values in mibibytes.
-        # grep: search for 'Mem'
-        # awk: print the value of the third column "used memory"
-        nvidia-smi --query-gpu=memory.used --format=csv,nounits,noheader
-        sleep 0.01; 
-done
-
-
-# fn="memlog"
-# rm $fn
 # while true;
 # do
-#     nvidia-smi | grep 'python3' | awk '{print $8}' | grep -o -E '[0-9]+' >> $fn
-#     sleep $1
+#         # free: Display memory details. -m to show values in mibibytes.
+#         # grep: search for 'Mem'
+#         # awk: print the value of the third column "used memory"
+#         nvidia-smi --query-gpu=memory.used --format=csv,nounits,noheader
+#         sleep 0.01; 
 # done
+
+
+fn=$1
+rm $fn
+while true;
+do
+    nvidia-smi | grep 'python3' | awk '{print $8}' | grep -o -E '[0-9]+' >> $fn
+    sleep 0.001
+done
 
 
 # cd $(dirname $0) # Jalal: the folder containing the script will be the root folder. https://askubuntu.com/a/368100
