@@ -61,3 +61,4 @@ for ds in datasets:
     err = output.stderr.decode()
     if(VERBOSE): 
         print(text)
+        print(err)
