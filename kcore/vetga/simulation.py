@@ -50,13 +50,13 @@ VERBOSE = True
 for ds in datasets:
 
     print(ds, ": Started... ", end=" ", flush=True)
-    memp = sp.Popen("./mem.sh", stdout=PIPE, stderr=PIPE)
+    memp = sp.Popen(["./mem.sh", "mem-"+ds])
     output = sp.run(["python3","kcdapp.py", "-m", "torch-gpu", DATASET + ds], stdout=PIPE, stderr=PIPE)
     memp.kill()
-    memtrace, errtrace = memp.communicate()
-    memtrace = list(map(int, memtrace.split())) # split and convert to integers
-    mem = max(memtrace)
-    print(ds, " MEM: ", mem)
+    # memtrace, errtrace = memp.communicate()
+    # memtrace = list(map(int, memtrace.split())) # split and convert to integers
+    # mem = max(memtrace)
+    # print(ds, " MEM: ", mem)
     text = output.stdout.decode()
     err = output.stderr.decode()
     if(VERBOSE): 
