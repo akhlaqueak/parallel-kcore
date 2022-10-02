@@ -41,7 +41,7 @@ datasets = [
 'it-2004.txt', \
 ]
 
-datasets = ['amazon0601.txt']
+# datasets = ['amazon0601.txt']
 OUTPUT = "../output/"
 DATASET = "../data_set/data/"
 VERIFY = False
