@@ -55,8 +55,8 @@ for ds in datasets:
     memp.kill()
     memtrace, errtrace = memp.communicate()
     memtrace = list(map(int, memtrace.split())) # split and convert to integers
-    mem = max(memtrace)
-    print(ds, " MEM: ", mem)
+    # mem = max(memtrace)
+    print(ds, " MEM: ", memtrace)
     text = output.stdout.decode()
     err = output.stderr.decode()
     if(VERBOSE): 
