@@ -19,14 +19,14 @@ import statistics as stat
 # folders = ['preallocated-final']
 
 datasets = [
-'amazon0601.txt', \
-'wiki-Talk.txt', \
-'web-Google.txt', \
-'web-BerkStan.txt', \
-'as-skitter.txt', \
-'patentcite.txt', \
-'in-2004.txt', \
-'dblp-author.txt', \
+# 'amazon0601.txt', \
+# 'wiki-Talk.txt', \
+# 'web-Google.txt', \
+# 'web-BerkStan.txt', \
+# 'as-skitter.txt', \
+# 'patentcite.txt', \
+# 'in-2004.txt', \
+# 'dblp-author.txt', \
 'wb-edu.txt', \
 'soc-LiveJournal1.txt', \
 'wikipedia-link-de.txt', \
