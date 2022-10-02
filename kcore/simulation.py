@@ -53,7 +53,7 @@ for ds in datasets:
 
     print(ds, ": Started... ", end=" ", flush=True)
     # memp = sp.Popen("../mem/mem.sh", stdout=PIPE, stderr=PIPE)
-    output = sp.run(["./kcore", ds], stdout=PIPE, stderr=PIPE)
+    output = sp.run(["./kcore","../data_set/data/"+ds], stdout=PIPE, stderr=PIPE)
     # memp.kill()
     # memtrace, errtrace = memp.communicate()
     # memtrace = list(map(int, memtrace.split())) # split and convert to integers

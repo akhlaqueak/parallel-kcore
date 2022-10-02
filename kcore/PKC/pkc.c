@@ -29,7 +29,7 @@
 #define BUFF_ACCESS_ASSERTS 1
 
 // Number of threads used
-int NUM_THREADS = 1;
+int NUM_THREADS = 32;
 
 typedef unsigned int vid_t;
 typedef unsigned int eid_t;

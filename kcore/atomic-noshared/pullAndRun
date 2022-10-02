@@ -1,4 +1,5 @@
 #!/bin/bash
 git pull
 make
-./kcore Enron.g
+./kcore amazon0601.txt
+

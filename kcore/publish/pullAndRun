@@ -1,4 +1,4 @@
 #!/bin/bash
 git pull
 make
-./kcore Enron.g
+./kcore ../data_set/data/amazon0601.txt
