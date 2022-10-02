@@ -52,7 +52,7 @@ sp.run(["make"])
 for ds in datasets:
 
     print(ds, ": Started... ", end=" ", flush=True)
-    memp = sp.Popen("../mem/mem.sh", stdout=PIPE, stderr=PIPE)
+    memp = sp.Popen("./mem.sh", stdout=PIPE, stderr=PIPE)
     output = sp.run(["python3","kcdapp.py", "-m", "torch-gpu", DATASET + ds], stdout=PIPE, stderr=PIPE)
     memp.kill()
     memtrace, errtrace = memp.communicate()
