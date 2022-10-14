@@ -43,7 +43,6 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
 
-    __shared__ unsigned int shBuffer[MAX_NV];
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
@@ -90,7 +89,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         }
         //bufTail is incremented in the code below:
 
-        unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
+        unsigned int v = readFromBuffer(glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
 
@@ -111,7 +110,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
+                    writeToBuffer(glBuffer, loc, u);
                 }
 
                 if(a <= level){
@@ -124,6 +123,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
     }
 
     if(THID == 0 && bufTail>0){
-        atomicAdd(global_count, bufTail); // atomic since contention among blocks
+        unsigned int g = atomicAdd(global_count, bufTail); // atomic since contention among blocks
+        cudaMemcpyAsync (d_p.degOrder+g, glBuffer, sizeof(unsigned int)*bufTail, cudaMemcpyDeviceToDevice);
     }
 }
