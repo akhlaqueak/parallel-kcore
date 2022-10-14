@@ -129,7 +129,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         // Store degeneracy order... 
         for(int i=base+THID; i<base+bufTail; i+=BLK_DIM){
             d_p.degOrder[i] = glBuffer[i-base];
-            printf("%d ", d_p.degOrder[i]);
+            // printf("%d ", d_p.degOrder[i]);
         }
     }
 }
