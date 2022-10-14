@@ -128,6 +128,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         __syncthreads();
         for(int i=base; i<base+bufTail; i+=BLK_DIM){
             d_p.degOrder[i] = glBuffer[i-base];
+            printf("%d ", d_p.degOrder[i]);
         }
     }
 }
