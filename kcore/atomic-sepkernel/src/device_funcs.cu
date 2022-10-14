@@ -122,8 +122,12 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
 
     }
 
-    if(THID == 0 && bufTail>0){
-        unsigned int g = atomicAdd(global_count, bufTail); // atomic since contention among blocks
-        cudaMemcpyAsync (d_p.degOrder+g, glBuffer, sizeof(unsigned int)*bufTail, cudaMemcpyDeviceToDevice);
+    if(bufTail>0){
+        if(THID == 0)
+            base = atomicAdd(global_count, bufTail); // atomic since contention among blocks
+        __syncthreads();
+        for(int i=base; i<bufTail; i+=BLK_DIM){
+            d_p.degOrder[i] = glBuffer[i-base];
+        }
     }
 }
