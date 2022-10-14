@@ -126,6 +126,7 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
         if(THID == 0)
             base = atomicAdd(global_count, bufTail); // atomic since contention among blocks
         __syncthreads();
+        // Store degeneracy order... 
         for(int i=base+THID; i<base+bufTail; i+=BLK_DIM){
             d_p.degOrder[i] = glBuffer[i-base];
             printf("%d ", d_p.degOrder[i]);
