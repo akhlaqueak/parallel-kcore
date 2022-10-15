@@ -9,11 +9,9 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     //          labels also use the same vtail
     // otail: offset tail, two consective values represent start and end of a subgraph.
     //          it's always atomically incremented by 2.
-    printf("st");
 
     unsigned int warpid = WARPID;
     unsigned int laneid = LANEID;
-    printf("end");
     if(THID==0){
         sg = subgs[BLKID];
         base += BLKID*SUBG;
@@ -21,6 +19,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         otail = 0;
     }
     __syncthreads();
+    printf("end");
 
     // create subgraphs... 
     unsigned int u;
