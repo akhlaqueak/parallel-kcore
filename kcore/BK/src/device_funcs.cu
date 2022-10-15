@@ -42,7 +42,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     for(;start<end; start+=32, loc+=32){
         u = dp.neighbors[start+laneid];
         sg.vertices[loc+laneid] = u;
-        if(u < v){sg.labels[loc+lanid] = X;}
+        if(u < v){sg.labels[loc+laneid] = X;}
         else {sg.labels[loc+laneid] = P;}
     }
 }
