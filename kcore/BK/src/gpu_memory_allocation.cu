@@ -12,7 +12,7 @@ void malloc_graph_gpu_memory(Graph &g,G_pointers &p){
     p.V = g.V;
     // std::cout<<"memory graph p = "<<p.neighbors[0]<<endl;
 }
-void recodedGraphCopy(Graph &g, G_pointers &p, Subgraphs** &sg){
+void recodedGraphCopy(Graph &g, G_pointers &p, Subgraphs** sg){
     chkerr(cudaMalloc(&(p.neighbors),g.neighbors_offset[g.V]*sizeof(unsigned int)));
     chkerr(cudaMemcpy(p.neighbors,g.neighbors,g.neighbors_offset[g.V]*sizeof(unsigned int),cudaMemcpyHostToDevice));
     chkerr(cudaMalloc(&(p.neighbors_offset),(g.V+1)*sizeof(unsigned int)));
