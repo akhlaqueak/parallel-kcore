@@ -71,7 +71,7 @@ int find_kcore(Graph &g,bool write_to_disk){
     cout<<"Reordering Time: "<<chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-tick).count()<<endl;
     
     free_graph_gpu_memory(dp);
-    cudaDeviceReset(); // clear everything from device
+    // cudaDeviceReset(); // clear everything from device
 
     Subgraphs sg[BLK_NUMS];
     cout<<"Recoded graph Copy Started"<<endl;

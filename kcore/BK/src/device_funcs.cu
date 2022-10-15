@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
+    printf("hi.");
     __shared__ Subgraphs sg;
     __shared__ unsigned int vtail, otail;
     // vtail: vertices tail, a subgraph vertices stored based on an atomic increment to it
@@ -19,7 +20,6 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         otail = 0;
     }
     __syncthreads();
-    printf("hi.");
 
     // create subgraphs... 
     unsigned int u;

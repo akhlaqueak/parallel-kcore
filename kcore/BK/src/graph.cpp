@@ -167,7 +167,7 @@ void Graph::writeKCoreToDisk(std::string file){
 }
 
 Graph::Graph(std::string input_file){
-    // if(readSerialized(input_file)) return;
+    if(readSerialized(input_file)) return;
     cout<<"Reading normal file... "<<endl;
 
     auto start = chrono::steady_clock::now();
