@@ -81,6 +81,7 @@ int find_kcore(Graph &g,bool write_to_disk){
     for (int i=0; i<V; i+=BLK_NUMS*SUBG){
         BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg, i);
     }
+    cudaDeviceSynchronize();
 
     return chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - tick).count();
 
