@@ -46,7 +46,7 @@ int find_kcore(Graph &g,bool write_to_disk){
     }
 	cout<<"K-core Computation Done"<<endl;
     cout<<"KMax: "<< level-1 <<endl;
-    Graph gRec(g); // copy constructor overloaded... it allocates array for degree, neighbors... 
+    Graph gRec(g); // copy constructor overloaded... it allocates array for degree, neighbors, offsets... 
   
     
     unsigned int rec[g.V];
@@ -69,7 +69,8 @@ int find_kcore(Graph &g,bool write_to_disk){
 
     }
     cout<<"Reordering Time: "<<chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-tick).count()<<endl;
-
+    
+    free_graph_gpu_memory(dp);
     
     // cout << "Elapsed Time: "
     // << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
@@ -79,7 +80,6 @@ int find_kcore(Graph &g,bool write_to_disk){
 	// get_results_from_gpu(g, dp);
     
     cudaFree(glBuffers);
-    free_graph_gpu_memory(dp);
     // if(write_to_disk){
     //     cout<<"Writing kcore to disk started... "<<endl;
     //     g.writeKCoreToDisk(data_file);
@@ -103,17 +103,8 @@ int main(int argc, char *argv[]){
     Graph g(data_file);
     cout<<"Loading Done"<<endl;
     
-    vector<int> et;
-    for(int i=0;i<REP; i++){
-        cout<<"Running iteration: "<<i+1<<endl;
-        int t = find_kcore(g, write_to_disk);
-        et.push_back(t);
-    }
-    cout << data_file << " Elapsed Time: ";
+    int t = find_kcore(g, write_to_disk);
 
-    for(auto t: et)
-        cout<<t<<" ";
-    cout<<(double)accumulate(et.begin(), et.end(), 0)/et.size();
     cout<<endl;
     return 0;
 }
