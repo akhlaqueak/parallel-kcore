@@ -16,6 +16,7 @@ void malloc_graph_gpu_memory(Graph &g,G_pointers &p){
     chkerr(cudaMalloc(&(p.degrees),(g.V)*sizeof(unsigned int)));
     chkerr(cudaMemcpy(p.degrees,g.degrees,(g.V)*sizeof(unsigned int),cudaMemcpyHostToDevice));
     chkerr(cudaMalloc(&(p.degOrder),(g.V)*sizeof(unsigned int)));
+    g.V = p.V;
     // std::cout<<"memory graph p = "<<p.neighbors[0]<<endl;
 }
 
