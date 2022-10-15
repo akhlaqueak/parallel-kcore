@@ -89,8 +89,10 @@ void find_kcore(string data_file,bool write_to_disk){
 
     for(int v=0;v<V;v++){
         unsigned int recv = rec[v];
+        cout<<v<<" "<<recv<<endl;
         for (int j=g.neighbors_offset[v], k=gRec.neighbors_offset[recv]; j<g.neighbors_offset[v+1]; j++, k++){
             gRec.neighbors[k] = rec[g.neighbors[j]];
+            cout<<gRec.neighbors[k]<<" ";
         }
     }
     REPORTTIME;
