@@ -48,6 +48,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         unsigned int st = sg.offsets[i];
         unsigned int en = sg.offsets[i+1];
     }
+    printf("end");
 }
 
 
