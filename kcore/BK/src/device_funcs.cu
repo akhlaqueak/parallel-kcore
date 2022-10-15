@@ -3,6 +3,51 @@
 #include "stdio.h"
 #include "buffer.cc"
 #define SHBUFFER 0
+__global__ void BK(G_pointers dp, Subgraphs* sg, unsigned int base){
+    __shared__ Subgraphs sgb;
+    __shared__ unsigned int vtail, otail;
+    // vtail: vertices tail, a subgraph vertices stored based on an atomic increment to it
+    //          labels also use the same vtail
+    // otail: offset tail, two consective values represent start and end of a subgraph.
+    //          it's always atomically incremented by 2.
+
+    unsigned int warpid = WARPID;
+    unsigned int laneid = LANEID;
+    if(THID==0){
+        sgb = sg[BLKID];
+        base += BLKID*SUBG;
+        vtail = 0;
+        otail = 0;
+    }
+    __syncthreads();
+
+    
+    // create subgraphs... 
+    unsigned int u;
+    unsigned int v = base+warpid;
+    unsigned int start = dp.neighbors_offset[v];
+    unsigned int end = dp.neighbors_offset[v+1];
+    unsigned int len = end-start+1; // number of neighbors + v itself
+    unsigned int loc;
+    if(laneid == 0){
+        loc = atomicAdd(vtail, len);
+        sg.vertices[loc] = v;
+        sg.labels[loc++] = R;
+        
+        unsigned int st = atomicAdd(otail, 2);
+        sg.offsets[st] = loc;
+        sg.offsets[st+1] = loc+len; 
+    }
+    loc = __shfl_sync(FULL, loc, 0);
+    for(;start<end; start+=32, loc+=32){
+        u = dp.neighbors[start+laneid];
+        sg.vertices[loc+laneid] = u;
+        if(u < v){sg.labels[loc+lanid] = X;}
+        else {sg.labels[loc+laneid] = P;}
+    }
+}
+
+
 
 __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, unsigned int V, 
                  unsigned int* bufTails, unsigned int* glBuffers){

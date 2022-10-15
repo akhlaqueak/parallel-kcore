@@ -15,6 +15,15 @@
 #define DS_LOC string("../data_set/data/")
 #define OUTPUT_LOC string("../output/")
 #define REP 1
+#define NSUBS 1000
+#define SUBG 32
+#define WARPID THID>>5
+#define LANEID THID&31
+#define BLKID blockIdx.x
+#define FULL 0xFFFFFFFF
+#define R 'r'
+#define P 'p'
+#define X 'x'
 
 #include <iostream>
 #include <vector>
@@ -44,6 +53,12 @@ typedef struct G_pointers {
     unsigned int* degOrder;
     unsigned int V;
 } G_pointers;//graph related
+
+typedef struct Subgraphs{
+    unsigned int* offsets;
+    unsigned int* vertices;
+    char* labels;
+}Subgraphs;
 
 typedef struct Node {
     unsigned int data[BUFF_SIZE];

@@ -71,20 +71,16 @@ int find_kcore(Graph &g,bool write_to_disk){
     cout<<"Reordering Time: "<<chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-tick).count()<<endl;
     
     free_graph_gpu_memory(dp);
-    
-    // cout << "Elapsed Time: "
-    // << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
-    // cout <<"MaxK: "<<level-1<<endl;
-    
-    
-	// get_results_from_gpu(g, dp);
-    
-    cudaFree(glBuffers);
-    // if(write_to_disk){
-    //     cout<<"Writing kcore to disk started... "<<endl;
-    //     g.writeKCoreToDisk(data_file);
-    //     cout<<"Writing kcore to disk completed... "<<endl;
-    // }
+    cudaDeviceReset(); // clear everything from device
+
+    Subgraphs sg[BLK_NUMS];
+    cout<<"Recoded graph Copy Started"<<endl;
+    recodedGraphCopy(gRec, dp, sg);
+    cout<<"Recoded graph Copy Done"<<endl;
+
+    for (int i=0; i<V; i+=BLK_NUMS*SUBG){
+        BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg, i);
+    }
 
     return chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - tick).count();
 
