@@ -13,9 +13,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     unsigned int warpid = WARPID;
     unsigned int laneid = LANEID;
     if(THID==0){
-    printf("end");
         sg = subgs[BLKID];
-    printf("ok");
         base += BLKID*SUBG;
         vtail = 0;
         otail = 0;
@@ -37,7 +35,6 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         unsigned int st = atomicAdd(&otail, 2);
         sg.offsets[st] = loc;
         sg.offsets[st+1] = loc+len; 
-        printf("%d-%d", st, loc);
     }
     loc = __shfl_sync(FULL, loc, 0);
     for(;start<end; start+=32, loc+=32){
@@ -46,10 +43,14 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         if(u < v){sg.labels[loc+laneid] = X;}
         else {sg.labels[loc+laneid] = P;}
     }
-    // for(int i=0;i<otail;i+=2){
-    //     unsigned int st = sg.offsets[i];
-    //     unsigned int en = sg.offsets[i+1];
-    // }
+    if(THID==0)
+    for(int i=0;i<otail;i+=2){
+        unsigned int st = sg.offsets[i];
+        unsigned int en = sg.offsets[i+1];
+        for(;st<en;st++){
+            printf("%d, %c", sg.vertices[st], sg.labels[st]);
+        }
+    }
 }
 
 
