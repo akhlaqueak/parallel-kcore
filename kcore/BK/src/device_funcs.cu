@@ -19,6 +19,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         otail = 0;
     }
     __syncthreads();
+    printf("end");
 
     // create subgraphs... 
     unsigned int u;
@@ -44,11 +45,10 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         if(u < v){sg.labels[loc+laneid] = X;}
         else {sg.labels[loc+laneid] = P;}
     }
-    for(int i=0;i<otail;i+=2){
-        unsigned int st = sg.offsets[i];
-        unsigned int en = sg.offsets[i+1];
-    }
-    printf("end");
+    // for(int i=0;i<otail;i+=2){
+    //     unsigned int st = sg.offsets[i];
+    //     unsigned int en = sg.offsets[i+1];
+    // }
 }
 
 
