@@ -69,7 +69,7 @@ void find_kcore(string data_file,bool write_to_disk){
         cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-    REPORTTIME;
+    cout<<"Elapsed Time: "<<chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-tick).count()<<endl;
     cout <<"MaxK: "<<level-1<<endl;
     tick = chrono::steady_clock::now();
 
@@ -89,19 +89,17 @@ void find_kcore(string data_file,bool write_to_disk){
 
     for(int v=0;v<V;v++){
         unsigned int recv = rec[v];
-        cout<<v<<" -> "<<recv<<endl;
         unsigned int start = gRec.neighbors_offset[recv];
         unsigned int end = gRec.neighbors_offset[recv+1];
-        cout<<"sta"<<start<<" "<<end<<endl;
         for (int j=g.neighbors_offset[v], k=start; j<g.neighbors_offset[v+1]; j++, k++){
             gRec.neighbors[k] = rec[g.neighbors[j]];
         }
-        std::sort(gRec.neighbors+ start, gRec.neighbors + end);
-        for(int k = start; k<end; k++)
-            cout<<gRec.neighbors[k]<<" ";
-        cout<<endl;
+        std::sort(gRec.neighbors+start, gRec.neighbors+end);
+        // for(int k = start; k<end; k++)
+        //     cout<<gRec.neighbors[k]<<" ";
+        // cout<<endl;
     }
-    REPORTTIME;
+    cout<<"Elapsed Time: "<<chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-tick).count()<<endl;
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);
     if(write_to_disk){
