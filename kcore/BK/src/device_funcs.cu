@@ -2,7 +2,6 @@
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 #include "buffer.cc"
-#define SHBUFFER 0
 __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     __shared__ Subgraphs sg;
     __shared__ unsigned int vtail, otail;
@@ -20,7 +19,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         otail = 0;
     }
     __syncthreads();
-
+    printf("hi.");
 
     // create subgraphs... 
     unsigned int u;
@@ -93,10 +92,7 @@ __global__ void selectNodesAtLevel(unsigned int *degrees, unsigned int level, un
 __global__ void processNodes(G_pointers d_p, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
-#if SHBUFFER
-    __shared__ unsigned int shBuffer[MAX_NV], initTail;
-    if(THID == 0) initTail = bufTails[blockIdx.x];
-#endif
+
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
@@ -133,11 +129,8 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
                 base = regTail;
         }
         //bufTail is incremented in the code below:
-        #if SHBUFFER
-            unsigned int v = readFromBuffer(shBuffer, glBuffer, initTail, i);
-        #else
-            unsigned int v = readFromBuffer(glBuffer, i);
-        #endif
+
+        unsigned int v = readFromBuffer(glBuffer, i);
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
 
@@ -158,11 +151,8 @@ __global__ void processNodes(G_pointers d_p, int level, int V,
             
                 if(a == level+1){
                     unsigned int loc = atomicAdd(&bufTail, 1);
-                    #if SHBUFFER
-                        writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
-                    #else
-                        writeToBuffer(glBuffer, loc, u);
-                    #endif
+
+                    writeToBuffer(glBuffer, loc, u);
                 }
 
                 if(a <= level){
