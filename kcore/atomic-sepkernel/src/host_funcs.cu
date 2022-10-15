@@ -85,7 +85,7 @@ void find_kcore(string data_file,bool write_to_disk){
         gRec.degrees[rec[i]] = g.degrees[i];
 
     gRec.neighbors_offset[0] = 0;
-    partial_sum(gRec.neighbors_offset, gRec.neighbors_offset+V, gRec.neighbors_offset+1);
+    std::partial_sum(gRec.neighbors_offset, gRec.neighbors_offset+V, gRec.neighbors_offset+1);
 
     for(int v=0;v<V;v++){
         unsigned int recv = rec[v];
@@ -94,6 +94,7 @@ void find_kcore(string data_file,bool write_to_disk){
             gRec.neighbors[k] = rec[g.neighbors[j]];
             cout<<gRec.neighbors[k]<<" ";
         }
+        std::sort(gRec.neighbors[gRec.neighbors_offset[recv]], gRec.neighbors[gRec.neighbors_offset[recv+1]]);
         cout<<endl;
     }
     REPORTTIME;
