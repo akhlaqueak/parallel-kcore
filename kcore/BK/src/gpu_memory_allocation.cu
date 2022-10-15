@@ -23,9 +23,9 @@ void recodedGraphCopy(Graph &g, G_pointers &p, Subgraphs** sg){
     chkerr(cudaMalloc(sg, BLK_NUMS*sizeof(Subgraphs)));
 
     for(int i=0;i<BLK_NUMS; i++){
-        chkerr(cudaMalloc(&(sg[i].offsets), NSUBS*sizeof(unsigned int)));
-        chkerr(cudaMalloc(&(sg[i].vertices), NSUBS*1000*sizeof(unsigned int)));
-        chkerr(cudaMalloc(&(sg[i].labels), NSUBS*1000*sizeof(char)));
+        chkerr(cudaMalloc(&(sg[0][i].offsets), NSUBS*sizeof(unsigned int)));
+        chkerr(cudaMalloc(&(sg[0][i].vertices), NSUBS*1000*sizeof(unsigned int)));
+        chkerr(cudaMalloc(&(sg[0][i].labels), NSUBS*1000*sizeof(char)));
     }
 }
 void get_results_from_gpu(Graph &g,G_pointers &p){
