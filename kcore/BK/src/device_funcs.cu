@@ -3,8 +3,8 @@
 #include "stdio.h"
 #include "buffer.cc"
 #define SHBUFFER 0
-__global__ void BK(G_pointers dp, Subgraphs* sg, unsigned int base){
-    __shared__ Subgraphs sgb;
+__global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
+    __shared__ Subgraphs sg;
     __shared__ unsigned int vtail, otail;
     // vtail: vertices tail, a subgraph vertices stored based on an atomic increment to it
     //          labels also use the same vtail
@@ -14,14 +14,14 @@ __global__ void BK(G_pointers dp, Subgraphs* sg, unsigned int base){
     unsigned int warpid = WARPID;
     unsigned int laneid = LANEID;
     if(THID==0){
-        sgb = sg[BLKID];
+        sg = subgs[BLKID];
         base += BLKID*SUBG;
         vtail = 0;
         otail = 0;
     }
     __syncthreads();
 
-    
+
     // create subgraphs... 
     unsigned int u;
     unsigned int v = base+warpid;
@@ -30,11 +30,11 @@ __global__ void BK(G_pointers dp, Subgraphs* sg, unsigned int base){
     unsigned int len = end-start+1; // number of neighbors + v itself
     unsigned int loc;
     if(laneid == 0){
-        loc = atomicAdd(vtail, len);
+        loc = atomicAdd(&vtail, len);
         sg.vertices[loc] = v;
         sg.labels[loc++] = R;
         
-        unsigned int st = atomicAdd(otail, 2);
+        unsigned int st = atomicAdd(&otail, 2);
         sg.offsets[st] = loc;
         sg.offsets[st+1] = loc+len; 
     }
