@@ -13,13 +13,14 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     unsigned int warpid = WARPID;
     unsigned int laneid = LANEID;
     if(THID==0){
+    printf("end");
         sg = subgs[BLKID];
+    printf("ok");
         base += BLKID*SUBG;
         vtail = 0;
         otail = 0;
     }
     __syncthreads();
-    printf("end");
 
     // create subgraphs... 
     unsigned int u;
