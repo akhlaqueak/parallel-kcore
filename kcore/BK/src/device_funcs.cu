@@ -30,11 +30,12 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     if(laneid == 0){
         loc = atomicAdd(&vtail, len);
         sg.vertices[loc] = v;
-        sg.labels[loc++] = R;
+        sg.labels[loc] = R;
         
         unsigned int st = atomicAdd(&otail, 2);
         sg.offsets[st] = loc;
         sg.offsets[st+1] = loc+len; 
+        loc++; // as one element is written already... 
     }
     loc = __shfl_sync(FULL, loc, 0);
     for(;start<end; start+=32, loc+=32){
@@ -48,7 +49,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         unsigned int st = sg.offsets[i];
         unsigned int en = sg.offsets[i+1];
         for(;st<en;st++){
-            printf("%d, %c", sg.vertices[st], sg.labels[st]);
+            printf("%d,%c ", sg.vertices[st], sg.labels[st]);
         }
         printf("\n");
     }
