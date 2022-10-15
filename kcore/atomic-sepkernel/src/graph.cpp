@@ -87,7 +87,13 @@ Graph::Graph(std::string input_file){
     readFile(input_file);
     writeSerialized(input_file);
 }
-
+Graph::Graph(const Graph& g){
+    degrees = new unsigned int[g.V];
+    neighbors = new unsigned int[g.E];
+    neighbors_offset = new unsigned int[g.V+1];
+    V = g.V;
+    E = g.E;
+}
 Graph::~Graph(){
     cout<<"Deallocated... "<<endl;
     delete [] neighbors;

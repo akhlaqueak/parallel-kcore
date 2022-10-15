@@ -11,6 +11,7 @@ public:
     unsigned int * neighbors;
     unsigned int * neighbors_offset;
     unsigned int * degrees;
+    Graph(const Graph& g);
     Graph(std::string input_file);
     bool readSerialized(string input_file);
     void writeSerialized(string input_file);

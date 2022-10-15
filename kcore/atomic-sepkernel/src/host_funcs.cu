@@ -1,7 +1,8 @@
 
 #include "../inc/host_funcs.h"
 #include "../inc/gpu_memory_allocation.h"
-
+#define REPORTTIME cout<<"Elapsed Time: "<<chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now()-tick).count()<<endl;
+    
 inline void chkerr(cudaError_t code)
 {
     if (code != cudaSuccess)
@@ -10,20 +11,21 @@ inline void chkerr(cudaError_t code)
         exit(-1);
     }
 }
-void copy_graph_to_gpu(Graph data_graph, G_pointers &data_pointers){
-    malloc_graph_gpu_memory(data_graph,data_pointers);
+void copy_graph_to_gpu(Graph g, G_pointers &data_pointers){
+    malloc_graph_gpu_memory(g,data_pointers);
 }
 void find_kcore(string data_file,bool write_to_disk){
     cout<<"start loading graph file from disk to memory..."<<endl;
     
-    Graph data_graph(data_file);
+    Graph g(data_file);
+    unsigned int V = g.V;
 
     cout<<"graph loading complete..."<<endl;
     G_pointers data_pointers;
 
 
     cout<<"start copying graph to gpu..."<<endl;
-    malloc_graph_gpu_memory(data_graph, data_pointers);
+    malloc_graph_gpu_memory(g, data_pointers);
     cout<<"end copying graph to gpu..."<<endl;
 
     unsigned int level = 0;
@@ -54,34 +56,49 @@ void find_kcore(string data_file,bool write_to_disk){
     
 	cout<<"Entering in while"<<endl;
 
-    auto start = chrono::steady_clock::now();
-    while(count < data_graph.V){
+    auto tick = chrono::steady_clock::now();
+    while(count < g.V){
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
         // chkerr(cudaDeviceSynchronize());
-        selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, data_graph.V, bufTails, glBuffers);
+        selectNodesAtLevel<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, g.V, bufTails, glBuffers);
 
-        processNodes<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, bufTails, glBuffers, global_count);
+        processNodes<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, g.V, bufTails, glBuffers, global_count);
         // test<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees);
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
         
         cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-    auto end = chrono::steady_clock::now();
-    
-    
-    cout << "Elapsed Time: "
-    << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+    REPORTTIME;
     cout <<"MaxK: "<<level-1<<endl;
+    tick = chrono::steady_clock::now();
+
+
+    // recode the graph as per degeneracy order
+    Graph gRec(g); // copy constructor overloaded... it allocates array for degree, neighbors... 
+  
     
+    unsigned int rec[g.V];
+    chkerr(cudaMemcpy(&rec, data_pointers.degOrder, sizeof(unsigned int)*V, cudaMemcpyDeviceToHost));    
     
-	get_results_from_gpu(data_graph, data_pointers);
-    
+    for(int i=0;i<g.V;i++)
+        gRec.degrees[rec[i]] = g.degrees[i];
+
+    gRec.neighbors_offset[0] = 0;
+    partial_sum(gRec.neighbors_offset, gRec.neighbors_offset+V, gRec.neighbors_offset+1);
+
+    for(int v=0;v<V;v++){
+        unsigned int recv = rec[v];
+        for (int j=g.neighbors_offset[v], k=gRec.neighbors_offset[recv]; j<g.neighbors_offset[v+1]; j++, k++){
+            gRec.neighbors[k] = rec[g.neighbors[j]];
+        }
+    }
+    REPORTTIME;
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);
     if(write_to_disk){
         cout<<"Writing kcore to disk started... "<<endl;
-        write_kcore_to_disk(data_graph.degrees, data_graph.V, data_file);
+        write_kcore_to_disk(gRec.degrees, gRec.V, data_file);
         cout<<"Writing kcore to disk completed... "<<endl;
     }
 
