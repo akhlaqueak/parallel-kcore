@@ -50,6 +50,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         for(;st<en;st++){
             printf("%d, %c", sg.vertices[st], sg.labels[st]);
         }
+        printf("\n");
     }
 }
 
