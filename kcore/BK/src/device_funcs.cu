@@ -23,43 +23,45 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     // create subgraphs... 
     unsigned int u;
     unsigned int v = base+BLKID*SUBG+warpid;
-    if(v>=dp.V) return;
-    unsigned int start = dp.neighbors_offset[v];
-    unsigned int end = dp.neighbors_offset[v+1];
-    unsigned int len = end-start+1; // number of neighbors + v itself
-    unsigned int loc;
-    if(laneid == 0){
-        loc = atomicAdd(&vtail, len);
-        unsigned int st = atomicAdd(&otail, 2);
-        sg.offsets[st] = loc;
-        sg.offsets[st+1] = loc+len; 
+    if(v<dp.V){
+        unsigned int start = dp.neighbors_offset[v];
+        unsigned int end = dp.neighbors_offset[v+1];
+        unsigned int len = end-start+1; // number of neighbors + v itself
+        unsigned int loc;
+        if(laneid == 0){
+            loc = atomicAdd(&vtail, len);
+            unsigned int st = atomicAdd(&otail, 2);
+            sg.offsets[st] = loc;
+            sg.offsets[st+1] = loc+len; 
 
-        sg.vertices[loc] = v;
-        sg.labels[loc] = R;
-        printf("%d=*", sg.vertices[loc]);
-        for(int i=start; i<end; i++){
-            printf("%d,", dp.neighbors[i]);
-            printf("\n");
+            sg.vertices[loc] = v;
+            sg.labels[loc] = R;
+            printf("%d=*", sg.vertices[loc]);
+            for(int i=start; i<end; i++){
+                printf("%d,", dp.neighbors[i]);
+                printf("\n");
+            }
+            loc++; // as one element is written already... 
         }
-        loc++; // as one element is written already... 
+        loc = __shfl_sync(FULL, loc, 0);
+        for(;start<end; start+=32, loc+=32){
+            u = dp.neighbors[start+laneid];
+            sg.vertices[loc+laneid] = u;
+            if(u < v){sg.labels[loc+laneid] = X;}
+            else {sg.labels[loc+laneid] = P;}
+        }
     }
-    loc = __shfl_sync(FULL, loc, 0);
-    for(;start<end; start+=32, loc+=32){
-        u = dp.neighbors[start+laneid];
-        sg.vertices[loc+laneid] = u;
-        if(u < v){sg.labels[loc+laneid] = X;}
-        else {sg.labels[loc+laneid] = P;}
+    __syncthreads();
+    if(THID==0 && BLKID==0)
+    for(int i=0;i<otail;i+=2){
+        unsigned int st = sg.offsets[i];
+        unsigned int en = sg.offsets[i+1];
+        printf("%d-%d:", st, en);
+        for(;st<en;st++){
+            printf("%d%c ", sg.vertices[st], sg.labels[st]);
+        }
+        printf("\n");
     }
-    // if(THID==0 && BLKID==0)
-    // for(int i=0;i<otail;i+=2){
-    //     unsigned int st = sg.offsets[i];
-    //     unsigned int en = sg.offsets[i+1];
-    //     printf("%d-%d:", st, en);
-    //     for(;st<en;st++){
-    //         printf("%d%c ", sg.vertices[st], sg.labels[st]);
-    //     }
-    //     printf("\n");
-    // }
 }
 
 
