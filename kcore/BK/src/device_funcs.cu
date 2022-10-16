@@ -4,7 +4,8 @@
 #include "buffer.cc"
 __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     __shared__ Subgraphs sg;
-    __shared__ unsigned int vtail, otail;
+    __shared__ unsigned int vtail;
+    __shared__ unsigned int otail;
     // vtail: vertices tail, a subgraph vertices stored based on an atomic increment to it
     //          labels also use the same vtail
     // otail: offset tail, two consective values represent start and end of a subgraph.
