@@ -50,16 +50,16 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         if(u < v){sg.labels[loc+laneid] = X;}
         else {sg.labels[loc+laneid] = P;}
     }
-    if(THID==0 && BLKID==0)
-    for(int i=0;i<otail;i+=2){
-        unsigned int st = sg.offsets[i];
-        unsigned int en = sg.offsets[i+1];
-        printf("%d-%d:", st, en);
-        for(;st<en;st++){
-            printf("%d%c ", sg.vertices[st], sg.labels[st]);
-        }
-        printf("\n");
-    }
+    // if(THID==0 && BLKID==0)
+    // for(int i=0;i<otail;i+=2){
+    //     unsigned int st = sg.offsets[i];
+    //     unsigned int en = sg.offsets[i+1];
+    //     printf("%d-%d:", st, en);
+    //     for(;st<en;st++){
+    //         printf("%d%c ", sg.vertices[st], sg.labels[st]);
+    //     }
+    //     printf("\n");
+    // }
 }
 
 
