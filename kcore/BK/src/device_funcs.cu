@@ -4,7 +4,9 @@
 #include "buffer.cc"
 
 __device__ void generateSubgraphs(G_pointers dp, Subgraphs sg, 
-        unsigned int v, unsigned int otail, unsigned int vtail){
+        unsigned int v, unsigned int* otail, unsigned int* vtail){
+    unsigned int laneid = LANEID;
+    unsigned int warpid = WARPID;
     unsigned int start = dp.neighbors_offset[v];
     unsigned int end = dp.neighbors_offset[v+1];
     unsigned int len = end-start+1; // number of neighbors + v itself
