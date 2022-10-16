@@ -32,7 +32,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         unsigned int st = atomicAdd(&otail, 2);
         sg.offsets[st] = loc;
         sg.offsets[st+1] = loc+len; 
-        
+
         sg.vertices[loc] = v;
         sg.labels[loc] = R;
         
@@ -49,6 +49,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     for(int i=0;i<otail;i+=2){
         unsigned int st = sg.offsets[i];
         unsigned int en = sg.offsets[i+1];
+        printf("%d-$d:", st, edn);
         for(;st<en;st++){
             printf("%d%c ", sg.vertices[st], sg.labels[st]);
         }
