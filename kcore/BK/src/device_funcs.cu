@@ -36,7 +36,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
 
         sg.vertices[loc] = v;
         sg.labels[loc] = R;
-        printf("%d*", sg.vertices[loc]);
+        printf("%d=%c*", sg.vertices[loc], sg.labels[loc]);
         
         loc++; // as one element is written already... 
     }
