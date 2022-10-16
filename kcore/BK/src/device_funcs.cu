@@ -2,6 +2,39 @@
 #include "../inc/device_funcs.h"
 #include "stdio.h"
 #include "buffer.cc"
+
+__device void generateSubgraphs(G_pointers dp, Subgraphs sg, 
+        unsigned int v, unsigned int otail, unsigned int vtail){
+    unsigned int start = dp.neighbors_offset[v];
+    unsigned int end = dp.neighbors_offset[v+1];
+    unsigned int len = end-start+1; // number of neighbors + v itself
+    if(len==1) return; // there was no neighbor this vertex... 
+    unsigned int loc, u;
+    if(laneid == 0){
+        loc = atomicAdd(vtail, len);
+        unsigned int st = atomicAdd(otail, 2);
+        sg.offsets[st] = loc;
+        sg.offsets[st+1] = loc+len; 
+
+        sg.vertices[loc] = v;
+        sg.labels[loc] = R;
+        printf("%d=*", sg.vertices[loc]);
+        for(int i=start; i<end; i++){
+            printf("%d,", dp.neighbors[i]);
+            printf("\n");
+        }
+        loc++; // as one element is written already... 
+    }
+    loc = __shfl_sync(FULL, loc, 0);
+    for(;start+laneid<end; start+=32, loc+=32){
+        u = dp.neighbors[start+laneid];
+        sg.vertices[loc+laneid] = u;
+        if(u < v){sg.labels[loc+laneid] = X;}
+        else {sg.labels[loc+laneid] = P;}
+    }
+}
+
+
 __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     __shared__ Subgraphs sg;
     __shared__ unsigned int vtail;
@@ -21,35 +54,9 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     __syncthreads();
 
     // create subgraphs... 
-    unsigned int u;
     unsigned int v = base+BLKID*SUBG+warpid;
     if(v<dp.V){
-        unsigned int start = dp.neighbors_offset[v];
-        unsigned int end = dp.neighbors_offset[v+1];
-        unsigned int len = end-start+1; // number of neighbors + v itself
-        unsigned int loc;
-        if(laneid == 0){
-            loc = atomicAdd(&vtail, len);
-            unsigned int st = atomicAdd(&otail, 2);
-            sg.offsets[st] = loc;
-            sg.offsets[st+1] = loc+len; 
-
-            sg.vertices[loc] = v;
-            sg.labels[loc] = R;
-            printf("%d=*", sg.vertices[loc]);
-            for(int i=start; i<end; i++){
-                printf("%d,", dp.neighbors[i]);
-                printf("\n");
-            }
-            loc++; // as one element is written already... 
-        }
-        loc = __shfl_sync(FULL, loc, 0);
-        for(;start<end; start+=32, loc+=32){
-            u = dp.neighbors[start+laneid];
-            sg.vertices[loc+laneid] = u;
-            if(u < v){sg.labels[loc+laneid] = X;}
-            else {sg.labels[loc+laneid] = P;}
-        }
+        generateSubGraphs(dp, sg, v, &otail, &vtail);
     }
     __syncthreads();
     if(THID==0 && BLKID==0)
