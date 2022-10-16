@@ -36,8 +36,11 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
 
         sg.vertices[loc] = v;
         sg.labels[loc] = R;
-        printf("%d=%c*", sg.vertices[loc], sg.labels[loc]);
-        
+        printf("%d=*", sg.vertices[loc]);
+        for(int i=start; i<end; i++){
+            printf("%d,", dp.neighbors[i]);
+            printf("\n");
+        }
         loc++; // as one element is written already... 
     }
     loc = __shfl_sync(FULL, loc, 0);
