@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-__device__ void generateSubgraphs(G_pointers dp, Subgraphs sg, 
+__device__ void generateSubGraphs(G_pointers dp, Subgraphs sg, 
         unsigned int v, unsigned int* otail, unsigned int* vtail){
     unsigned int laneid = LANEID;
     unsigned int warpid = WARPID;
