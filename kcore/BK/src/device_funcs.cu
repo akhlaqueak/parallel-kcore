@@ -18,6 +18,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         vtail = 0;
         otail = 0;
     }
+    if(base>dp.V) return;
     __syncthreads();
 
     // create subgraphs... 
