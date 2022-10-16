@@ -28,11 +28,11 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg,
         loc++; // as one element is written already... 
     }
     loc = __shfl_sync(FULL, loc, 0);
-    for(;start+laneid<end; start+=32, loc+=32){
-        u = dp.neighbors[start+laneid];
-        sg.vertices[loc+laneid] = u;
-        if(u < v){sg.labels[loc+laneid] = X;}
-        else {sg.labels[loc+laneid] = P;}
+    for(unsigned int j=start+laneid, k=loc+laneid;j<end; j+=32, k+=32){
+        u = dp.neighbors[j];
+        sg.vertices[k] = u;
+        if(u < v){sg.labels[k] = X;}
+        else {sg.labels[k] = P;}
     }
 }
 
