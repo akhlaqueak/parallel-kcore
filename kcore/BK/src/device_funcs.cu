@@ -22,7 +22,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     // create subgraphs... 
     unsigned int u;
     unsigned int v = base+BLKID*SUBG+warpid;
-    if(!v<dp.V) return;
+    if(v>=dp.V) return;
     unsigned int start = dp.neighbors_offset[v];
     unsigned int end = dp.neighbors_offset[v+1];
     unsigned int len = end-start+1; // number of neighbors + v itself
