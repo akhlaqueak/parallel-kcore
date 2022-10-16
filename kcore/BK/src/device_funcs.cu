@@ -14,7 +14,6 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     unsigned int laneid = LANEID;
     if(THID==0){
         sg = subgs[BLKID];
-        base += BLKID*SUBG;
         vtail = 0;
         otail = 0;
     }
