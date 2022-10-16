@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "buffer.cc"
 
-__device void generateSubgraphs(G_pointers dp, Subgraphs sg, 
+__device__ void generateSubgraphs(G_pointers dp, Subgraphs sg, 
         unsigned int v, unsigned int otail, unsigned int vtail){
     unsigned int start = dp.neighbors_offset[v];
     unsigned int end = dp.neighbors_offset[v+1];
