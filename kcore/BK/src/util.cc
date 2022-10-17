@@ -23,7 +23,7 @@ __device__ bool binarySearch(unsigned int* arr, unsigned int end, unsigned int v
 //     }
 //     return sum;
 // }
-__device__ int searchAtWarpAny(auto* data, unsigned int st, unsigned int en, auto v){
+__device__ int searchAtWarpAny(unsigned int* data, unsigned int st, unsigned int en, unsigned int v){
     bool pred;
     unsigned int laneid = LANEID;
     unsigned int res;
@@ -39,7 +39,7 @@ __device__ int searchAtWarpAny(auto* data, unsigned int st, unsigned int en, aut
     return false;
 }
 
-__device__ int searchAtWarpAll(auto* data, unsigned int st, unsigned int en, auto v){
+__device__ int searchAtWarpAll(char* data, unsigned int st, unsigned int en, char v){
     bool pred;
     unsigned int laneid = LANEID;
     unsigned int res;
