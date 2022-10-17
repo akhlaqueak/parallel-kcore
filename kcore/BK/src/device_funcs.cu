@@ -69,7 +69,7 @@ __device__ void expandClique(G_pointers dp, Subgraphs sg, unsigned int i,  unsig
         v = sg.vertices[i]; // v in P
         
 
-        if(!searchAtWarp(dp.neighbors, pst, pen, v, ANY)){ //this v is in P-N(pivot)
+        if(!searchAtWarpAny(dp.neighbors, pst, pen, v)){ //this v is in P-N(pivot)
             // generate a subgraph for this sg.vertices[i]: done
             unsigned int ot = generateSubGraphs(dp, sg, v);
             // fux R in newly spawned graph, all such vertices which are R in old graph are R in spawned graph
