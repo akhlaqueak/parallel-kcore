@@ -58,14 +58,11 @@ typedef struct Subgraphs{
     unsigned int* offsets;
     unsigned int* vertices;
     char* labels;
-}Subgraphs;
 
-typedef struct Node {
-    unsigned int data[BUFF_SIZE];
-    unsigned int limit;
-    Node* next;
-    Node* prev;
-} Node;
+    unsigned int* otail;
+    unsigned int* vtail;
+    unsigned int* ohead;
+}Subgraphs;
 
 
 #endif //CUTS_COMMON_H
