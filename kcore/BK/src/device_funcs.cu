@@ -80,11 +80,8 @@ __device__ void expandClique(G_pointers dp, Subgraphs sg, unsigned int i,  unsig
 }
 
 __device__ bool examineClique(Subgraphs sg, unsigned int i){
-    unsigned int laneid=LANEID;
-    unsigned int st, en, j, res;
-    bool pred, report;
-    st = sg.offsets[i];
-    en = sg.offsets[i+1];
+    unsigned int st = sg.offsets[i];
+    unsigned int en = sg.offsets[i+1];
     return searchAtWarpAll(sg.labels, st, en, R);
     // report = true;
     // for(; st<en; st+=32){
@@ -103,12 +100,11 @@ __device__ bool examineClique(Subgraphs sg, unsigned int i){
 
 
 __device__ unsigned int selectPivot(G_pointers dp, Subgraphs sg, unsigned int i){
-    unsigned int warpid=WARPID;
     unsigned int laneid=LANEID;
     unsigned int st=sg.offsets[i];
     unsigned int en=sg.offsets[i+1];
     unsigned int v;
-    unsigned int st1, en1, k;
+    unsigned int st1, en1;
     unsigned int nmatched, max, pivot;
     bool pred;
 
@@ -149,7 +145,6 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     //          it's always atomically incremented by 2.
 
     unsigned int warpid = WARPID;
-    unsigned int laneid = LANEID;
     unsigned int s;
     if(THID==0){
         sg = subgs[BLKID];
