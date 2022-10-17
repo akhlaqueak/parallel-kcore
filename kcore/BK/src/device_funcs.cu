@@ -4,6 +4,7 @@
 #include "buffer.cc"
 #include "kcore.cc"
 #include "util.cc"
+
 __device__ int generateSubGraphs(G_pointers dp, Subgraphs sg, 
         unsigned int v){
     unsigned int laneid = LANEID;
@@ -171,7 +172,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         __syncthreads();
         if(ohead == otail) break;
         s = ohead + warpid*2;
-        ohead = min(otail, ohead+WARPS_EACH_BLK);
+        ohead = min(otail, ohead+WARPS_EACH_BLK*2);
         __syncthreads();
 
         if(examineClique(sg, s)){
