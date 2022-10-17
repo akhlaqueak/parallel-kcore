@@ -168,7 +168,6 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         if(ohead >= otail) break;
         s = ohead + warpid*2;
         ohead = min(otail, ohead+WARPS_EACH_BLK*2);
-        printf(".");
         __syncthreads();
 
         if(examineClique(sg, s)){
