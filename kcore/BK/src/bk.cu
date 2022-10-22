@@ -213,6 +213,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
             // ?? do we need to store R, or just increment a count
             // seemingly GPU-BK(TPDS) is only calculating number of cliques
             dp.total++;
+            printf(".");
         }
         else if(!crossed(sg, s)){
             unsigned int pivot = selectPivot(dp, sg, s);
