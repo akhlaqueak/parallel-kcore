@@ -23,7 +23,7 @@ __device__ bool binarySearch(unsigned int* arr, unsigned int end, unsigned int v
 //     }
 //     return sum;
 // }
-__device__ int searchAtWarpAny(unsigned int* data, unsigned int st, unsigned int en, unsigned int v){
+__device__ int searchAny(unsigned int* data, unsigned int st, unsigned int en, unsigned int v){
     bool pred;
     unsigned int laneid = LANEID;
     unsigned int res;
@@ -39,18 +39,32 @@ __device__ int searchAtWarpAny(unsigned int* data, unsigned int st, unsigned int
     return false;
 }
 
-__device__ int searchAtWarpAll(char* data, unsigned int st, unsigned int en, char v){
+__device__ int searchAnyPX(char* data, unsigned int st, unsigned int en){
     bool pred;
     unsigned int laneid = LANEID;
     unsigned int res;
     for(unsigned int k; st<en; st+=32){
         k = st+laneid;
-        pred = true;
-        // not applying binary search here, as it may diverge the warp
+        pred = false;
         if(k < en)
-            pred = (v == data[k]);
+            pred = (data[k]==P || data[k]==X);
         res = __ballot_sync(FULL, pred);
-        if(res!=FULL) return false;
+        if(res!=0) return true;
     }
-    return true;
+    return false;
+}
+
+__device__ int searchAnyP(char* data, unsigned int st, unsigned int en){
+    bool pred;
+    unsigned int laneid = LANEID;
+    unsigned int res;
+    for(unsigned int k; st<en; st+=32){
+        k = st+laneid;
+        pred = false;
+        if(k < en)
+            pred = (data[k]==P);
+        res = __ballot_sync(FULL, pred);
+        if(res!=0) return true;
+    }
+    return false;
 }

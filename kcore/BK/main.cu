@@ -73,13 +73,16 @@ int find_kcore(Graph &g,bool write_to_disk){
     free_graph_gpu_memory(dp);
     // cudaDeviceReset(); // clear everything from device
 
-    Subgraphs* sg;
+    Subgraphs* sg1;
+    Subgraphs* sg2;
     cout<<"Recoded graph Copy Started"<<endl;
-    recodedGraphCopy(gRec, dp, &sg);
+    recodedGraphCopy(gRec, dp, &sg1, &sg2);
     cout<<"Recoded graph Copy Done"<<endl;
 
     for (int i=0; i<V; i+=BLK_NUMS*SUBG){
-        BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg, i);
+        // subgraphs processed from i to i+BLK_NUMS*SUBG
+        // BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg1, sg2, i);
+        BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg1 i);
         cudaDeviceSynchronize();
     }
 

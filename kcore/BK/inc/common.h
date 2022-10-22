@@ -21,9 +21,12 @@
 #define LANEID THID&31
 #define BLKID blockIdx.x
 #define FULL 0xFFFFFFFF
+// tempsize is max size of a subgraph stored in temp area, in general it should be the size of max degree of supported graph
+#define TEMPSIZE 100000
 #define R 'r'
 #define P 'p'
 #define X 'x'
+#define Q 'q'
 
 #include <iostream>
 #include <vector>
@@ -52,6 +55,7 @@ typedef struct G_pointers {
     unsigned int* degrees;
     unsigned int* degOrder;
     unsigned int V;
+    unsigned int* total;
 } G_pointers;//graph related
 
 typedef struct Subgraphs{
@@ -60,8 +64,11 @@ typedef struct Subgraphs{
     char* labels;
 
     unsigned int* otail;
-    unsigned int* vtail;
     unsigned int* ohead;
+    unsigned int* vtail;
+
+    unsigned int* tempv;
+    unsigned int* templ;
 }Subgraphs;
 
 
