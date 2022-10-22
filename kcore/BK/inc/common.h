@@ -16,7 +16,7 @@
 #define OUTPUT_LOC string("../output/")
 #define REP 1
 #define NSUBS 1000
-#define SUBG 32
+#define SUBG 5
 #define WARPID (THID>>5)
 #define LANEID (THID&31)
 #define BLKID blockIdx.x
