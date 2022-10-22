@@ -17,7 +17,7 @@
 #define REP 1
 #define NSUBS 1000
 #define SUBG 32
-#define WARPID THID>>5
+#define WARPID (THID>>5)
 #define LANEID (THID&31)
 #define BLKID blockIdx.x
 #define FULL 0xFFFFFFFF
