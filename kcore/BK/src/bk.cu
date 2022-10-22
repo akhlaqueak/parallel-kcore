@@ -201,6 +201,8 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         generateSubGraphs(dp, sg, v);
     }
 
+    __syncthreads();
+
     if(THID==0 && BLKID==0)
         printf("%d-%d", ohead, otail);
     
