@@ -225,7 +225,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
             // ?? do we need to store R, or just increment a count
             // seemingly GPU-BK(TPDS) is only calculating number of cliques
             if(LANEID==0){
-                unsigned int t = atomicAdd(&dp.total, 1);
+                unsigned int t = atomicAdd(dp.total, 1);
                 printf("total: %u", t);  
             } 
         }
