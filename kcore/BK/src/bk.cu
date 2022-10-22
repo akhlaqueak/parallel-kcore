@@ -156,6 +156,7 @@ __device__ unsigned int selectPivot(G_pointers dp, Subgraphs sg, unsigned int i)
         st1 = dp.neighbors_offset[v];
         en1 = dp.neighbors_offset[v+1];
         nmatched = 0, max = 0, pivot = v;
+        printf("%d", max);
         for(unsigned int k=st; k<en; k+=32){
             unsigned int kl = k+laneid; // need to run all lanes, so that ballot function works well
             pred = false;
@@ -165,7 +166,6 @@ __device__ unsigned int selectPivot(G_pointers dp, Subgraphs sg, unsigned int i)
                 // binary search can introduce divergence, we can also try with warp level linear search in future
             nmatched+=__popc(__ballot_sync(FULL, pred));
             if(THID/32 == 0)
-            printf("%d", max);
         }
         if(nmatched > max){
             max = nmatched;
