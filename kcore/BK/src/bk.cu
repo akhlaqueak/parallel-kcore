@@ -215,7 +215,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         ohead = min(otail, ohead+WARPS_EACH_BLK*2);
         __syncthreads();
         if(s>=otail) continue;
-        printf("%d ", s);
+        // printf("%d ", s);
         if(examineClique(sg, s)){
             // todo report clique
             // ?? do we need to store R, or just increment a count
@@ -224,8 +224,8 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
             printf("total: %d", dp.total);
         }
         else if(!crossed(sg, s)){
-            printf("piv");
             unsigned int pivot = selectPivot(dp, sg, s);
+            printf("p%d", pivot);
             expandClique(dp, sg, s, pivot);
         }
     }
