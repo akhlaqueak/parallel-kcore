@@ -51,12 +51,11 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     // X = N(q) intersect X
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
     char* templ = sg.templ + warpid*TEMPSIZE;
-    tempv[0] = 50;
-    templ[0] = P;
+
     // todo intersection could be changed to binary search, but it'll cause divergence. Let's see in the future if it can help improve performance
     for(unsigned int i=st; i<en; i++){
-        // v = sg.vertices[i];
-        // l = sg.labels[i];
+        tempv[i] = sg.vertices[i];
+        templ[i] = sg.labels[i];
         // if(l==R){ // it's already in N(q), no need to intersect. 
         //     // First lane writes it to buffer
         //     // writeToTemp(tempv, templ, v, l, sglen);
