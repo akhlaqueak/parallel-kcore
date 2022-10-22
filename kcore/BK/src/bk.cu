@@ -8,7 +8,6 @@
 __device__ void writeToTemp(unsigned int* tempv, char* templ, 
                             unsigned int v, char l, unsigned int& sglen){
     if(LANEID==0){
-        printf("%d", sglen);
         tempv[sglen] = v;
         templ[sglen] = l;
         sglen++;
@@ -58,12 +57,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
             // First lane writes it to buffer
-            // writeToTemp(tempv, templ, v, l, sglen);
-            if(laneid==0){
-                tempv[sglen] = v;
-                templ[sglen] = l; // sglen is updated inside this function
-                sglen++;
-            } 
+            writeToTemp(tempv, templ, v, l, sglen);
             continue;   
         }
         if(searchAny(dp.neighbors, qst, qen, v)){
@@ -190,6 +184,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     __shared__ unsigned int vtail;
     __shared__ unsigned int otail;
     __shared__ unsigned int ohead;
+    dp.total = 0;
     // vtail: vertices tail, a subgraph vertices stored based on an atomic increment to it
     //          labels also use the same vtail
     // otail: offset tail, two consective values represent start and end of a subgraph.
