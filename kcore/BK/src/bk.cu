@@ -41,7 +41,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     printf("#%u:%u:%u*", s, st, en);
     unsigned int qst = dp.neighbors_offset[q];
     unsigned int qen = dp.neighbors_offset[q+1];
-    unsigned int v, l, idx = 0;
+    unsigned int v, l, len = 0;
     // spawned subgraph len = 1 + |N(q) intersect (RUPUX)|
     // spawned subgraph:
     // R = q U (N(q) intersect R), or even simply R = q U R
@@ -56,22 +56,22 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
             // First lane writes it to buffer
-            writeToTemp(tempv, templ, v, l, idx);
+            writeToTemp(tempv, templ, v, l, len);
             // if(laneid==0){
-            //     tempv[idx] = v;
-            //     templ[idx] = l; // len is updated inside this function
-            //     idx++;
+            //     tempv[len] = v;
+            //     templ[len] = l; // len is updated inside this function
+            //     len++;
             // } 
             continue;   
         }
         if(searchAny(dp.neighbors, qst, qen, v)){
-            writeToTemp(tempv, templ, v, l, idx);
+            writeToTemp(tempv, templ, v, l, len);
         }
     }
     // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
     // len is updated all the time in lane0. now broadcast to other lanes
-    idx = __shfl_sync(FULL, idx, 0);
-    return idx;
+    len = __shfl_sync(FULL, len, 0);
+    return len;
 }
 
 
