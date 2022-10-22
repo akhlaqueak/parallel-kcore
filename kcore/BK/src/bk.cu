@@ -201,7 +201,6 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         generateSubGraphs(dp, sg, v);
     }
     
-    printf("%d", v);
     while(true){
         __syncthreads();
         if(ohead >= otail) break;
