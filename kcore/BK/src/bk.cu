@@ -51,6 +51,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     unsigned int* templ = sg.templ + warpid*TEMPSIZE;
     // todo intersection could be changed to binary search, but it'll cause divergence. Let's see in the future if it can help improve performance
     for(unsigned int i=st; i<en; i++){
+        printf("x");
         v = sg.vertices[i];
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
@@ -61,7 +62,6 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
         if(searchAny(dp.neighbors, qst, qen, v)){
             writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
         }
-        // printf("x");
     }
     // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
     // len is updated all the time in lane0. now broadcast to other lanes
