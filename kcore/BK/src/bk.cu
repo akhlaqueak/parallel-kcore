@@ -72,8 +72,8 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
 __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg, unsigned int s, unsigned int q){
     unsigned int laneid = LANEID;
     unsigned int warpid = WARPID;
-    printf("L%d", s);
     unsigned int len = getSubgraphTemp(dp, sg, s, q);
+    printf("L%d-%d ", s, len);
     unsigned int vt = initializeSubgraph(sg, len, q); // allocates a subgraph by atomic operations, and puts v as well
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
     unsigned int* templ = sg.templ + warpid*TEMPSIZE;
@@ -218,7 +218,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         ohead = min(otail, ohead+WARPS_EACH_BLK*2);
         __syncthreads();
         if(s>=otail) continue;
-        if(THID==0)printf("##");
+        // if(THID==0)printf("##");
         if(examineClique(sg, s)){
             // todo report clique
             // ?? do we need to store R, or just increment a count
@@ -229,7 +229,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         else if(!crossed(sg, s)){
             unsigned int pivot = selectPivot(dp, sg, s);
             expandClique(dp, sg, s, pivot);
-            if(LANEID==0)printf("s:%d,%d", s, pivot);
+            // if(LANEID==0)printf("s:%d,%d", s, pivot);
         }
     }
 }
