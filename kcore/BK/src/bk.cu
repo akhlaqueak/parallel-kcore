@@ -18,7 +18,7 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
     unsigned int* vtail = sg.vtail;
     unsigned int* otail = sg.otail;
     unsigned int ot, vt=0;
-    if(LANEID == 0){
+    {
         printf("L%d", LANEID); 
         vt = atomicAdd(vtail, len);
         ot = atomicAdd(otail, 2);
