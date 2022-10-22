@@ -5,20 +5,20 @@
 #include "kcore.cc"
 #include "util.cc"
 
-__device__ void writeToBuffer(unsigned int* tempv, unsigned int* templ, 
-    unsigned int v, unsigned int l, unsigned int& len){
-        if(laneid == 0){
-            tempv[len] = v;
-            templ[len] = l;
-            len++;
-        }
+__device__ inline void writeToTemp(unsigned int* tempv, unsigned int* templ, 
+                            unsigned int v, unsigned int l, unsigned int& len){
+    if(LANEID == 0){
+        tempv[len] = v;
+        templ[len] = l;
+        len++;
+    }
 }
 
 __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v){
     unsigned int* vtail = sg.vtail;
     unsigned int* otail = sg.otail;
     unsigned int ot, vt;
-    if(laneid == 0){
+    if(LANEID == 0){
         vt = atomicAdd(vtail, len);
         ot = atomicAdd(otail, 2);
         sg.offsets[ot] = vt;
@@ -52,11 +52,11 @@ __device__ int getSubgraphTemp(Subgraphs sg, unsigned int s, unsigned int q){
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
             // First lane writes it to buffer
-            writeToBuffer(tempv, templ, v, l, len); // len is updated inside this function
+            writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
             continue;   
         }
         if(searchAny(dp.neighbors, qst, qen, v)){
-            writeToBuffer(tempv, templ, v, l, len); // len is updated inside this function
+            writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
         }
     }
     // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
@@ -68,6 +68,7 @@ __device__ int getSubgraphTemp(Subgraphs sg, unsigned int s, unsigned int q){
 
 __device__ void generateSubGraphs(Subgraphs sg, unsigned int s, unsigned int q){
     unsigned int laneid = LANEID;
+    unsigned int warpid = WARPID;
     unsigned int len = getSubgraphTemp(sg, s, q);
     unsigned int vt = initializeSubgraph(sg, len, q); // allocates a subgraph by atomic operations, and puts v as well
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
