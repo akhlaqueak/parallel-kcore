@@ -184,7 +184,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
     __shared__ unsigned int vtail;
     __shared__ unsigned int otail;
     __shared__ unsigned int ohead;
-    dp.total = 0;
+    dp.total[0] = 0;
     // vtail: vertices tail, a subgraph vertices stored based on an atomic increment to it
     //          labels also use the same vtail
     // otail: offset tail, two consective values represent start and end of a subgraph.
