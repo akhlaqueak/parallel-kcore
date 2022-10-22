@@ -5,11 +5,11 @@
 #include "kcore.cc"
 #include "util.cc"
 
-__device__ void writeToTemp(unsigned int* tempv, unsigned int* templ, 
-                            unsigned int v, unsigned int l, unsigned int len){
-        tempv[len] = v;
-        templ[len] = l;
-}
+// __device__ void writeToTemp(unsigned int* tempv, unsigned int* templ, 
+//                             unsigned int v, unsigned int l, unsigned int len){
+//         tempv[len] = v;
+//         templ[len] = l;
+// }
 
 __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v){
     unsigned int* vtail = sg.vtail;
@@ -69,7 +69,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     }
     // // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
     // // len is updated all the time in lane0. now broadcast to other lanes
-    len = __shfl_sync(FULL, len, 0);
+    idx = __shfl_sync(FULL, idx, 0);
     return idx;
 }
 
