@@ -92,6 +92,7 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg,
     if(len==1) return; // there was no neighbor for this vertex... 
     unsigned int vt, u;
     vt = initializeSubgraph(sg, len, v); // allocates a subgraph by atomic operations, and puts v as well
+    printf("Len:%d ", len);
     for(unsigned int j=start+laneid, k=vt+laneid;j<end; j+=32, k+=32){
         u = dp.neighbors[j];
         sg.vertices[k] = u;
