@@ -17,8 +17,9 @@ __device__ inline void writeToTemp(unsigned int* tempv, unsigned int* templ,
 __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v){
     unsigned int* vtail = sg.vtail;
     unsigned int* otail = sg.otail;
+    unsigned int laneid = LANEID;
     unsigned int ot, vt=0;
-    {
+    if(laneid==0){
         printf("L%d", LANEID); 
         vt = atomicAdd(vtail, len);
         ot = atomicAdd(otail, 2);
