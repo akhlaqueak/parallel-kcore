@@ -21,7 +21,6 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
     unsigned int laneid = LANEID;
     unsigned int ot, vt=0;
     if(laneid==0){
-        printf("L%d", LANEID); 
         vt = atomicAdd(vtail, len);
         ot = atomicAdd(otail, 2);
         sg.offsets[ot] = vt;
@@ -94,7 +93,7 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg,
     if(len==1) return; // there was no neighbor for this vertex... 
     unsigned int vt, u;
     vt = initializeSubgraph(sg, len, v); // allocates a subgraph by atomic operations, and puts v as well
-    printf("vt:%d ", vt);
+    // printf("vt:%d ", vt);
     for(unsigned int j=start+laneid, k=vt+laneid;j<end; j+=32, k+=32){
         u = dp.neighbors[j];
         sg.vertices[k] = u;
@@ -222,7 +221,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
             // ?? do we need to store R, or just increment a count
             // seemingly GPU-BK(TPDS) is only calculating number of cliques
             dp.total++;
-            printf(".");
+            printf("total: %d", dp.total);
         }
         else if(!crossed(sg, s)){
             unsigned int pivot = selectPivot(dp, sg, s);
