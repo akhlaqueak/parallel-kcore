@@ -68,7 +68,7 @@ typedef struct Subgraphs{
     unsigned int* vtail;
 
     unsigned int* tempv;
-    unsigned int* templ;
+    char* templ;
 }Subgraphs;
 
 
