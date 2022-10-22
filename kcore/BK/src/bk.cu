@@ -37,9 +37,9 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
 __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsigned int q){
     unsigned int warpid=WARPID;
     // unsigned int laneid=LANEID;
-    printf("x");
     unsigned int st = sg.offsets[s];
     unsigned int en = sg.offsets[s+1];
+    printf("%u:%u%u", s, st, en);
     unsigned int qst = dp.neighbors_offset[q];
     unsigned int qen = dp.neighbors_offset[q+1];
     unsigned int v, l, len = 0;
