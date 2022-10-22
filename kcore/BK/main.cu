@@ -82,7 +82,7 @@ int find_kcore(Graph &g,bool write_to_disk){
     for (int i=0; i<V; i+=BLK_NUMS*SUBG){
         // subgraphs processed from i to i+BLK_NUMS*SUBG
         // BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg1, sg2, i);
-        BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg1 i);
+        BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg1, i);
         cudaDeviceSynchronize();
     }
 
