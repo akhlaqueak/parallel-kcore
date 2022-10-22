@@ -33,11 +33,11 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
 }
 __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsigned int q){
     unsigned int warpid=WARPID;
-    unsigned int laneid=LANEID;
+    // unsigned int laneid=LANEID;
     unsigned int st = sg.otail[s];
     unsigned int en = sg.otail[s+1];
-    unsigned int qst = dp.offsets[q];
-    unsigned int qen = dp.offsets[q+1];
+    unsigned int qst = dp.neighbors_offsets[q];
+    unsigned int qen = dp.neighbors_offsets[q+1];
     unsigned int v, l, len = 0;
     // spawned subgraph len = 1 + |N(q) intersect (RUPUX)|
     // spawned subgraph:
@@ -74,19 +74,17 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg, unsigned int s, u
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
     unsigned int* templ = sg.templ + warpid*TEMPSIZE;
     for(unsigned int i=laneid; i<len; i+=32, vt+=32){
-        unsigned int v = sg.tempv[i];
-        char label = sg.templ[i];
+        unsigned int v = tempv[i];
+        char label = templ[i];
         sg.vertices[vt] = v;
         sg.labels[vt] = label;
         if(label == Q)
             sg.labels[vt] = v<q? X : P;
     }
 }    
-__device__ int generateSubGraphs(G_pointers dp, Subgraphs sg, 
+__device__ void generateSubGraphs(G_pointers dp, Subgraphs sg, 
         unsigned int v){
     unsigned int laneid = LANEID;        
-    unsigned int* otail = sg.otail;
-    unsigned int* vtail = sg.vtail;
     unsigned int start = dp.neighbors_offset[v];
     unsigned int end = dp.neighbors_offset[v+1];
     unsigned int len = end-start+1; // number of neighbors + v itself
