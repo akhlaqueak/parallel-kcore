@@ -6,7 +6,7 @@
 #include "util.cc"
 
 __device__ void writeToTemp(unsigned int* tempv, char* templ, 
-                            unsigned int v, unsigned int l, unsigned int& sglen){
+                            unsigned int v, char l, unsigned int& sglen){
     if(LANEID==0){
         printf("%d", sglen);
         tempv[sglen] = v;
@@ -42,7 +42,8 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     printf("#%u:%u:%u*", s, st, en);
     unsigned int qst = dp.neighbors_offset[q];
     unsigned int qen = dp.neighbors_offset[q+1];
-    unsigned int v, l, sglen = 0;
+    unsigned int v, sglen = 0;
+    char l;
     // spawned subgraph sglen = 1 + |N(q) intersect (RUPUX)|
     // spawned subgraph:
     // R = q U (N(q) intersect R), or even simply R = q U R
@@ -52,23 +53,23 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     char* templ = sg.templ + warpid*TEMPSIZE;
 
     // todo intersection could be changed to binary search, but it'll cause divergence. Let's see in the future if it can help improve performance
-    // for(unsigned int i=st; i<en; i++){
-    //     v = sg.vertices[i];
-    //     l = sg.labels[i];
-    //     if(l==R){ // it's already in N(q), no need to intersect. 
-    //         // First lane writes it to buffer
-    //         writeToTemp(tempv, templ, v, l, sglen);
-    //         // if(laneid==0){
-    //         //     tempv[sglen] = v;
-    //         //     templ[sglen] = l; // sglen is updated inside this function
-    //         //     sglen++;
-    //         // } 
-    //         continue;   
-    //     }
-    //     if(searchAny(dp.neighbors, qst, qen, v)){
-    //         writeToTemp(tempv, templ, v, l, sglen);
-    //     }
-    // }
+    for(unsigned int i=st; i<en; i++){
+        v = sg.vertices[i];
+        l = sg.labels[i];
+        if(l==R){ // it's already in N(q), no need to intersect. 
+            // First lane writes it to buffer
+            writeToTemp(tempv, templ, v, l, sglen);
+            // if(laneid==0){
+            //     tempv[sglen] = v;
+            //     templ[sglen] = l; // sglen is updated inside this function
+            //     sglen++;
+            // } 
+            continue;   
+        }
+        if(searchAny(dp.neighbors, qst, qen, v)){
+            writeToTemp(tempv, templ, v, l, sglen);
+        }
+    }
     // sglen is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
     // sglen is updated all the time in lane0. now broadcast to other lanes
     sglen = __shfl_sync(FULL, sglen, 0);
