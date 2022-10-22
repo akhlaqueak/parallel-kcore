@@ -88,7 +88,7 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg,
     unsigned int start = dp.neighbors_offset[v];
     unsigned int end = dp.neighbors_offset[v+1];
     unsigned int len = end-start+1; // number of neighbors + v itself
-    if(len==1) return 0; // there was no neighbor for this vertex... 
+    if(len==1) return; // there was no neighbor for this vertex... 
     unsigned int vt, u;
     vt = initializeSubgraph(sg, len, v); // allocates a subgraph by atomic operations, and puts v as well
 
