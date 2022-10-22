@@ -17,11 +17,11 @@ __device__ inline void writeToTemp(unsigned int* tempv, unsigned int* templ,
 __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v){
     unsigned int* vtail = sg.vtail;
     unsigned int* otail = sg.otail;
-    unsigned int ot, vt;
+    unsigned int ot, vt=0;
+    printf("%d@", vt); 
     if(LANEID == 0){
         vt = atomicAdd(vtail, len);
         ot = atomicAdd(otail, 2);
-        printf("%d@", vt); 
         sg.offsets[ot] = vt;
         sg.offsets[ot+1] = vt+len; 
         // insert v in the subgraph
