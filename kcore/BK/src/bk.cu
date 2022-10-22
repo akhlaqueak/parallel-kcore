@@ -50,8 +50,8 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
     unsigned int* templ = sg.templ + warpid*TEMPSIZE;
     // todo intersection could be changed to binary search, but it'll cause divergence. Let's see in the future if it can help improve performance
+    printf("x");
     for(unsigned int i=st; i<en; i++){
-        printf("x");
         v = sg.vertices[i];
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
