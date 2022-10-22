@@ -26,7 +26,8 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
         // insert v in the subgraph
         sg.vertices[vt] = v;
         sg.labels[vt] = R;
-        vt++; // as one element is written already... 
+        vt++; // as one element is written i.e. v
+        printf("%d@", vt); 
     }    
     vt = __shfl_sync(FULL, vt, 0);
     return vt;
@@ -91,7 +92,6 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg,
     if(len==1) return; // there was no neighbor for this vertex... 
     unsigned int vt, u;
     vt = initializeSubgraph(sg, len, v); // allocates a subgraph by atomic operations, and puts v as well
-    printf("%d*", vt);
     for(unsigned int j=start+laneid, k=vt+laneid;j<end; j+=32, k+=32){
         u = dp.neighbors[j];
         sg.vertices[k] = u;
