@@ -7,7 +7,7 @@
 
 __device__ void writeToTemp(unsigned int* tempv, unsigned int* templ, 
                             unsigned int v, unsigned int l, unsigned int len){
-    if(laneid == 0){
+    if(LANEID == 0){
         len = 1;
         // tempv[len] = v;
         // templ[len] = l;
@@ -56,12 +56,12 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
             // First lane writes it to buffer
-            if(laneid==0) 
+            if(LANEID==0) 
                 writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
             continue;   
         }
         if(searchAny(dp.neighbors, qst, qen, v)){
-            if(laneid==0)
+            if(LANEID==0)
                 writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
         }
     }
