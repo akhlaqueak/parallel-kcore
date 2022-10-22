@@ -7,7 +7,8 @@
 
 __device__ inline void writeToTemp(unsigned int* tempv, unsigned int* templ, 
                             unsigned int v, unsigned int l, unsigned int& len){
-    if(LANEID == 0){
+    unsigned int laneid = LANEID;
+    if(laneid == 0){
         tempv[len] = v;
         templ[len] = l;
         len++;
