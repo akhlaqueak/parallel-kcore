@@ -114,7 +114,7 @@ __device__ void expandClique(G_pointers dp, Subgraphs sg, unsigned int s,  unsig
     // N(pivot) are in (pst, pen)
     // find Q=P-N(pivot)
     // for every u in Q, generate a subgraph
-    printf("%d:%d-", st, en);
+    printf("*%u:%u:%u*", s, st, en);
     for(unsigned int i = st; i<en; i++){
         if(sg.labels[i]!=P) continue; // only need to search for P
         v = sg.vertices[i];
