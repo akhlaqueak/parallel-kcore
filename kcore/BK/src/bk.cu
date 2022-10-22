@@ -7,12 +7,12 @@
 
 __device__ void writeToTemp(unsigned int* tempv, char* templ, 
                             unsigned int v, char l, unsigned int& sglen){
-                                printf("%d", sglen);
-    // if(LANEID==0){
-    //     tempv[sglen] = v;
-    //     templ[sglen] = l;
-    //     sglen++;
-    // } 
+    if(LANEID==0){
+        printf("%d", sglen);
+        tempv[sglen] = v;
+        templ[sglen] = l;
+        sglen++;
+    } 
 }
 
 __device__ int initializeSubgraph(Subgraphs sg, unsigned int sglen, unsigned int v){
@@ -56,19 +56,19 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     for(unsigned int i=st; i<en; i++){
         v = sg.vertices[i];
         l = sg.labels[i];
-        if(l==R){ // it's already in N(q), no need to intersect. 
-            // First lane writes it to buffer
-            writeToTemp(tempv, templ, v, l, sglen);
-            // if(laneid==0){
-            //     tempv[sglen] = v;
-            //     templ[sglen] = l; // sglen is updated inside this function
-            //     sglen++;
-            // } 
-            continue;   
-        }
-        if(searchAny(dp.neighbors, qst, qen, v)){
-            writeToTemp(tempv, templ, v, l, sglen);
-        }
+        // if(l==R){ // it's already in N(q), no need to intersect. 
+        //     // First lane writes it to buffer
+        //     writeToTemp(tempv, templ, v, l, sglen);
+        //     // if(laneid==0){
+        //     //     tempv[sglen] = v;
+        //     //     templ[sglen] = l; // sglen is updated inside this function
+        //     //     sglen++;
+        //     // } 
+        //     continue;   
+        // }
+        // if(searchAny(dp.neighbors, qst, qen, v)){
+        //     writeToTemp(tempv, templ, v, l, sglen);
+        // }
     }
     // sglen is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
     // sglen is updated all the time in lane0. now broadcast to other lanes
