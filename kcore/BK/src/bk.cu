@@ -156,8 +156,8 @@ __device__ unsigned int selectPivot(G_pointers dp, Subgraphs sg, unsigned int i)
         st1 = dp.neighbors_offset[v];
         en1 = dp.neighbors_offset[v+1];
         nmatched = 0, max = 0, pivot = v;
-        printf("%d:%d-", st1, en1);
         for(unsigned int k=st; k<en; k+=32){
+            printf("%d:%d-", st, en);
             unsigned int kl = k+laneid; // need to run all lanes, so that ballot function works well
             pred = false;
             // some of the lanes will diverge from this point, it may be improved in future.
