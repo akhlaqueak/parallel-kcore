@@ -165,7 +165,6 @@ __device__ unsigned int selectPivot(G_pointers dp, Subgraphs sg, unsigned int i)
                 pred = binarySearch(dp.neighbors+st1, en1-st1, sg.vertices[kl]); // P intersect N(v)
                 // binary search can introduce divergence, we can also try with warp level linear search in future
             nmatched+=__popc(__ballot_sync(FULL, pred));
-            if(THID/32 == 0)
         }
         if(nmatched > max){
             max = nmatched;
