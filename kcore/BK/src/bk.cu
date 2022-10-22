@@ -61,7 +61,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
             continue;   
         }
         if(searchAny(dp.neighbors, qst, qen, v)){
-            writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
+            writeToTemp(tempv, templ, v, l, &len); // len is updated inside this function
         }
     }
     // // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
