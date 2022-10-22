@@ -224,6 +224,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
             printf("total: %d", dp.total);
         }
         else if(!crossed(sg, s)){
+            printf("piv");
             unsigned int pivot = selectPivot(dp, sg, s);
             expandClique(dp, sg, s, pivot);
         }
