@@ -49,24 +49,24 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     // R = q U (N(q) intersect R), or even simply R = q U R
     // P = N(q) intersect P
     // X = N(q) intersect X
-    unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
-    unsigned int* templ = sg.templ + warpid*TEMPSIZE;
-    // todo intersection could be changed to binary search, but it'll cause divergence. Let's see in the future if it can help improve performance
-    for(unsigned int i=st; i<en; i++){
-        v = sg.vertices[i];
-        l = sg.labels[i];
-        if(l==R){ // it's already in N(q), no need to intersect. 
-            // First lane writes it to buffer
-            writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
-            continue;   
-        }
-        if(searchAny(dp.neighbors, qst, qen, v)){
-            writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
-        }
-    }
-    // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
-    // len is updated all the time in lane0. now broadcast to other lanes
-    len = __shfl_sync(FULL, len, 0);
+    // unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
+    // unsigned int* templ = sg.templ + warpid*TEMPSIZE;
+    // // todo intersection could be changed to binary search, but it'll cause divergence. Let's see in the future if it can help improve performance
+    // for(unsigned int i=st; i<en; i++){
+    //     v = sg.vertices[i];
+    //     l = sg.labels[i];
+    //     if(l==R){ // it's already in N(q), no need to intersect. 
+    //         // First lane writes it to buffer
+    //         writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
+    //         continue;   
+    //     }
+    //     if(searchAny(dp.neighbors, qst, qen, v)){
+    //         writeToTemp(tempv, templ, v, l, len); // len is updated inside this function
+    //     }
+    // }
+    // // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
+    // // len is updated all the time in lane0. now broadcast to other lanes
+    // len = __shfl_sync(FULL, len, 0);
     return len;
 }
 
