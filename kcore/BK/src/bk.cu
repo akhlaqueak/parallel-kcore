@@ -6,24 +6,25 @@
 #include "util.cc"
 
 __device__ void writeToTemp(unsigned int* tempv, char* templ, 
-                            unsigned int v, unsigned int l, unsigned int& len){
+                            unsigned int v, unsigned int l, unsigned int& sglen){
     if(LANEID==0){
-        tempv[len] = v;
-        templ[len] = l;
-        len++;
+        printf("%d", sglen);
+        tempv[sglen] = v;
+        templ[sglen] = l;
+        sglen++;
     } 
 }
 
-__device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v){
+__device__ int initializeSubgraph(Subgraphs sg, unsigned int sglen, unsigned int v){
     unsigned int* vtail = sg.vtail;
     unsigned int* otail = sg.otail;
     unsigned int laneid = LANEID;
     unsigned int ot, vt=0;
     if(laneid==0){
-        vt = atomicAdd(vtail, len);
+        vt = atomicAdd(vtail, sglen);
         ot = atomicAdd(otail, 2);
         sg.offsets[ot] = vt;
-        sg.offsets[ot+1] = vt+len; 
+        sg.offsets[ot+1] = vt+sglen; 
         // insert v in the subgraph
         
         sg.vertices[vt] = v;
@@ -41,8 +42,8 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     printf("#%u:%u:%u*", s, st, en);
     unsigned int qst = dp.neighbors_offset[q];
     unsigned int qen = dp.neighbors_offset[q+1];
-    unsigned int v, l, len = 0;
-    // spawned subgraph len = 1 + |N(q) intersect (RUPUX)|
+    unsigned int v, l, sglen = 0;
+    // spawned subgraph sglen = 1 + |N(q) intersect (RUPUX)|
     // spawned subgraph:
     // R = q U (N(q) intersect R), or even simply R = q U R
     // P = N(q) intersect P
@@ -56,34 +57,34 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
             // First lane writes it to buffer
-            writeToTemp(tempv, templ, v, l, len);
+            writeToTemp(tempv, templ, v, l, sglen);
             // if(laneid==0){
-            //     tempv[len] = v;
-            //     templ[len] = l; // len is updated inside this function
-            //     len++;
+            //     tempv[sglen] = v;
+            //     templ[sglen] = l; // sglen is updated inside this function
+            //     sglen++;
             // } 
             continue;   
         }
         if(searchAny(dp.neighbors, qst, qen, v)){
-            writeToTemp(tempv, templ, v, l, len);
+            writeToTemp(tempv, templ, v, l, sglen);
         }
     }
-    // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
-    // len is updated all the time in lane0. now broadcast to other lanes
-    len = __shfl_sync(FULL, len, 0);
-    return len;
+    // sglen is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
+    // sglen is updated all the time in lane0. now broadcast to other lanes
+    sglen = __shfl_sync(FULL, sglen, 0);
+    return sglen;
 }
 
 
 __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg, unsigned int s, unsigned int q){
     unsigned int laneid = LANEID;
     unsigned int warpid = WARPID;
-    unsigned int len = getSubgraphTemp(dp, sg, s, q);
-    printf("L%d-%d ", s, len);
-    unsigned int vt = initializeSubgraph(sg, len, q); // allocates a subgraph by atomic operations, and puts v as well
+    unsigned int sglen = getSubgraphTemp(dp, sg, s, q);
+    printf("L%d-%d ", s, sglen);
+    unsigned int vt = initializeSubgraph(sg, sglen, q); // allocates a subgraph by atomic operations, and puts v as well
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
     unsigned int* templ = sg.templ + warpid*TEMPSIZE;
-    for(unsigned int i=laneid; i<len; i+=32, vt+=32){
+    for(unsigned int i=laneid; i<sglen; i+=32, vt+=32){
         unsigned int v = tempv[i];
         char label = templ[i];
         sg.vertices[vt] = v;
@@ -97,10 +98,10 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg,
     unsigned int laneid = LANEID;        
     unsigned int start = dp.neighbors_offset[v];
     unsigned int end = dp.neighbors_offset[v+1];
-    unsigned int len = end-start+1; // number of neighbors + v itself
-    if(len==1) return; // there was no neighbor for this vertex... 
+    unsigned int sglen = end-start+1; // number of neighbors + v itself
+    if(sglen==1) return; // there was no neighbor for this vertex... 
     unsigned int vt, u;
-    vt = initializeSubgraph(sg, len, v); // allocates a subgraph by atomic operations, and puts v as well
+    vt = initializeSubgraph(sg, sglen, v); // allocates a subgraph by atomic operations, and puts v as well
     // printf("vt:%d ", vt);
     for(unsigned int j=start+laneid, k=vt+laneid;j<end; j+=32, k+=32){
         u = dp.neighbors[j];
