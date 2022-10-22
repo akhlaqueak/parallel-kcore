@@ -157,14 +157,14 @@ __device__ unsigned int selectPivot(G_pointers dp, Subgraphs sg, unsigned int i)
         en1 = dp.neighbors_offset[v+1];
         nmatched = 0, max = 0, pivot = v;
         for(unsigned int k=st; k<en; k+=32){
-            printf("%d:%d-", st, en);
             unsigned int kl = k+laneid; // need to run all lanes, so that ballot function works well
             pred = false;
             // some of the lanes will diverge from this point, it may be improved in future.
             if(kl<en && sg.labels[kl]==P)  // only P nodes will be searched.
-                pred = binarySearch(dp.neighbors+st1, en1-st1, sg.vertices[kl]); // P intersect N(v)
-                // binary search can introduce divergence, we can also try with warp level linear search in future
+            pred = binarySearch(dp.neighbors+st1, en1-st1, sg.vertices[kl]); // P intersect N(v)
+            // binary search can introduce divergence, we can also try with warp level linear search in future
             nmatched+=__popc(__ballot_sync(FULL, pred));
+            printf("%d:%d-", st, en);
         }
         if(nmatched > max){
             max = nmatched;
