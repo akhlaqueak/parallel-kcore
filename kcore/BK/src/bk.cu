@@ -117,6 +117,7 @@ __device__ void expandClique(G_pointers dp, Subgraphs sg, unsigned int s,  unsig
     for(unsigned int i = st; i<en; i++){
         if(sg.labels[i]!=P) continue; // only need to search for P
         v = sg.vertices[i];
+        printf("%d", v);
         if(!searchAny(dp.neighbors, pst, pen, v)) // v belongs to Q, so generate subgraph for it
             sg.labels[i] = Q;             // simply change their labels to Q, afterwards generate a subgraph for each such node
         // this is necessary as per Algo 4 of the TPDS paper
@@ -226,7 +227,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         }
         else if(!crossed(sg, s)){
             unsigned int pivot = selectPivot(dp, sg, s);
-            printf("p%d", pivot);
+            // printf("p%d", pivot);
             expandClique(dp, sg, s, pivot);
         }
     }
