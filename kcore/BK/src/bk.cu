@@ -7,12 +7,12 @@
 
 __device__ void writeToTemp(unsigned int* tempv, char* templ, 
                             unsigned int v, char l, unsigned int& sglen){
-    if(LANEID==0){
-        printf("%d", sglen);
-        tempv[sglen] = v;
-        templ[sglen] = l;
-        sglen++;
-    } 
+                                printf("%d", sglen);
+    // if(LANEID==0){
+    //     tempv[sglen] = v;
+    //     templ[sglen] = l;
+    //     sglen++;
+    // } 
 }
 
 __device__ int initializeSubgraph(Subgraphs sg, unsigned int sglen, unsigned int v){
