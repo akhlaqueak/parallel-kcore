@@ -1,7 +1,7 @@
 __device__ bool binarySearch(unsigned int* arr, unsigned int end, unsigned int val){
-    unsigned int begin = 0;
-    unsigned int mid = (begin+end)/2;
+    unsigned int begin = 0, mid;
     while(begin<=end){
+        mid = (begin+end)/2;
         if(val == arr[mid]) return true;
         else if(val<arr[mid]) end = mid-1;
         else begin = mid+1;
