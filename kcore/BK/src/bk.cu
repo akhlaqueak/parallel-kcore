@@ -115,7 +115,7 @@ __device__ void expandClique(G_pointers dp, Subgraphs sg, unsigned int s,  unsig
     // N(pivot) are in (pst, pen)
     // find Q=P-N(pivot)
     // for every u in Q, generate a subgraph
-    printf("*%u:%u:%u*", s, st, en);
+    // printf("*%u:%u:%u*", s, st, en);
     for(unsigned int i = st; i<en; i++){
         if(sg.labels[i]!=P) continue; // only need to search for P
         v = sg.vertices[i];
@@ -228,8 +228,8 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         }
         else if(!crossed(sg, s)){
             unsigned int pivot = selectPivot(dp, sg, s);
-            // printf("p%d", pivot);
             expandClique(dp, sg, s, pivot);
+            // printf("p%d", pivot);
         }
     }
 }
