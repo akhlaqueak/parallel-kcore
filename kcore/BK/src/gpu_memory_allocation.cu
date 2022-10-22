@@ -33,8 +33,8 @@ void recodedGraphCopy(Graph &g, G_pointers &p, Subgraphs** sg1, Subgraphs** sg2)
     chkerr(cudaMallocManaged(sg2, BLK_NUMS*sizeof(Subgraphs)));
     for(int i=0;i<BLK_NUMS; i++){
         chkerr(cudaMalloc(&(sg2[0][i].offsets), NSUBS*sizeof(unsigned int)));
-        chkerr(cudaMalloc(&(sg2[0][i].vertices), NSUBS*1000*sizeof(unsigned int)));
-        chkerr(cudaMalloc(&(sg2[0][i].labels), NSUBS*1000*sizeof(char)));
+        chkerr(cudaMalloc(&(sg2[0][i].vertices), NSUBS*10000*sizeof(unsigned int)));
+        chkerr(cudaMalloc(&(sg2[0][i].labels), NSUBS*10000*sizeof(char)));
     }
     for(int i=0;i<BLK_NUMS; i++){
         chkerr(cudaMalloc(&(sg1[0][i].tempv), TEMPSIZE*WARPS_EACH_BLK*sizeof(unsigned int)));
