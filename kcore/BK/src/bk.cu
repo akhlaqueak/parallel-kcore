@@ -18,17 +18,16 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
     unsigned int* vtail = sg.vtail;
     unsigned int* otail = sg.otail;
     unsigned int ot, vt=0;
-    printf("lane%d", LANEID);
     if(LANEID == 0){
         printf("%d@", vt); 
-        vt = atomicAdd(vtail, len);
-        ot = atomicAdd(otail, 2);
-        sg.offsets[ot] = vt;
-        sg.offsets[ot+1] = vt+len; 
-        // insert v in the subgraph
-        sg.vertices[vt] = v;
-        sg.labels[vt] = R;
-        vt++; // as one element is written i.e. v
+        // vt = atomicAdd(vtail, len);
+        // ot = atomicAdd(otail, 2);
+        // sg.offsets[ot] = vt;
+        // sg.offsets[ot+1] = vt+len; 
+        // // insert v in the subgraph
+        // sg.vertices[vt] = v;
+        // sg.labels[vt] = R;
+        // vt++; // as one element is written i.e. v
     }    
     vt = __shfl_sync(FULL, vt, 0);
     return vt;
