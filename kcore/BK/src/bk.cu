@@ -8,7 +8,7 @@
 __device__ void writeToTemp(unsigned int* tempv, unsigned int* templ, 
                             unsigned int v, unsigned int l, unsigned int len){
     if(laneid == 0){
-        len[0] = 1;
+        len = 1;
         // tempv[len] = v;
         // templ[len] = l;
         // len++;
