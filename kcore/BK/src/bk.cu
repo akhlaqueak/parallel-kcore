@@ -38,7 +38,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     unsigned int laneid=LANEID;
     unsigned int st = sg.offsets[s];
     unsigned int en = sg.offsets[s+1];
-    printf("#%u:%u:%u*", s, st, en);
+    // printf("#%u:%u:%u*", s, st, en);
     unsigned int qst = dp.neighbors_offset[q];
     unsigned int qen = dp.neighbors_offset[q+1];
     unsigned int v, sglen = 0;
@@ -75,7 +75,7 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg, unsigned int s, u
     unsigned int laneid = LANEID;
     unsigned int warpid = WARPID;
     unsigned int sglen = getSubgraphTemp(dp, sg, s, q);
-    printf("L%d-%d ", s, sglen);
+    // printf("L%d-%d ", s, sglen);
     unsigned int vt = initializeSubgraph(sg, sglen, q); // allocates a subgraph by atomic operations, and puts v as well
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
     char* templ = sg.templ + warpid*TEMPSIZE;
