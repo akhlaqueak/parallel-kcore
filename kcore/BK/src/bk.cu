@@ -226,7 +226,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
             // seemingly GPU-BK(TPDS) is only calculating number of cliques
             if(LANEID==0){
                 unsigned int t = atomicAdd(dp.total, 1);
-                printf("total: %u", t);  
+                // printf("total: %u", t);  
             } 
         }
         else if(!crossed(sg, s)){
