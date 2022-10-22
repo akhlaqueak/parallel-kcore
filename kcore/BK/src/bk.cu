@@ -32,7 +32,7 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
 }
 __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsigned int q){
     unsigned int warpid=WARPID;
-    // unsigned int laneid=LANEID;
+    unsigned int laneid=LANEID;
     unsigned int st = sg.offsets[s];
     unsigned int en = sg.offsets[s+1];
     printf("#%u:%u:%u*", s, st, en);
@@ -52,7 +52,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
             // First lane writes it to buffer
-            if(LANEID==0){
+            if(laneid==0){
                 tempv[idx] = v;
                 templ[idx] = l; // len is updated inside this function
                 idx++;
@@ -60,7 +60,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
             continue;   
         }
         if(searchAny(dp.neighbors, qst, qen, v)){
-            if(LANEID==0){
+            if(laneid==0){
                 tempv[idx] = v;
                 templ[idx] = l; // len is updated inside this function
                 idx++;
