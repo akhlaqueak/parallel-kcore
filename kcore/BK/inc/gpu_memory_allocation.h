@@ -6,7 +6,7 @@
 void malloc_graph_gpu_memory(Graph &g,G_pointers &p);
 void get_results_from_gpu(Graph &g,G_pointers &p);
 void free_graph_gpu_memory(G_pointers &p);
-void recodedGraphCopy(Graph &g, G_pointers &p, Subgraphs** sg1, Subgraphs** sg2){
+void recodedGraphCopy(Graph &g, G_pointers &p, Subgraphs** sg1, Subgraphs** sg2);
 inline void chkerr(cudaError_t code)
 {
     if (code != cudaSuccess)
