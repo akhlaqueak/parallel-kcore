@@ -26,6 +26,7 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
         sg.offsets[ot] = vt;
         sg.offsets[ot+1] = vt+len; 
         // insert v in the subgraph
+        
         sg.vertices[vt] = v;
         sg.labels[vt] = R;
         vt++; // as one element is written i.e. v
@@ -105,8 +106,8 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg,
 
 __device__ void expandClique(G_pointers dp, Subgraphs sg, unsigned int s,  unsigned int pivot){
     
-    unsigned int st = sg.otail[s];
-    unsigned int en = sg.otail[s+1];
+    unsigned int st = sg.offsets[s];
+    unsigned int en = sg.offsets[s+1];
     unsigned int pst = dp.neighbors_offset[pivot];
     unsigned int pen = dp.neighbors_offset[pivot+1];
     unsigned int v;
