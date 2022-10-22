@@ -69,7 +69,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     }
     // // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
     // // len is updated all the time in lane0. now broadcast to other lanes
-    // len = __shfl_sync(FULL, len, 0);
+    len = __shfl_sync(FULL, len, 0);
     return idx;
 }
 
