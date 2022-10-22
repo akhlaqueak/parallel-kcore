@@ -83,7 +83,7 @@ __device__ void generateSubGraphs(G_pointers dp, Subgraphs sg, unsigned int s, u
     printf("L%d-%d ", s, sglen);
     unsigned int vt = initializeSubgraph(sg, sglen, q); // allocates a subgraph by atomic operations, and puts v as well
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
-    unsigned int* templ = sg.templ + warpid*TEMPSIZE;
+    char* templ = sg.templ + warpid*TEMPSIZE;
     for(unsigned int i=laneid; i<sglen; i+=32, vt+=32){
         unsigned int v = tempv[i];
         char label = templ[i];
