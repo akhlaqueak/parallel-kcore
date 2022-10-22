@@ -56,16 +56,16 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     for(unsigned int i=st; i<en; i++){
         v = sg.vertices[i];
         l = sg.labels[i];
-        // if(l==R){ // it's already in N(q), no need to intersect. 
-        //     // First lane writes it to buffer
-        //     writeToTemp(tempv, templ, v, l, sglen);
-        //     // if(laneid==0){
-        //     //     tempv[sglen] = v;
-        //     //     templ[sglen] = l; // sglen is updated inside this function
-        //     //     sglen++;
-        //     // } 
-        //     continue;   
-        // }
+        if(l==R){ // it's already in N(q), no need to intersect. 
+            // First lane writes it to buffer
+            writeToTemp(tempv, templ, v, l, sglen);
+            // if(laneid==0){
+            //     tempv[sglen] = v;
+            //     templ[sglen] = l; // sglen is updated inside this function
+            //     sglen++;
+            // } 
+            continue;   
+        }
         // if(searchAny(dp.neighbors, qst, qen, v)){
         //     writeToTemp(tempv, templ, v, l, sglen);
         // }
