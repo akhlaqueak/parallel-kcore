@@ -18,7 +18,7 @@
 #define NSUBS 1000
 #define SUBG 32
 #define WARPID THID>>5
-#define LANEID THID&31
+#define LANEID (THID&31)
 #define BLKID blockIdx.x
 #define FULL 0xFFFFFFFF
 // tempsize is max size of a subgraph stored in temp area, in general it should be the size of max degree of supported graph
