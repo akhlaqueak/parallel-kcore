@@ -85,7 +85,8 @@ int find_kcore(Graph &g,bool write_to_disk){
         BK<<<BLK_NUMS, BLK_DIM>>>(dp, sg1, i);
         cudaDeviceSynchronize();
     }
-
+    chkerr(cudaMemcpy(&count, dp.total, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
+    cout<<"Total cliques: "<<count;
     return chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - tick).count();
 
 }
