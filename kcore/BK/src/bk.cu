@@ -5,7 +5,7 @@
 #include "kcore.cc"
 #include "util.cc"
 
-__device__ inline void writeToTemp(unsigned int* tempv, unsigned int* templ, 
+__device__ void writeToTemp(unsigned int* tempv, unsigned int* templ, 
                             unsigned int v, unsigned int l, unsigned int* len){
     unsigned int laneid = LANEID;
     if(laneid == 0){
