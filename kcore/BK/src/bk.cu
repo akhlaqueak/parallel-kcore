@@ -214,8 +214,6 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
 
     __syncthreads();
 
-    if(THID==0 && BLKID==0)
-        printf("%d-%d", ohead, otail);
     
     while(true){
         __syncthreads();
@@ -229,8 +227,10 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
             // todo report clique
             // ?? do we need to store R, or just increment a count
             // seemingly GPU-BK(TPDS) is only calculating number of cliques
-            dp.total++;
-            printf("total: %u", dp.total);
+            if(LANEID==0){
+                dp.total++;
+                printf("total: %u", dp.total);  
+            } 
         }
         else if(!crossed(sg, s)){
             unsigned int pivot = selectPivot(dp, sg, s);
