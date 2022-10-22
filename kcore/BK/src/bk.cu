@@ -39,7 +39,7 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     // unsigned int laneid=LANEID;
     unsigned int st = sg.offsets[s];
     unsigned int en = sg.offsets[s+1];
-    printf("#%u:%u%u*", s, st, en);
+    printf("#%u:%u:%u*", s, st, en);
     unsigned int qst = dp.neighbors_offset[q];
     unsigned int qen = dp.neighbors_offset[q+1];
     unsigned int v, l, len = 0;
@@ -48,8 +48,8 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     // R = q U (N(q) intersect R), or even simply R = q U R
     // P = N(q) intersect P
     // X = N(q) intersect X
-    // unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
-    // unsigned int* templ = sg.templ + warpid*TEMPSIZE;
+    unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
+    unsigned int* templ = sg.templ + warpid*TEMPSIZE;
     // // todo intersection could be changed to binary search, but it'll cause divergence. Let's see in the future if it can help improve performance
     // for(unsigned int i=st; i<en; i++){
     //     v = sg.vertices[i];
