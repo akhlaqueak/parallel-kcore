@@ -201,13 +201,13 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         generateSubGraphs(dp, sg, v);
     }
     
+    printf("%d", v);
     while(true){
         __syncthreads();
         if(ohead >= otail) break;
         s = ohead + warpid*2;
         ohead = min(otail, ohead+WARPS_EACH_BLK*2);
         __syncthreads();
-        printf("%d", s);
         if(examineClique(sg, s)){
             // todo report clique
             // ?? do we need to store R, or just increment a count
