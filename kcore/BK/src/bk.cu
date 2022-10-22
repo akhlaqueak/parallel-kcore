@@ -229,7 +229,7 @@ __global__ void BK(G_pointers dp, Subgraphs* subgs, unsigned int base){
         else if(!crossed(sg, s)){
             unsigned int pivot = selectPivot(dp, sg, s);
             expandClique(dp, sg, s, pivot);
-            // printf("p%d", pivot);
+            printf("p%d", pivot);
         }
     }
 }
