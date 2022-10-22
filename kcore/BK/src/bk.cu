@@ -114,10 +114,10 @@ __device__ void expandClique(G_pointers dp, Subgraphs sg, unsigned int s,  unsig
     // N(pivot) are in (pst, pen)
     // find Q=P-N(pivot)
     // for every u in Q, generate a subgraph
+    printf("%d", v);
     for(unsigned int i = st; i<en; i++){
         if(sg.labels[i]!=P) continue; // only need to search for P
         v = sg.vertices[i];
-        printf("%d", v);
         if(!searchAny(dp.neighbors, pst, pen, v)) // v belongs to Q, so generate subgraph for it
             sg.labels[i] = Q;             // simply change their labels to Q, afterwards generate a subgraph for each such node
         // this is necessary as per Algo 4 of the TPDS paper
