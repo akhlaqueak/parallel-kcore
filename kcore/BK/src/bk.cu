@@ -5,11 +5,14 @@
 #include "kcore.cc"
 #include "util.cc"
 
-// __device__ void writeToTemp(unsigned int* tempv, unsigned int* templ, 
-//                             unsigned int v, unsigned int l, unsigned int len){
-//         tempv[len] = v;
-//         templ[len] = l;
-// }
+__device__ void writeToTemp(unsigned int* tempv, char* templ, 
+                            unsigned int v, unsigned int l, unsigned int& len){
+    if(LANEID==0){
+        tempv[len] = v;
+        templ[len] = l;
+        len++;
+    } 
+}
 
 __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v){
     unsigned int* vtail = sg.vtail;
@@ -53,19 +56,16 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
         l = sg.labels[i];
         if(l==R){ // it's already in N(q), no need to intersect. 
             // First lane writes it to buffer
-            if(laneid==0){
-                tempv[idx] = v;
-                templ[idx] = l; // len is updated inside this function
-                idx++;
-            } 
+            writeToTemp(tempv, templ, v, l, idx);
+            // if(laneid==0){
+            //     tempv[idx] = v;
+            //     templ[idx] = l; // len is updated inside this function
+            //     idx++;
+            // } 
             continue;   
         }
         if(searchAny(dp.neighbors, qst, qen, v)){
-            if(laneid==0){
-                tempv[idx] = v;
-                templ[idx] = l; // len is updated inside this function
-                idx++;
-            }
+            writeToTemp(tempv, templ, v, l, idx);
         }
     }
     // len is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
