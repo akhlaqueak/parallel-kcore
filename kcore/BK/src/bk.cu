@@ -9,7 +9,7 @@ __device__ inline void writeToTemp(unsigned int* tempv, unsigned int* templ,
                             unsigned int v, unsigned int l, unsigned int* len){
     unsigned int laneid = LANEID;
     if(laneid == 0){
-        printf("%d", len);
+        printf("%u", len);
         // tempv[len] = v;
         // templ[len] = l;
         // len++;
