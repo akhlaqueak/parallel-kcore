@@ -31,7 +31,7 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
     vt = __shfl_sync(FULL, vt, 0);
     return vt;
 }
-__device__ int getSubgraphTemp(Subgraphs sg, unsigned int s, unsigned int q){
+__device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsigned int q){
     unsigned int warpid=WARPID;
     unsigned int laneid=LANEID;
     unsigned int st = sg.otail[s];
@@ -66,10 +66,10 @@ __device__ int getSubgraphTemp(Subgraphs sg, unsigned int s, unsigned int q){
 }
 
 
-__device__ void generateSubGraphs(Subgraphs sg, unsigned int s, unsigned int q){
+__device__ void generateSubGraphs(G_pointers dp, Subgraphs sg, unsigned int s, unsigned int q){
     unsigned int laneid = LANEID;
     unsigned int warpid = WARPID;
-    unsigned int len = getSubgraphTemp(sg, s, q);
+    unsigned int len = getSubgraphTemp(dp, sg, s, q);
     unsigned int vt = initializeSubgraph(sg, len, q); // allocates a subgraph by atomic operations, and puts v as well
     unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
     unsigned int* templ = sg.templ + warpid*TEMPSIZE;
@@ -123,7 +123,7 @@ __device__ void expandClique(G_pointers dp, Subgraphs sg, unsigned int s,  unsig
     // now generate subgraphs for all v's which were put to Q
     for(unsigned int i=st;i<en;i++)
         if(sg.labels[i] == Q)
-            generateSubGraphs(sg, s, sg.vertices[i]);
+            generateSubGraphs(dp, sg, s, sg.vertices[i]);
 }
 
 __device__ bool examineClique(Subgraphs sg, unsigned int s){
