@@ -36,8 +36,8 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     // unsigned int laneid=LANEID;
     unsigned int st = sg.otail[s];
     unsigned int en = sg.otail[s+1];
-    unsigned int qst = dp.neighbors_offsets[q];
-    unsigned int qen = dp.neighbors_offsets[q+1];
+    unsigned int qst = dp.neighbors_offset[q];
+    unsigned int qen = dp.neighbors_offset[q+1];
     unsigned int v, l, len = 0;
     // spawned subgraph len = 1 + |N(q) intersect (RUPUX)|
     // spawned subgraph:
