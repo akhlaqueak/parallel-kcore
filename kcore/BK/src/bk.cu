@@ -35,14 +35,14 @@ __device__ int initializeSubgraph(Subgraphs sg, unsigned int len, unsigned int v
     return vt;
 }
 __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsigned int q){
-    printf("x");
     unsigned int warpid=WARPID;
     // unsigned int laneid=LANEID;
-    unsigned int st = sg.otail[s];
-    unsigned int en = sg.otail[s+1];
+    unsigned int st = sg.offsets[s];
+    unsigned int en = sg.offsets[s+1];
     unsigned int qst = dp.neighbors_offset[q];
     unsigned int qen = dp.neighbors_offset[q+1];
     unsigned int v, l, len = 0;
+    printf("x");
     // spawned subgraph len = 1 + |N(q) intersect (RUPUX)|
     // spawned subgraph:
     // R = q U (N(q) intersect R), or even simply R = q U R
