@@ -5,13 +5,24 @@
 #include "kcore.cc"
 #include "util.cc"
 
-__device__ void writeToTemp(unsigned int* tempv, char* templ, 
-                            unsigned int v, char l, unsigned int& sglen){
-    if(LANEID==0){
-        tempv[sglen] = v;
-        templ[sglen] = l;
-        sglen++;
+__device__ inline void writeToTemp(Subgraphs sg, 
+                            unsigned int v, char l, bool pred, unsigned int& sglen){
+    unsigned int bits = __ballot_sync(FULL, pred);
+    unsigned int laneid = LANEID;
+    unsigned int warpid = WARPID;
+    unsigned int mask = FULL >> (31-lane_id);
+    unsigned int loc = __popc(mask & bits) + sglen - pred; // popc gives inclusive sum scan, subtract pred to make it exclusive
+    // add sglen to find exact location in the temp
+    // unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
+    // char* templ = sg.templ + warpid*TEMPSIZE;
+    if(pred){
+        sg.tempv[loc + warpid*TEMPSIZE] = v;
+        sg.templ[loc + warpid*TEMPSIZE] = l;
     } 
+    if(laneid == 31){
+        sglen+=pred;
+    }
+    sglen = __shfl_sync(FULL, sglen, 31);
 }
 
 __device__ int initializeSubgraph(Subgraphs sg, unsigned int sglen, unsigned int v){
@@ -43,30 +54,43 @@ __device__ int getSubgraphTemp(G_pointers dp, Subgraphs sg, unsigned int s, unsi
     unsigned int qen = dp.neighbors_offset[q+1];
     unsigned int v, sglen = 0;
     char l;
+    bool pred;
     // spawned subgraph sglen = 1 + |N(q) intersect (RUPUX)|
     // spawned subgraph:
     // R = q U (N(q) intersect R), or even simply R = q U R
     // P = N(q) intersect P
     // X = N(q) intersect X
-    unsigned int* tempv = sg.tempv + warpid*TEMPSIZE;
-    char* templ = sg.templ + warpid*TEMPSIZE;
 
     // todo intersection could be changed to binary search, but it'll cause divergence. Let's see in the future if it can help improve performance
-    for(unsigned int i=st; i<en; i++){
-        v = sg.vertices[i];
-        l = sg.labels[i];
-        if(l==R){ // it's already in N(q), no need to intersect. 
-            // First lane writes it to buffer
-            writeToTemp(tempv, templ, v, l, sglen);
-            continue;   
-        }
-        if(searchAny(dp.neighbors, qst, qen, v)){
-            writeToTemp(tempv, templ, v, l, sglen);
-        }
-    }
+    // ### Linear search with warp... 
+    // for(unsigned int i=st; i<en; i++){
+    //     v = sg.vertices[i];
+    //     l = sg.labels[i];
+    //     if(l==R){ // it's already in N(q), no need to intersect. 
+    //         // First lane writes it to buffer
+    //         writeToTemp(tempv, templ, v, l, sglen);
+    //         continue;   
+    //     }
+    //     if(searchAny(dp.neighbors, qst, qen, v)){
+    //         writeToTemp(tempv, templ, v, l, sglen);
+    //     }
+    // }
     // sglen is the number of items stored on temp buffer, let's generate subgraphs by adding q as R
     // sglen is updated all the time in lane0. now broadcast to other lanes
-    sglen = __shfl_sync(FULL, sglen, 0);
+
+    // ### Binary search, it'll also need a scan to get the locations.
+    for(; st<en; st+=32){
+        unsigned int i=st+laneid
+        if(i<en){
+            unsigned int v = sg.vertices[st+laneid];
+            char l = sg.labels[st+laneid];
+        }
+        if(i>=en) pred=false;
+        else if(l==R) pred = true; // it's already in N(q), no need to intersect.
+        else pred = binarySearch(dp.neighbors, qst, qen, v);
+        
+        writeToTemp(sg, v, l, pred, sglen); // appply sum scan and store in temp... 
+    }
     return sglen;
 }
 
@@ -166,7 +190,7 @@ __device__ unsigned int selectPivot(G_pointers dp, Subgraphs sg, unsigned int i)
             pred = false;
             // some of the lanes will diverge from this point, it may be improved in future.
             if(kl<en && sg.labels[kl]==P)  // only P nodes will be searched.
-                pred = binarySearch(dp.neighbors+st1, en1-st1, sg.vertices[kl]); // P intersect N(v)
+                pred = binarySearch(dp.neighbors, st1, en1, sg.vertices[kl]); // P intersect N(v)
             // binary search can introduce divergence, we can also try with warp level linear search in future
             nmatched+=__popc(__ballot_sync(FULL, pred));
         }
