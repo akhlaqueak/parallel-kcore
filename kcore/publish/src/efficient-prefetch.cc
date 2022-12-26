@@ -23,7 +23,7 @@ __global__ void selectNodesAtLevel7(unsigned int *degrees, unsigned int level, u
         predicate[THID] = (v<V)? (degrees[v] == level) : 0;
         if(predicate[THID]) temp[THID] = v;
 
-        compactWarpHellis(predicate, addresses, temp, glBuffer, &bufTail);        
+        compactBlock(predicate, addresses, temp, glBuffer, &bufTail);        
         
         __syncthreads();
             
