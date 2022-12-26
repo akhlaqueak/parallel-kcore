@@ -176,10 +176,10 @@ int kcoreHellisScanPrefetch(Graph &data_graph){
     while(count < data_graph.V){
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
 
-        selectNodesAtLevel6<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
+        selectNodesAtLevel7<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
                         data_graph.V, bufTails, glBuffers);
 
-        processNodes6<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 
+        processNodes7<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 
                         bufTails, glBuffers, global_count);
 
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
