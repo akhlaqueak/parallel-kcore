@@ -12,6 +12,7 @@
 #include "./src/efficient.cc"
 #include "./src/ballot-prefetch.cc"
 #include "./src/ballot.cc"
+#include "./src/efficient-prefetch.cc"
 
 
 int main(int argc, char *argv[]){
@@ -52,6 +53,9 @@ int main(int argc, char *argv[]){
     cout<<"Computing Ballot scan, vertex prefetching: ";
     t = kcoreBallotScanPrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
-    
+
+    cout<<"Computing Hellis scan, vertex prefetching: ";
+    t = kcoreHellisScanPrefetch(data_graph);
+    cout<<"Done: "<< t << "ms" << endl<< endl;
     return 0;
 }
