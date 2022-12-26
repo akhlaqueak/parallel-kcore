@@ -120,7 +120,7 @@ void Graph::readFile(string input_file){
         for(int j=neighbors_offset[i]; j < neighbors_offset[i+1]; j++, it++)
             neighbors[j] = *it;
     }
-    writeSerialized(input_file, "serialized");
+    writeSerialized(input_file);
 }
 
 void Graph::writeKCoreToDisk(std::string file){
@@ -140,7 +140,7 @@ void Graph::writeKCoreToDisk(std::string file){
 }
 
 Graph::Graph(std::string input_file){
-    if(readSerialized(input_file, "serialized")) return;
+    if(readSerialized(input_file)) return;
     cout<<"Reading normal file... "<<endl;
 
     auto start = chrono::steady_clock::now();
