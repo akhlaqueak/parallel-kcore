@@ -6,10 +6,10 @@ bool degComp(const pair<unsigned int, unsigned int> & lhs, const pair<unsigned i
   return lhs.second > rhs.second;
 }
 
-bool Graph::readSerialized(string input_file, string prefix){
+bool Graph::readSerialized(string input_file){
     input_file = input_file.substr(input_file.find_last_of("/")+1);
     ifstream file;
-    file.open(string(OUTPUT_LOC) + prefix + string("-") + input_file);
+    file.open(string(OUTPUT_LOC) +  string("serialized-") + input_file);
     if(file){
         cout<<"Reading serialized file... "<<endl;
         file>>V;
@@ -26,17 +26,17 @@ bool Graph::readSerialized(string input_file, string prefix){
         file.close();
         return true;
     }else{
-        cout<<prefix + string("-") + input_file<<" : File couldn't open"<<endl;
+        cout<<string("serialized-") + input_file<<" : File couldn't open"<<endl;
     }
 
     return false;
 }
 
-void Graph::writeSerialized(string input_file, string prefix){
+void Graph::writeSerialized(string input_file){
     input_file = input_file.substr(input_file.find_last_of("/")+1);
 
     ofstream file;
-    file.open(string(OUTPUT_LOC) + prefix + string("-") + input_file);
+    file.open(string(OUTPUT_LOC) + string("serialized-") + input_file);
     if(file){
         file<<V<<endl;
         file<<E<<endl;
@@ -49,7 +49,7 @@ void Graph::writeSerialized(string input_file, string prefix){
         file.close();
     }
     else{
-        cout<<prefix + string("-") + input_file<<" : File couldn't open"<<endl;
+        cout<<string("serialized-") + input_file<<" : File couldn't open"<<endl;
     }
 }
 Graph::Graph(){
