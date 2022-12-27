@@ -54,8 +54,8 @@ int main(int argc, char *argv[]){
     t = kcoreBallotScanPrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
 
-    cout<<"Computing Hellis scan, vertex prefetching: ";
-    t = kcoreHellisScanPrefetch(data_graph);
+    cout<<"Computing Efficient scan, vertex prefetching: ";
+    t = kcoreEfficientScanPrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
     return 0;
 }

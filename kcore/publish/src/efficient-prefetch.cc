@@ -152,7 +152,7 @@ __global__ void processNodes7(G_pointers d_p, int level, int V,
 
 
 
-int kcoreHellisScanPrefetch(Graph &data_graph){
+int kcoreEfficientScanPrefetch(Graph &data_graph){
 
     G_pointers data_pointers;
 
