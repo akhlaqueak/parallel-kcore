@@ -42,19 +42,19 @@ int main(int argc, char *argv[]){
     repSimulation(kcore, g);
     cout<<"Kmax: "<<g.kmax<<endl;
 
-    cout<<"Computing Ours + Shared Memory: ";
-    repSimulation(kcoreSharedMem, g);
+    // cout<<"Computing Ours + Shared Memory: ";
+    // repSimulation(kcoreSharedMem, g);
 
     
-    cout<<"Computing Ours + Vertex Prefetching: ";
-    repSimulation(kcorePrefetch, g);
+    // cout<<"Computing Ours + Vertex Prefetching: ";
+    // repSimulation(kcorePrefetch, g);
 
 
-    cout<<"Computing Efficient scan: ";
-    repSimulation(kcoreEfficientScan, g);
+    // cout<<"Computing Efficient scan: ";
+    // repSimulation(kcoreEfficientScan, g);
     
-    cout<<"Computing Ballot scan: " ;
-    repSimulation(kcoreBallotScan, g);
+    // cout<<"Computing Ballot scan: " ;
+    // repSimulation(kcoreBallotScan, g);
     
     cout<<"Computing Efficient scan + Shared Memory + : ";
     repSimulation(kcoreSharedMemEfficient, g);
@@ -62,11 +62,11 @@ int main(int argc, char *argv[]){
     cout<<"Computing Ballot scan + Shared Memory: ";
     repSimulation(kcoreSharedMemBallot, g);
 
-    cout<<"Computing Efficient Scan + Vertex Prefetching: ";
-    repSimulation(kcoreEfficientScanPrefetch, g);
+    // cout<<"Computing Efficient Scan + Vertex Prefetching: ";
+    // repSimulation(kcoreEfficientScanPrefetch, g);
 
-    cout<<"Computing Ballot scan + Vertex Prefetching: ";
-    repSimulation(kcoreBallotScanPrefetch, g);
+    // cout<<"Computing Ballot scan + Vertex Prefetching: ";
+    // repSimulation(kcoreBallotScanPrefetch, g);
 
     return 0;
 }
