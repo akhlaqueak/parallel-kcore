@@ -25,7 +25,7 @@ __device__ unsigned int scanIndexBallot(bool pred, unsigned int* bufTail)
     unsigned int bits = __ballot_sync(FULL, pred);
     unsigned int mask = FULL >> (31 - laneid);
     unsigned int index = __popc(mask & bits) - pred; // to get exclusive sum subtract pred
-    unsigned int btail;
+    unsigned int btail = 0;
     if(laneid==31){
         btail = atomicAdd(bufTail, index+pred);
         printf("%d, %d.", index, btail);
