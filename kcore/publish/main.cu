@@ -18,7 +18,7 @@
 template<class T>
 void repSimulation(int (*kern)(T), Graph& g){
     float sum=0;
-    int rep = 10;
+    int rep = 10; // number of iterations... 
     for(int i=0;i<rep;i++){
         sum+=(*kern)(g);
     }
@@ -34,7 +34,6 @@ int main(int argc, char *argv[]){
 
     cout<<"Graph loading Started... "<<endl;    
     Graph g(ds);
-    unsigned int t;
     cout<<ds<<endl;
     cout<<"V: "<< g.V<<endl;
     cout<<"E: "<< g.E<<endl;
@@ -68,6 +67,6 @@ int main(int argc, char *argv[]){
 
     cout<<"Computing Ballot scan + Vertex Prefetching: ";
     repSimulation(kcoreBallotScanPrefetch, g);
-    
+
     return 0;
 }
