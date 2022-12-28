@@ -37,10 +37,11 @@ __device__ unsigned int scanIndexBallot(bool pred, unsigned int* bufTail)
 
 __device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
 {
+    const unsigned int laneid = THID & 31;
     __shared__ volatile unsigned int addresses[BLK_DIM];
     addresses[THID] = pred; 
     for(int i=1; i<WARP_SIZE; i*=2){
-        if(LANEID >= i)
+        if(laneid >= i)
             addresses[THID] += addresses[THID-i];
         __syncwarp();
     }
@@ -49,7 +50,7 @@ __device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
         btail = atomicAdd(bufTail, addresses[THID]+pred);
     btail = __shfl_sync(FULL, btail, 31);
 
-    return addresses[THID]+btail;
+    return addresses[THID]+btail-pred; // exclusive scan requires -pred
 }
 
 
