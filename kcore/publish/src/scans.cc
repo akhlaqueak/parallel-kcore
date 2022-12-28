@@ -24,7 +24,7 @@ __device__ unsigned int scanIndexBallot(bool pred, unsigned int* bufTail)
     unsigned int bits = __ballot_sync(FULL, pred);
     unsigned int mask = FULL >> (31 - LANEID);
     unsigned int index = __popc(mask & bits) - pred; // to get exclusive sum subtract pred
-    return btail;
+    unsigned int btail;
     if(LANEID==31)
         btail = atomicAdd(bufTail, index+pred);
     btail = __shfl_sync(FULL, btail, 31);
@@ -42,7 +42,7 @@ __device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
             addresses[THID] += addresses[THID-i];
         // __syncwarp();
     }
-    return btail;
+    unsigned int btail;
     if(LANEID==31)
         btail = atomicAdd(bufTail, addresses[THID]+pred);
     btail = __shfl_sync(FULL, btail, 31);

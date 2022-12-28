@@ -100,7 +100,7 @@ __global__ void processNodes9(G_pointers d_p, int level, int V,
                 }
             }
 
-            unsigned int loc = scanIndexHellis(pred, bufTail);
+            unsigned int loc = scanIndexHellis(pred, &bufTail);
             if(pred)
                 writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
             pred = false;

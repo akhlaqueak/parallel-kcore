@@ -102,7 +102,7 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
                 }
             }
 
-            unsigned int loc = scanIndexBallot(pred, bufTail);
+            unsigned int loc = scanIndexBallot(pred, &bufTail);
             if(pred)
                 writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
             pred = false;
