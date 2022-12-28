@@ -21,11 +21,12 @@ __device__ unsigned int scanWarpHellis(volatile unsigned int* addresses, unsigne
 // returns index to write after scanning a warp
 __device__ unsigned int scanIndexBallot(bool pred, unsigned int* bufTail)
 {
+    unsigned int laneid = THID%32;
     unsigned int bits = __ballot_sync(FULL, pred);
-    unsigned int mask = FULL >> (31 - LANEID);
+    unsigned int mask = FULL >> (31 - laneid);
     unsigned int index = __popc(mask & bits) - pred; // to get exclusive sum subtract pred
     unsigned int btail;
-    if(LANEID==31){
+    if(laneid==31){
         btail = atomicAdd(bufTail, index+pred);
     }
     btail = __shfl_sync(FULL, btail, 31);
