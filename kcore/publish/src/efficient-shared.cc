@@ -136,7 +136,7 @@ int kcoreSharedMemEfficient(Graph &data_graph){
 	// cout<<"K-core Computation Started";
 
     auto start = chrono::steady_clock::now();
-    while(count < data_graph.V){
+    while(count < data_graph.V and level < 100){
         cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
 
         selectNodesAtLevel9<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
