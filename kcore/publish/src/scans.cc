@@ -32,7 +32,6 @@ __device__ unsigned int scanIndexBallot(bool pred, unsigned int* bufTail)
     }
     btail = __shfl_sync(FULL, btail, 31);
     index+=btail;
-
     return index;
 }
 
