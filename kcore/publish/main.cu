@@ -61,7 +61,7 @@ int main(int argc, char *argv[]){
     cout<<"Done: "<< t << "ms" << endl<< endl;
 
     cout<<"Computing Share Memory + Ballot scan: ";
-    // t = kcoreSharedMemBallot(data_graph);
+    t = kcoreSharedMemBallot(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
 
     cout<<"Computing Share Memory + Efficient scan: ";
