@@ -79,7 +79,6 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
         unsigned int end = d_p.neighbors_offset[v+1];
         bool pred = false;
 
-        printf("%d ", initTail);
 
         while(true){
             if(start >= end) break;
