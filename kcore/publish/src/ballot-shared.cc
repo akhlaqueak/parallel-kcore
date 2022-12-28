@@ -40,6 +40,7 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
+    __shared__ unsigned int temp[BLK_DIM];
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
@@ -79,7 +80,7 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         bool pred = false;
-
+        unsigned int u;
 
         while(true){
             if(start >= end) break;
@@ -87,12 +88,12 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
             if(pred)
                 writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
             pred = false;
-            
+
             unsigned int j = start + lane_id;
             start += WARP_SIZE;
             if(j >= end) continue;
 
-            unsigned int u = d_p.neighbors[j];
+            u = d_p.neighbors[j];
             if( d_p.degrees[u] > level){
                 
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
