@@ -88,7 +88,7 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
             if(pred)
                 writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
             pred = false;
-
+            __syncwarp();
             unsigned int j = start + lane_id;
             start += WARP_SIZE;
             if(j >= end) continue;
