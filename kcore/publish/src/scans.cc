@@ -46,8 +46,8 @@ __device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
     if(LANEID==31)
         btail = atomicAdd(bufTail, addresses[THID]+pred);
     btail = __shfl_sync(FULL, btail, 31);
-    addresses[THID]+=btail;
-    return address[THID];
+
+    return addresses[THID]+btail;
 }
 
 
