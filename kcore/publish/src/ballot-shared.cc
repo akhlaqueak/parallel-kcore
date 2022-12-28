@@ -83,7 +83,6 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
         unsigned int u=0;
 
         while(true){
-            __syncwarp();
             unsigned int loc = scanIndexBallot(pred, &bufTail);
             if(pred){
                 writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
@@ -97,7 +96,7 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
             u = d_p.neighbors[j];
             if( d_p.degrees[u] > level){                
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
-                pred = (a == level+1) 
+                pred = (a == level+1) ;
                 if(a <= level){
                     // node degree became less than the level after decrementing... 
                     atomicAdd(d_p.degrees+u, 1);
