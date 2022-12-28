@@ -41,7 +41,6 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
-    __shared__ unsigned int temp[BLK_DIM];
     unsigned int warp_id = THID / 32;
     unsigned int lane_id = THID % 32;
     unsigned int regTail;
@@ -84,24 +83,21 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
         unsigned int u=0;
 
         while(true){
-            if(start >= end) break;
             __syncwarp();
             unsigned int loc = scanIndexBallot(pred, &bufTail);
             if(pred){
                 writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
             }
+            if(start >= end) break;
             pred = false;
             unsigned int j = start + lane_id;
             start += WARP_SIZE;
             if(j >= end) continue;
 
             u = d_p.neighbors[j];
-            if( d_p.degrees[u] > level){
-                
+            if( d_p.degrees[u] > level){                
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
-                if(a == level+1)
-                    pred = true;
-
+                pred = (a == level+1) 
                 if(a <= level){
                     // node degree became less than the level after decrementing... 
                     atomicAdd(d_p.degrees+u, 1);
