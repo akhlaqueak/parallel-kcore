@@ -111,6 +111,7 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
 
     if(THID == 0 && bufTail>0){
         atomicAdd(global_count, bufTail); // atomic since contention among blocks
+        print("%d ", bufTail);
     }
 }
 
