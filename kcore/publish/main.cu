@@ -13,6 +13,8 @@
 #include "./src/ballot-prefetch.cc"
 #include "./src/ballot.cc"
 #include "./src/efficient-prefetch.cc"
+#include "./src/ballot-shared.cc"
+#include "./src/efficient-shared.cc"
 
 
 int main(int argc, char *argv[]){
@@ -34,28 +36,37 @@ int main(int argc, char *argv[]){
     cout<<"Kmax: "<<data_graph.kmax<<endl;
     cout<<"Our algo Done: "<< t << "ms" << endl<< endl;
 
-    cout<<"Computing ours algo with using shared memory buffer... ";
+    cout<<"Computing Shared Memory + Ours... ";
     t = kcoreSharedMem(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
     
-    cout<<"Computing ours algo with vertex prefetching... ";
+    cout<<"Computing Vertex Prefetching + Ours ... ";
     t = kcorePrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
 
-    cout<<"Computing using Efficient scan: ";
+    cout<<"Computing Efficient scan: ";
     t = kcoreEfficientScan(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
     
-    cout<<"Computing using Ballot scan: " ;
+    cout<<"Computing Ballot scan: " ;
     t = kcoreBallotScan(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
     
-    cout<<"Computing Ballot scan, vertex prefetching: ";
+    cout<<"Computing Ballot scan + Vertex Prefetching: ";
     t = kcoreBallotScanPrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
 
-    cout<<"Computing Efficient scan, vertex prefetching: ";
+    cout<<"Computing Efficient Scan, Vertex Prefetching: ";
     t = kcoreEfficientScanPrefetch(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
+
+    cout<<"Computing Share Memory + Ballot scan: ";
+    t = kcoreSharedMemBallot(data_graph);
+    cout<<"Done: "<< t << "ms" << endl<< endl;
+
+    cout<<"Computing Share Memory + Efficient scan: ";
+    t = kcoreSharedMemEfficient(data_graph);
+    cout<<"Done: "<< t << "ms" << endl<< endl;
+    
     return 0;
 }

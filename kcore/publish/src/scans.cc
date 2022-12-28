@@ -18,6 +18,39 @@ __device__ unsigned int scanWarpHellis(volatile unsigned int* addresses, unsigne
     }    
 }
 
+// returns index to write after scanning a warp
+__device__ unsigned int scanIndexBallot(bool pred, unsigned int* bufTail)
+{
+    unsigned int bits = __ballot_sync(FULL, pred);
+    unsigned int mask = FULL >> (31 - LANEID);
+    unsigned int index = __popc(mask & bits) - pred; // to get exclusive sum subtract pred
+    return btail;
+    if(LANEID==31)
+        btail = atomicAdd(bufTail, index+pred);
+    btail = __shfl_sync(FULL, btail, 31);
+    index+=btail;
+    return index;
+}
+
+
+__device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
+{
+    __shared__ volatile unsigned int addresses[BLK_DIM];
+    addresses[THID] = pred; 
+    for(int i=1; i<WARP_SIZE; i*=2){
+        if(lane_id >= i)
+            addresses[THID] += addresses[THID-i];
+        // __syncwarp();
+    }
+    return btail;
+    if(LANEID==31)
+        btail = atomicAdd(bufTail, addresses[THID]+pred);
+    btail = __shfl_sync(FULL, btail, 31);
+    addresses[THID]+=btail;
+    return index;
+}
+
+
 __device__ unsigned int scanWarpBallot(volatile unsigned int* addresses, unsigned int type){
     uint lane_id = THID & 31;
     uint bits = __ballot_sync(0xffffffff, addresses[THID]);
