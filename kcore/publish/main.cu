@@ -16,12 +16,13 @@
 #include "./src/ballot-shared.cc"
 #include "./src/efficient-shared.cc"
 template<class T>
-void invoke(Graph& g, int (*kern)(T)){
+void repSimulation(int (*kern)(T), Graph& g){
     float sum=0;
-    for(int i=0;i<5;i++){
+    int rep = 10;
+    for(int i=0;i<rep;i++){
         sum+=(*kern)(g);
     }
-    cout<<"EX: "<<sum/5.0<<endl;
+    cout<<"EX: "<<sum/rep<<endl;
 }
 
 int main(int argc, char *argv[]){
@@ -29,51 +30,44 @@ int main(int argc, char *argv[]){
         cout<<"Please provide data file"<<endl;
         exit(-1);
     }
-    std::string data_file = argv[1];
+    std::string ds = argv[1];
 
     cout<<"Graph loading Started... "<<endl;    
-    Graph g(data_file);
+    Graph g(ds);
     unsigned int t;
-
+    cout<<ds<<endl;
     cout<<"V: "<< g.V<<endl;
     cout<<"E: "<< g.E<<endl;
 
-    // cout<<"Computing ours... ";
-    t = kcore(g);
+    cout<<"Computing ours: ";
+    repSimulation(kcore, g);
     cout<<"Kmax: "<<g.kmax<<endl;
-    cout<<"Our algo Done: "<< t  << endl<< endl;
 
-    cout<<"Computing Shared Memory + Ours... ";
-    t = kcoreSharedMem(g);
-    cout<<"Done: "<< t  << endl<< endl;
+    cout<<"Computing Ours + Shared Memory: ";
+    repSimulation(kcoreSharedMem, g);
+
     
-    cout<<"Computing Vertex Prefetching + Ours ... ";
-    t = kcorePrefetch(g);
-    cout<<"Done: "<< t  << endl<< endl;
+    cout<<"Computing Ours + Vertex Prefetching: ";
+    repSimulation(kcorePrefetch, g);
+
 
     cout<<"Computing Efficient scan: ";
-    t = kcoreEfficientScan(g);
-    cout<<"Done: "<< t  << endl<< endl;
+    repSimulation(kcoreEfficientScan, g);
     
     cout<<"Computing Ballot scan: " ;
-    t = kcoreBallotScan(g);
-    cout<<"Done: "<< t  << endl<< endl;
+    repSimulation(kcoreBallotScan, g);
     
+    cout<<"Computing Efficient scan + Shared Memory + : ";
+    repSimulation(kcoreSharedMemEfficient, g);
+
+    cout<<"Computing Ballot scan + Shared Memory: ";
+    repSimulation(kcoreSharedMemBallot, g);
+
+    cout<<"Computing Efficient Scan + Vertex Prefetching: ";
+    repSimulation(kcoreEfficientScanPrefetch, g);
+
     cout<<"Computing Ballot scan + Vertex Prefetching: ";
-    t = kcoreBallotScanPrefetch(g);
-    cout<<"Done: "<< t  << endl<< endl;
-
-    cout<<"Computing Efficient Scan, Vertex Prefetching: ";
-    t = kcoreEfficientScanPrefetch(g);
-    cout<<"Done: "<< t  << endl<< endl;
-
-    cout<<"Computing Share Memory + Ballot scan: ";
-    t = kcoreSharedMemBallot(g);
-    cout<<"Done: "<< t  << endl<< endl;
-
-    cout<<"Computing Share Memory + Efficient scan: ";
-    t = kcoreSharedMemEfficient(g);
-    cout<<"Done: "<< t  << endl<< endl;
-    invoke(g, kcoreSharedMemEfficient);
+    repSimulation(kcoreBallotScanPrefetch, g);
+    
     return 0;
 }
