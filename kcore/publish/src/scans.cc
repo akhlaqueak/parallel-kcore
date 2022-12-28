@@ -43,11 +43,11 @@ __device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
     for(int i=1; i<WARP_SIZE; i*=2){
         if(laneid >= i)
             addresses[THID] += addresses[THID-i];
-        __syncwarp();
+        // __syncwarp();
     }
     unsigned int btail;
-    if(LANEID==31)
-        btail = atomicAdd(bufTail, addresses[THID]+pred);
+    if(laneid==31)
+        btail = atomicAdd(bufTail, addresses[THID]);
     btail = __shfl_sync(FULL, btail, 31);
 
     return addresses[THID]+btail-pred; // exclusive scan requires -pred
