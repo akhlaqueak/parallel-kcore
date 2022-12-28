@@ -103,7 +103,6 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
             if(pred)
                 writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
             pred = false;
-                    printf("%d ", loc);
 
         }
 
