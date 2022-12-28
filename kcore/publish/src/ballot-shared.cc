@@ -148,7 +148,7 @@ int kcoreSharedMemBallot(Graph &data_graph){
                         bufTails, glBuffers, global_count);
 
         chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
-        // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
+        cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
 	// cout<<"Done"<<endl;
