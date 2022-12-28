@@ -27,7 +27,7 @@ __device__ unsigned int scanIndexBallot(bool pred, unsigned int* bufTail)
     unsigned int btail;
     if(LANEID==31){
         btail = atomicAdd(bufTail, index+pred);
-        printf("%d, btail.", index, btail);
+        printf("%d, %d.", index, btail);
     }
     btail = __shfl_sync(FULL, btail, 31);
     index+=btail;
