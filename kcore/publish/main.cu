@@ -15,7 +15,13 @@
 #include "./src/efficient-prefetch.cc"
 #include "./src/ballot-shared.cc"
 #include "./src/efficient-shared.cc"
-
+void invoke(auto& g, auto fun){
+    float sum=0;
+    for(int i=0;i<5;i++){
+        sum+=fun(g);
+    }
+    cout<<"EX: "<<sum/5.0<<endl;
+}
 
 int main(int argc, char *argv[]){
     if (argc < 2) {
@@ -67,6 +73,6 @@ int main(int argc, char *argv[]){
     cout<<"Computing Share Memory + Efficient scan: ";
     t = kcoreSharedMemEfficient(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
-    
+    invoke(data_graph, &kcoreSharedMemEfficient);
     return 0;
 }
