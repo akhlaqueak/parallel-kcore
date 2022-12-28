@@ -95,7 +95,11 @@ __global__ void processNodes9(G_pointers d_p, int level, int V,
             if( d_p.degrees[u] > level){
                 
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
-                pred = (a == level+1);
+                // pred = (a == level+1);
+                                if(a == level+1){
+                    unsigned int loc = atomicAdd(&bufTail, 1);
+                    writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
+                }
 
                 if(a <= level){
                     // node degree became less than the level after decrementing... 
