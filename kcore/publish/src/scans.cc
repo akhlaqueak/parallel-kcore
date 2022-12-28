@@ -38,7 +38,7 @@ __device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
     __shared__ volatile unsigned int addresses[BLK_DIM];
     addresses[THID] = pred; 
     for(int i=1; i<WARP_SIZE; i*=2){
-        if(lane_id >= i)
+        if(LANEID >= i)
             addresses[THID] += addresses[THID-i];
         // __syncwarp();
     }
@@ -47,7 +47,7 @@ __device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
         btail = atomicAdd(bufTail, addresses[THID]+pred);
     btail = __shfl_sync(FULL, btail, 31);
     addresses[THID]+=btail;
-    return index;
+    return address[THID];
 }
 
 
