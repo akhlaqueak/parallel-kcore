@@ -47,6 +47,7 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
     if(THID==0){
         initTail = bufTail = bufTails[blockIdx.x];
         base = 0;
+        printf("%d ", initTail);
         glBuffer = glBuffers + blockIdx.x*GLBUFFER_SIZE; 
         assert(glBuffer!=NULL);
     }
@@ -81,9 +82,6 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
 
 
         while(true){
-            __syncwarp();
-            
-
             if(start >= end) break;
 
             unsigned int j = start + lane_id;
