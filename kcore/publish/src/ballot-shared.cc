@@ -36,7 +36,8 @@ __global__ void selectNodesAtLevel8(unsigned int *degrees, unsigned int level, u
 __global__ void processNodes8(G_pointers d_p, int level, int V, 
                     unsigned int* bufTails, unsigned int* glBuffers, 
                     unsigned int *global_count){
-    __shared__ unsigned int shBuffer[MAX_NV], initTail;
+    __shared__ unsigned int shBuffer[MAX_NV];
+    __shared__ unsigned int initTail;
     __shared__ unsigned int bufTail;
     __shared__ unsigned int* glBuffer;
     __shared__ unsigned int base;
