@@ -99,6 +99,7 @@ __global__ void processNodes8(G_pointers d_p, int level, int V,
                     atomicAdd(d_p.degrees+u, 1);
                 }
             }
+            printf("%d ", threadIdx.x);
 
             unsigned int loc = scanIndexBallot(pred, &bufTail);
             if(pred)
