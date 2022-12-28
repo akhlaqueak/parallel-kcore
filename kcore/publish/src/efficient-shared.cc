@@ -78,17 +78,21 @@ __global__ void processNodes9(G_pointers d_p, int level, int V,
         unsigned int start = d_p.neighbors_offset[v];
         unsigned int end = d_p.neighbors_offset[v+1];
         bool pred = false;
-
+        unsigned int u;
 
         while(true){
 
             if(start >= end) break;
+            unsigned int loc = scanIndexHellis(pred, &bufTail);
+            if(pred)
+                writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
+            pred = false;
 
             unsigned int j = start + lane_id;
             start += WARP_SIZE;
             if(j >= end) continue;
 
-            unsigned int u = d_p.neighbors[j];
+            u = d_p.neighbors[j];
             if( d_p.degrees[u] > level){
                 
                 unsigned int a = atomicSub(d_p.degrees+u, 1);
@@ -100,10 +104,6 @@ __global__ void processNodes9(G_pointers d_p, int level, int V,
                 }
             }
 
-            unsigned int loc = scanIndexHellis(pred, &bufTail);
-            if(pred)
-                writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
-            pred = false;
         }
 
     }
