@@ -42,7 +42,7 @@ __device__ unsigned int scanIndexHellis(bool pred, unsigned int* bufTail)
     for(int i=1; i<WARP_SIZE; i*=2){
         if(LANEID >= i)
             addresses[THID] += addresses[THID-i];
-        // __syncwarp();
+        __syncwarp();
     }
     unsigned int btail;
     if(LANEID==31)
