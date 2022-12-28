@@ -30,7 +30,7 @@ __device__ unsigned int scanIndexBallot(bool pred, unsigned int* bufTail)
     }
     btail = __shfl_sync(FULL, btail, 31);
     index+=btail;
-                    printf("%d ", index);
+                    printf("%d ", btail);
 
     return index;
 }
