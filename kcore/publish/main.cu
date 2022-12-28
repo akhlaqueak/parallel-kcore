@@ -65,7 +65,7 @@ int main(int argc, char *argv[]){
     cout<<"Done: "<< t << "ms" << endl<< endl;
 
     cout<<"Computing Share Memory + Efficient scan: ";
-    // t = kcoreSharedMemEfficient(data_graph);
+    t = kcoreSharedMemEfficient(data_graph);
     cout<<"Done: "<< t << "ms" << endl<< endl;
     
     return 0;

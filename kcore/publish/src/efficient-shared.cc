@@ -81,13 +81,12 @@ __global__ void processNodes9(G_pointers d_p, int level, int V,
         unsigned int u;
 
         while(true){
-
-            if(start >= end) break;
             unsigned int loc = scanIndexHellis(pred, &bufTail);
-            if(pred)
+            if(pred){
                 writeToBuffer(shBuffer, glBuffer, initTail, loc, u);
+            }
+            if(start >= end) break;
             pred = false;
-
             unsigned int j = start + lane_id;
             start += WARP_SIZE;
             if(j >= end) continue;
