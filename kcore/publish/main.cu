@@ -36,13 +36,13 @@ int main(int argc, char *argv[]){
 
     cout<<"Graph loading Started... "<<endl;    
     Graph g(ds);
-    cout<<ds<<endl;
-    cout<<"V: "<< g.V<<endl;
-    cout<<"E: "<< g.E<<endl;
+    cout<<"******************  "<<ds<<" ******************"<<endl;
+    // cout<<"V: "<< g.V<<endl;
+    // cout<<"E: "<< g.E<<endl;
 
     cout<<"Ours: ";
     repSimulation(kcore, g);
-    cout<<"Kmax: "<<g.kmax<<endl;
+    // cout<<"Kmax: "<<g.kmax<<endl;
 
     cout<<"Ours + SM:  ";
     repSimulation(kcoreSharedMem, g);
