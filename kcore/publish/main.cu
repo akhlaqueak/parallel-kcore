@@ -20,7 +20,9 @@ void repSimulation(int (*kern)(T), Graph& g){
     float sum=0;
     int rep = 10; // number of iterations... 
     for(int i=0;i<rep;i++){
-        sum+=(*kern)(g);
+        unsigned int t = (*kern)(g);
+        cout<<t<<" ";
+        sum+=t;
     }
     cout<<"EX: "<<sum/rep<<endl;
 }
@@ -56,17 +58,16 @@ int main(int argc, char *argv[]){
     repSimulation(kcoreSharedMemBallot, g);
 
     cout<<"Ballot scan + VP ";
-    repSimulation(kcoreEfficientScanPrefetch, g);
+    repSimulation(kcoreBallotScanPrefetch, g);
 
     cout<<"Efficient scan ";
-    repSimulation(kcoreEfficientScan, g);
-    
+    repSimulation(kcoreEfficientScan, g);    
     
     cout<<"Efficient scan + SM ";
     repSimulation(kcoreSharedMemEfficient, g);
 
     cout<<"Efficient Scan + VP ";
-    repSimulation(kcoreBallotScanPrefetch, g);
+    repSimulation(kcoreEfficientScanPrefetch, g);
 
     return 0;
 }
