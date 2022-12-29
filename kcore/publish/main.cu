@@ -18,13 +18,12 @@
 template<class T>
 void repSimulation(int (*kern)(T), Graph& g){
     float sum=0;
-    int rep = 10; // number of iterations... 
+    int rep = 100; // number of iterations... 
     for(int i=0;i<rep;i++){
         unsigned int t = (*kern)(g);
         cout<<t<<" ";
         sum+=t;
     }
-    cout<<"EX: "<<sum/rep<<endl;
 }
 
 int main(int argc, char *argv[]){
@@ -40,33 +39,33 @@ int main(int argc, char *argv[]){
     cout<<"V: "<< g.V<<endl;
     cout<<"E: "<< g.E<<endl;
 
-    cout<<"Computing ours: ";
+    cout<<"Ours: ";
     repSimulation(kcore, g);
     cout<<"Kmax: "<<g.kmax<<endl;
 
-    cout<<"Ours + SM ";
+    cout<<"Ours + SM:  ";
     repSimulation(kcoreSharedMem, g);
 
     
-    cout<<"Ours + VP ";
+    cout<<"Ours + VP: ";
     repSimulation(kcorePrefetch, g);
 
-    cout<<"Ballot scan ";
+    cout<<"Ballot scan: ";
     repSimulation(kcoreBallotScan, g);
 
-    cout<<"Ballot scan + SM ";
+    cout<<"Ballot scan + SM: ";
     repSimulation(kcoreSharedMemBallot, g);
 
-    cout<<"Ballot scan + VP ";
+    cout<<"Ballot scan + VP: ";
     repSimulation(kcoreBallotScanPrefetch, g);
 
-    cout<<"Efficient scan ";
+    cout<<"Efficient scan: ";
     repSimulation(kcoreEfficientScan, g);    
     
-    cout<<"Efficient scan + SM ";
+    cout<<"Efficient scan + SM: ";
     repSimulation(kcoreSharedMemEfficient, g);
 
-    cout<<"Efficient Scan + VP ";
+    cout<<"Efficient scan + VP: ";
     repSimulation(kcoreEfficientScanPrefetch, g);
 
     return 0;
