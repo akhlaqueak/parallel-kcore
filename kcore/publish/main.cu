@@ -24,6 +24,7 @@ void repSimulation(int (*kern)(T), Graph& g){
         cout<<t<<" ";
         sum+=t;
     }
+    cout<<endl;
 }
 
 int main(int argc, char *argv[]){
