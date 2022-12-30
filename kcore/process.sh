@@ -1,16 +1,17 @@
 res=(
-"Ours"	
-"Ours +  SM"	
-"Ours + VP"	
-"Ballot scan"	
-"Ballot scan + SM"	
-"Ballot scan + VP"	
-"Efficient scan"	
-"Efficient scan + SM"	
-"Efficient Scan + VP"
+"Ours: "	
+"Ours + SM: "	
+"Ours + VP: "	
+"Ballot scan: "	
+"Ballot scan + SM: "	
+"Ballot scan + VP: "	
+"Efficient scan: "	
+"Efficient scan + SM: "	
+"Efficient scan + VP: "
 )
 
 for ds in "${res[@]}"; do
     echo "$ds"
-    grep "$ds" log/publish.out | awk '{print $NF}'
+    grep "$ds" log/publish.out | awk '{for (i = NF; i > NF-100; i--) printf $i " "; print ""}'
 done
+

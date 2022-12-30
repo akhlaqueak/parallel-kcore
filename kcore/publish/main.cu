@@ -27,6 +27,17 @@ void repSimulation(int (*kern)(T), Graph& g){
     cout<<endl;
 }
 
+void STDdegrees(auto& g){
+    double sum = std::accumulate(g.degrees, g.degrees+g.V, 0.0);
+    double mean = sum / g.V;
+
+    std::vector<double> diff(g.V);
+    std::transform(g.degrees, g.degrees+V, diff.begin(),
+                std::bind2nd(std::minus<double>(), mean));
+    double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+    double stdev = std::sqrt(sq_sum / g.V);
+}
+
 int main(int argc, char *argv[]){
     if (argc < 2) {
         cout<<"Please provide data file"<<endl;
@@ -40,34 +51,36 @@ int main(int argc, char *argv[]){
     // cout<<"V: "<< g.V<<endl;
     // cout<<"E: "<< g.E<<endl;
 
-    cout<<"Ours: ";
-    repSimulation(kcore, g);
-    // cout<<"Kmax: "<<g.kmax<<endl;
+    STDdegrees(ds);
 
-    cout<<"Ours + SM:  ";
-    repSimulation(kcoreSharedMem, g);
+    // cout<<"Ours: ";
+    // repSimulation(kcore, g);
+    // // cout<<"Kmax: "<<g.kmax<<endl;
+
+    // cout<<"Ours + SM:  ";
+    // repSimulation(kcoreSharedMem, g);
 
     
-    cout<<"Ours + VP: ";
-    repSimulation(kcorePrefetch, g);
+    // cout<<"Ours + VP: ";
+    // repSimulation(kcorePrefetch, g);
 
-    cout<<"Ballot scan: ";
-    repSimulation(kcoreBallotScan, g);
+    // cout<<"Ballot scan: ";
+    // repSimulation(kcoreBallotScan, g);
 
-    cout<<"Ballot scan + SM: ";
-    repSimulation(kcoreSharedMemBallot, g);
+    // cout<<"Ballot scan + SM: ";
+    // repSimulation(kcoreSharedMemBallot, g);
 
-    cout<<"Ballot scan + VP: ";
-    repSimulation(kcoreBallotScanPrefetch, g);
+    // cout<<"Ballot scan + VP: ";
+    // repSimulation(kcoreBallotScanPrefetch, g);
 
-    cout<<"Efficient scan: ";
-    repSimulation(kcoreEfficientScan, g);    
+    // cout<<"Efficient scan: ";
+    // repSimulation(kcoreEfficientScan, g);    
     
-    cout<<"Efficient scan + SM: ";
-    repSimulation(kcoreSharedMemEfficient, g);
+    // cout<<"Efficient scan + SM: ";
+    // repSimulation(kcoreSharedMemEfficient, g);
 
-    cout<<"Efficient scan + VP: ";
-    repSimulation(kcoreEfficientScanPrefetch, g);
+    // cout<<"Efficient scan + VP: ";
+    // repSimulation(kcoreEfficientScanPrefetch, g);
 
     return 0;
 }
