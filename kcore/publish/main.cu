@@ -27,12 +27,12 @@ void repSimulation(int (*kern)(T), Graph& g){
     cout<<endl;
 }
 
-void STDdegrees(auto& g){
+void STDdegrees(Graph& g){
     double sum = std::accumulate(g.degrees, g.degrees+g.V, 0.0);
     double mean = sum / g.V;
 
     std::vector<double> diff(g.V);
-    std::transform(g.degrees, g.degrees+V, diff.begin(),
+    std::transform(g.degrees, g.degrees+g.V, diff.begin(),
                 std::bind2nd(std::minus<double>(), mean));
     double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
     double stdev = std::sqrt(sq_sum / g.V);
