@@ -36,7 +36,8 @@ void STDdegrees(Graph& g){
                 std::bind2nd(std::minus<double>(), mean));
     double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
     double stdev = std::sqrt(sq_sum / g.V);
-}
+    cout<<stdev;
+}   
 
 int main(int argc, char *argv[]){
     if (argc < 2) {
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]){
 
     cout<<"Graph loading Started... "<<endl;    
     Graph g(ds);
-    cout<<"******************  "<<ds<<" ******************"<<endl;
+    cout<<"******************  "<<ds<<" ****************** "<<endl;
     // cout<<"V: "<< g.V<<endl;
     // cout<<"E: "<< g.E<<endl;
 
