@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
     // cout<<"V: "<< g.V<<endl;
     // cout<<"E: "<< g.E<<endl;
 
-    STDdegrees(ds);
+    STDdegrees(g);
 
     // cout<<"Ours: ";
     // repSimulation(kcore, g);
