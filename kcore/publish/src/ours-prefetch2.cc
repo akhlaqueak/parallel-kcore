@@ -37,7 +37,7 @@ __global__ void selectNodesAtLevel32(unsigned int *degrees, unsigned int level, 
     }
 }
 
-__device__ swapBuffers(auto X, auto Y){
+__device__ void swapBuffers(unsigned int** X, unsigned int** Y){
     auto temp = *X;
     *X = *Y;
     *Y = temp;
@@ -59,8 +59,8 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
     __shared__ unsigned int C1[MAX_PREF*31];
     __shared__ unsigned int C2[MAX_PREF*31];
     __shared__ int npref;
-    __shared__ unsigned int *wrBuff = C1;
-    __shared__ unsigned int *rdBuff = C2;
+    __shared__ unsigned int *wrBuff;
+    __shared__ unsigned int *rdBuff;
 
     unsigned int warp_id = WARPID;
     unsigned int lane_id = LANEID;
@@ -75,6 +75,8 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
         base = 0;
         npref = 0;
         glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE;
+        wrBuff = C1;
+        rdBuff = C2;
         assert(glBuffer != NULL);
     }
 
@@ -89,10 +91,10 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
         if (warp_id - 1 < bufTail)
         {
             if(lane_id==0){
-                prefv[warp_id] = readFromBuffer(glBuffer, warp_id - 1);
-                prefst[warp_id] = d_p.neighbors_offset[v];
-                prefen[warp_id] = d_p.neighbors_offset[v + 1];
-                bpref[warp_id] = end - start <= MAX_PREF;
+                v = prefv[warp_id] = readFromBuffer(glBuffer, warp_id - 1);
+                st = prefst[warp_id] = d_p.neighbors_offset[v];
+                en = prefen[warp_id] = d_p.neighbors_offset[v + 1];
+                bpref[warp_id] = en - st <= MAX_PREF;
             }
             __syncwarp();
 
@@ -151,9 +153,9 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
 
             for(int i=0;i<npref;i++){
                 if(lane_id==0){
-                    prefv[i+1] = readFromBuffer(glBuffer, base+i);
-                    prefst[i+1] = d_p.neighbors_offset[v];
-                    prefen[i+1] = d_p.neighbors_offset[v + 1];
+                    v = prefv[i+1] = readFromBuffer(glBuffer, base+i);
+                    st = prefst[i+1] = d_p.neighbors_offset[v];
+                    en = prefen[i+1] = d_p.neighbors_offset[v + 1];
                     bpref[i+1] = en - st <= MAX_PREF;
                 }
                 __syncwarp();
