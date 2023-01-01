@@ -48,12 +48,15 @@ int main(int argc, char *argv[]){
 
     cout<<"Graph loading Started... "<<endl;    
     Graph g(ds);
-    // cout<<"******************  "<<ds<<" ****************** "<<endl;
-    cout<<"******************  "<<ds<<" ****************** ";
-    // cout<<"V: "<< g.V<<endl;
-    // cout<<"E: "<< g.E<<endl;
+    cout<<"******************  "<<ds<<" ****************** "<<endl;
+    cout<<"V: "<< g.V<<endl;
+    cout<<"E: "<< g.E<<endl;
+    
+    // cout<<"******************  "<<ds<<" ****************** ";
+    // STDdegrees(g);
 
-    STDdegrees(g);
+    cout<<"Prefetch2: ";
+    repSimulation(kcorePrefetch2, g);
 
     // cout<<"Ours: ";
     // repSimulation(kcore, g);

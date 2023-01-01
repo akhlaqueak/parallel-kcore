@@ -6,6 +6,7 @@
 #define WARPS_EACH_BLK (BLK_DIM/32)
 #define WORK_UNITS (BLK_NUMS*WARPS_EACH_BLK)
 #define MAX_NV 10000
+
 #define BUFF_SIZE 20000
 #define N_THREADS (BLK_DIM*BLK_NUMS)
 #define GLBUFFER_SIZE 1000000
@@ -16,7 +17,9 @@
 #define OUTPUT_LOC string("../output/")
 #define REP 10
 #define LANEID (THID&31)
+#define WARPID (THID>>5)
 #define FULL 0xFFFFFFFF
+#define MAX_PREF 350
 
 #include <iostream>
 #include <vector>
