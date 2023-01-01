@@ -61,7 +61,7 @@ int main(int argc, char *argv[]){
 
     // cout<<"Ours: ";
     // repSimulation(kcore, g);
-    // // cout<<"Kmax: "<<g.kmax<<endl;
+    cout<<"Kmax: "<<g.kmax<<endl;
 
     // cout<<"Ours + SM:  ";
     // repSimulation(kcoreSharedMem, g);
