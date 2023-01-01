@@ -19,7 +19,7 @@
 #define LANEID (THID&31)
 #define WARPID (THID>>5)
 #define FULL 0xFFFFFFFF
-#define MAX_PREF 250
+#define MAX_PREF 180
 
 #include <iostream>
 #include <vector>
