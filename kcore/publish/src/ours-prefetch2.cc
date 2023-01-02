@@ -160,7 +160,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                     st = prefst[i+1] = d_p.neighbors_offset[v];
                     en = prefen[i+1] = d_p.neighbors_offset[v + 1];
                     pref = bpref[i+1] = en - st <= MAX_PREF;
-                    printf("%d ", npref);
+                    // printf("%d ", npref);
                 }
                 v=__shfl_sync(FULL, v, 0);
                 st=__shfl_sync(FULL, st, 0);
