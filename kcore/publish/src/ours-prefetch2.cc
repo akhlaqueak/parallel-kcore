@@ -159,14 +159,18 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                     v = prefv[i+1] = readFromBuffer(glBuffer, base+i);
                     st = prefst[i+1] = d_p.neighbors_offset[v];
                     en = prefen[i+1] = d_p.neighbors_offset[v + 1];
-                    bpref[i+1] = en - st <= MAX_PREF;
+                    pref = bpref[i+1] = en - st <= MAX_PREF;
+                    printf("%d ", blockIdx.x);
                 }
-                __syncwarp();
+                v=__shfl_sync(FULL, v, 0);
+                st=__shfl_sync(FULL, st, 0);
+                en=__shfl_sync(FULL, en, 0);
+                pref=__shfl_sync(FULL, pref, 0);
                 
-                for (unsigned int k = prefst[i+1], j = lane_id; i < prefen[i+1] && bpref[i+1]; k += 32, j += 32)
+                for (unsigned int k = st, j = lane_id; i < en && pref; k += 32, j += 32)
                 {
                     unsigned int kl = k + lane_id;
-                    if (kl < prefen[i+1])
+                    if (kl < en)
                     {
                         wrBuff[i * MAX_PREF + j] = d_p.neighbors[kl];
                     }
@@ -175,8 +179,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
 
             continue; // warp0 doesn't process nodes.
         }
-                if(lane_id==0)
-                    printf("%d-%d ", st, en);
+
 
         for(unsigned int j=st, k=lane_id; j<en; j+=32, k+=32){
             unsigned int jl = j+lane_id;
