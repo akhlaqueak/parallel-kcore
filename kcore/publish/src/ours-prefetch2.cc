@@ -110,6 +110,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
     if (THID == 0)
     {
         npref = min(WARPS_EACH_BLK - 1, bufTail);
+        printf("%d ", npref);
     }
 
     // if(THID == 0){
@@ -128,6 +129,8 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
         __syncthreads(); // syncthreads must be executed by all the threads
         swapBuffers(&wrBuff, &rdBuff); // swaps reading and writing buffer pointers.
         if(warp_id <= npref){
+            // warp0 will also read these value, but it's none of use
+            // doing it only for simplicity of code, else need a condition
             v = prefv[warp_id];
             st = prefst[warp_id];
             en = prefen[warp_id];
@@ -152,7 +155,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
             __syncwarp(); // so that other lanes can see updated base value
 
             for(int i=0;i<npref;i++){
-                if(lane_id==0){
+                if(lane_id==0){ // running only first lane, because shared memory operation is inside
                     v = prefv[i+1] = readFromBuffer(glBuffer, base+i);
                     st = prefst[i+1] = d_p.neighbors_offset[v];
                     en = prefen[i+1] = d_p.neighbors_offset[v + 1];
@@ -174,20 +177,9 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
         }
 
 
-        // while (true)
-        // {
-        //     __syncwarp();
-
-        //     if (start >= end)
-        //         break;
-
-        //     unsigned int j = start + lane_id;
-        //     start += WARP_SIZE;
-        //     if (j >= end)
-        //         continue;
         for(unsigned int j=st, k=lane_id; j<en; j+=32, k+=32){
             unsigned int jl = j+lane_id;
-            if(jl>=en) continue;
+            if(jl>=en) break;
             unsigned int u = pref? rdBuff[(warp_id-1) * MAX_PREF + k] : d_p.neighbors[jl];            
 
             if ( d_p.degrees[u] > level)
