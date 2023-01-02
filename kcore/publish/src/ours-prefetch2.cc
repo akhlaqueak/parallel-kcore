@@ -159,7 +159,6 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                     v = prefv[i+1] = readFromBuffer(glBuffer, base+i);
                     st = prefst[i+1] = d_p.neighbors_offset[v];
                     en = prefen[i+1] = d_p.neighbors_offset[v + 1];
-                    printf("%d-%d ", st, en);
                     bpref[i+1] = en - st <= MAX_PREF;
                 }
                 __syncwarp();
@@ -176,7 +175,8 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
 
             continue; // warp0 doesn't process nodes.
         }
-
+                if(lane_id==0)
+                    printf("%d-%d ", st, en);
 
         for(unsigned int j=st, k=lane_id; j<en; j+=32, k+=32){
             unsigned int jl = j+lane_id;
