@@ -94,17 +94,17 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                 v = prefv[warp_id] = readFromBuffer(glBuffer, warp_id - 1);
                 st = prefst[warp_id] = d_p.neighbors_offset[v];
                 en = prefen[warp_id] = d_p.neighbors_offset[v + 1];
-                bpref[warp_id] = en - st <= MAX_PREF;
+                pref = bpref[warp_id] = en - st <= MAX_PREF;
             }
-            __syncwarp();
+            v=__shfl_sync(FULL, v, 0);
+            st=__shfl_sync(FULL, st, 0);
+            en=__shfl_sync(FULL, en, 0);
+            pref=__shfl_sync(FULL, pref, 0);
+            // __syncwarp();
 
-            for (unsigned int i = prefst[warp_id], j = lane_id; i < prefen[warp_id] && bpref[warp_id]; i += 32, j += 32)
+            for (unsigned int i = st+lane_id, j = lane_id; i < en && pref; i += 32, j += 32)
             {
-                unsigned int il = i + lane_id;
-                if (il < prefen[warp_id])
-                {
-                    wrBuff[(warp_id-1) * MAX_PREF + j] = d_p.neighbors[il];
-                }
+                wrBuff[(warp_id-1) * MAX_PREF + j] = d_p.neighbors[il];
             }
         }
     if (THID == 0)
@@ -167,13 +167,9 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                 en=__shfl_sync(FULL, en, 0);
                 pref=__shfl_sync(FULL, pref, 0);
                 
-                for (unsigned int k = st, j = lane_id; k < en && pref; k += 32, j += 32)
+                for (unsigned int k = st+lane_id, j = lane_id; k < en && pref; k += 32, j += 32)
                 {
-                    unsigned int kl = k + lane_id;
-                    if (kl < en)
-                    {
-                        wrBuff[i * MAX_PREF + j] = d_p.neighbors[kl];
-                    }
+                    wrBuff[i * MAX_PREF + j] = d_p.neighbors[kl];
                 }
             }
 
