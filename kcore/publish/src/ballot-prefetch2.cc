@@ -183,21 +183,21 @@ __global__ void processNodes62(G_pointers d_p, int level, int V,
             continue; // warp0 doesn't process nodes.
         }
         bool pred = false;
+        unsigned int u;
 
         for (unsigned int j = st, k = lane_id; j < en; j += 32, k += 32)
         {
             unsigned int jl = j + lane_id;
-            if (jl >= en)
-                break;
-            unsigned int u = pref ? rdBuff[(warp_id - 1) * MAX_PREF + k] : d_p.neighbors[jl];
-
-
             unsigned int loc = scanIndexBallot(pred, &bufTail);
             if(pred){
                 writeToBuffer(glBuffer, loc, u);
             }
 
             pred = false;
+
+            if (jl >= en)
+                break;
+            u = pref ? rdBuff[(warp_id - 1) * MAX_PREF + k] : d_p.neighbors[jl];
 
             if (d_p.degrees[u] > level)
             {
