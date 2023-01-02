@@ -139,7 +139,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
         if (base == bufTail)
             break; // all the threads will evaluate to true at same iteration
         if(THID==0)
-            printf("%d ", base);
+            printf("%d \n", base);
         regTail = bufTail;
         __syncthreads();
         if (warp_id > regnpref)
