@@ -188,8 +188,8 @@ __global__ void processNodes62(G_pointers d_p, int level, int V,
         for (unsigned int j = st, k = lane_id; j < en; j += 32, k += 32)
         {
             unsigned int jl = j + lane_id;
-            unsigned int loc = scanIndexBallot(pred, &bufTail);
             if(pred){
+            unsigned int loc = atomicAdd(&bufTail, 1);
                 writeToBuffer(glBuffer, loc, u);
             }
 
