@@ -12,6 +12,7 @@
 #include "./src/ours-prefetch2.cc"
 #include "./src/efficient.cc"
 #include "./src/ballot-prefetch.cc"
+#include "./src/ballot-prefetch2.cc"
 #include "./src/ballot.cc"
 #include "./src/efficient-prefetch.cc"
 #include "./src/ballot-shared.cc"
@@ -78,6 +79,9 @@ int main(int argc, char *argv[]){
 
     // cout<<"Ballot scan + VP: ";
     // repSimulation(kcoreBallotScanPrefetch, g);
+
+    cout<<"Ballot scan + VP2: ";
+    repSimulation(kcoreBallotScanPrefetch2, g);
 
     // cout<<"Efficient scan: ";
     // repSimulation(kcoreEfficientScan, g);    

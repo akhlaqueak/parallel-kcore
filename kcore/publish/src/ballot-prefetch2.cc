@@ -1,56 +1,48 @@
 
-__global__ void selectNodesAtLevel32(unsigned int *degrees, unsigned int level, unsigned int V,
-                                     unsigned int *bufTails, unsigned int *glBuffers)
-{
 
-    __shared__ unsigned int *glBuffer;
+__global__ void selectNodesAtLevel62(unsigned int *degrees, unsigned int level, unsigned int V, 
+                 unsigned int* bufTails, unsigned int* glBuffers){
+
+    __shared__ bool predicate[BLK_DIM];
+    __shared__ unsigned int temp[BLK_DIM];
+    __shared__ volatile unsigned int addresses[BLK_DIM];
     __shared__ unsigned int bufTail;
-
-    if (THID == 0)
-    {
+    __shared__ unsigned int* glBuffer;
+    if(THID==0){
         bufTail = 0;
-        glBuffer = glBuffers + blockIdx.x * GLBUFFER_SIZE;
-    }
-    __syncthreads();
-
-    unsigned int global_threadIdx = blockIdx.x * blockDim.x + threadIdx.x;
-    for (unsigned int base = 0; base < V; base += N_THREADS)
-    {
-
-        unsigned int v = base + global_threadIdx;
-
-        if (v >= V)
-            continue;
-
-        if (degrees[v] == level)
-        {
-            unsigned int loc = atomicAdd(&bufTail, 1);
-            writeToBuffer(glBuffer, loc, v);
-        }
+        glBuffer = glBuffers+(blockIdx.x*GLBUFFER_SIZE);
     }
 
-    __syncthreads();
+    unsigned int glThreadIdx = blockIdx.x * BLK_DIM + THID; 
 
-    if (THID == 0)
-    {
+    for(unsigned int base = 0; base < V; base += N_THREADS){
+        
+        unsigned int v = base + glThreadIdx; 
+
+        // all threads should get some value, if vertices are less than n_threads, rest of the threads get zero
+        predicate[THID] = (v<V)? (degrees[v] == level) : 0;
+        if(predicate[THID]) temp[THID] = v;
+
+        compactWarpBallot(predicate, addresses, temp, glBuffer, &bufTail);        
+        
+        __syncthreads();
+            
+    }
+
+    if(THID==0){
         bufTails[blockIdx.x] = bufTail;
     }
 }
 
-__device__ void swapBuffers(unsigned int **X, unsigned int **Y)
-{
-    if (THID == 0)
-    {
-        auto temp = *X;
-        *X = *Y;
-        *Y = temp;
-    }
-}
 
-__global__ void processNodes32(G_pointers d_p, int level, int V,
-                               unsigned int *bufTails, unsigned int *glBuffers,
-                               unsigned int *global_count)
-{
+
+
+
+
+
+__global__ void processNodes62(G_pointers d_p, int level, int V, 
+                    unsigned int* bufTails, unsigned int* glBuffers, 
+                    unsigned int *global_count){
     __shared__ unsigned int bufTail;
     __shared__ unsigned int *glBuffer;
     __shared__ unsigned int base;
@@ -190,6 +182,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
 
             continue; // warp0 doesn't process nodes.
         }
+        bool pred = false;
 
         for (unsigned int j = st, k = lane_id; j < en; j += 32, k += 32)
         {
@@ -198,17 +191,20 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                 break;
             unsigned int u = pref ? rdBuff[(warp_id - 1) * MAX_PREF + k] : d_p.neighbors[jl];
 
+
+            unsigned int loc = scanIndexBallot(pred, &bufTail);
+            if(pred){
+                writeToBuffer(glBuffer, loc, u);
+            }
+
+            pred = false;
+
             if (d_p.degrees[u] > level)
             {
 
                 unsigned int a = atomicSub(d_p.degrees + u, 1);
 
-                if (a == level + 1)
-                {
-                    unsigned int loc = atomicAdd(&bufTail, 1);
-
-                    writeToBuffer(glBuffer, loc, u);
-                }
+                pred = (a==level+1);
 
                 if (a <= level)
                 {
@@ -223,10 +219,13 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
     {
         atomicAdd(global_count, bufTail); // atomic since contention among blocks
     }
+
+
 }
 
-int kcorePrefetch2(Graph &data_graph)
-{
+
+
+int kcoreBallotScanPrefetch2(Graph &data_graph){
 
     G_pointers data_pointers;
 
@@ -234,38 +233,40 @@ int kcorePrefetch2(Graph &data_graph)
 
     unsigned int level = 0;
     unsigned int count = 0;
-    unsigned int *global_count = NULL;
-    unsigned int *bufTails = NULL;
-    unsigned int *glBuffers = NULL;
+    unsigned int* global_count  = NULL;
+    unsigned int* bufTails  = NULL;
+    unsigned int* glBuffers     = NULL;
 
     chkerr(cudaMalloc(&global_count, sizeof(unsigned int)));
-    chkerr(cudaMalloc(&bufTails, sizeof(unsigned int) * BLK_NUMS));
+    chkerr(cudaMalloc(&bufTails, sizeof(unsigned int)*BLK_NUMS));
     cudaMemset(global_count, 0, sizeof(unsigned int));
-    chkerr(cudaMalloc(&glBuffers, sizeof(unsigned int) * BLK_NUMS * GLBUFFER_SIZE));
-
-    // cout<<"K-core Computation Started";
+    chkerr(cudaMalloc(&glBuffers,sizeof(unsigned int)*BLK_NUMS*GLBUFFER_SIZE));
+       
+    
+	// cout<<"K-core Computation Started";
 
     auto start = chrono::steady_clock::now();
-    while (count < data_graph.V)
-    {
-        cudaMemset(bufTails, 0, sizeof(unsigned int) * BLK_NUMS);
+    while(count < data_graph.V){
+        cudaMemset(bufTails, 0, sizeof(unsigned int)*BLK_NUMS);
 
-        selectNodesAtLevel32<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level,
-                                                    data_graph.V, bufTails, glBuffers);
+        selectNodesAtLevel62<<<BLK_NUMS, BLK_DIM>>>(data_pointers.degrees, level, 
+                        data_graph.V, bufTails, glBuffers);
 
-        processNodes32<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V,
-                                              bufTails, glBuffers, global_count);
+        processNodes62<<<BLK_NUMS, BLK_DIM>>>(data_pointers, level, data_graph.V, 
+                        bufTails, glBuffers, global_count);
 
-        chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));
-        cout << "*********Completed level: " << level << ", global_count: " << count << " *********" << endl;
+        chkerr(cudaMemcpy(&count, global_count, sizeof(unsigned int), cudaMemcpyDeviceToHost));    
+        // cout<<"*********Completed level: "<<level<<", global_count: "<<count<<" *********"<<endl;
         level++;
     }
-    // cout<<"Done "<<"Kmax: "<<level-1<<endl;
+	// cout<<"Done "<<"Kmax: "<<level-1<<endl;
 
     auto end = chrono::steady_clock::now();
 
     cudaFree(glBuffers);
     free_graph_gpu_memory(data_pointers);
 
+
     return chrono::duration_cast<chrono::milliseconds>(end - start).count();
+
 }
