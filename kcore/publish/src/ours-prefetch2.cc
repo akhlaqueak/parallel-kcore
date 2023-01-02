@@ -138,8 +138,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
         regnpref = npref;
         if (base == bufTail)
             break; // all the threads will evaluate to true at same iteration
-        if(THID==0)
-            printf("%d \n", base);
+
         regTail = bufTail;
         __syncthreads();
         if (warp_id > regnpref)
@@ -160,6 +159,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                     v = prefv[i+1] = readFromBuffer(glBuffer, base+i);
                     st = prefst[i+1] = d_p.neighbors_offset[v];
                     en = prefen[i+1] = d_p.neighbors_offset[v + 1];
+                    printf("%d-%d ", st, en);
                     bpref[i+1] = en - st <= MAX_PREF;
                 }
                 __syncwarp();
