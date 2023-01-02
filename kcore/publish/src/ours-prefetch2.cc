@@ -126,18 +126,19 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
     while (true)
     {
         __syncthreads(); // syncthreads must be executed by all the threads
+        if (base == bufTail)
+            break; // all the threads will evaluate to true at same iteration
+
         swapBuffers(&wrBuff, &rdBuff); // swaps reading and writing buffer pointers.
-        if(warp_id <= npref){
+        // if(warp_id <= npref){
             // warp0 will also read these value, but it's none of use
-            // doing it only for simplicity of code, else need a condition
+            // reading it only for simplicity of code, else need a condition
             v = prefv[warp_id];
             st = prefst[warp_id];
             en = prefen[warp_id];
             pref = bpref[warp_id];
-        }
+        // }
         regnpref = npref;
-        if (base == bufTail)
-            break; // all the threads will evaluate to true at same iteration
 
         regTail = bufTail;
         __syncthreads();
