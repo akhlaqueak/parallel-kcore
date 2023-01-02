@@ -184,10 +184,11 @@ __global__ void processNodes62(G_pointers d_p, int level, int V,
         bool pred = false;
         unsigned int u;
 
-        for (unsigned int j = st, k = lane_id; j < en+32 ; j += 32, k += 32)
+        // adding 32 in this loop, so that scan is done in last iteration as well.
+        for (unsigned int j = st, k = lane_id; j < en+32; j += 32, k += 32)
         {
+            unsigned int loc = scanIndexBallot(pred, &bufTail);
             if(pred){
-                unsigned int loc = atomicAdd(&bufTail, 1);
                 writeToBuffer(glBuffer, loc, u);
             }
             pred = false;
