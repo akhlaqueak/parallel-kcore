@@ -167,7 +167,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                 en=__shfl_sync(FULL, en, 0);
                 pref=__shfl_sync(FULL, pref, 0);
                 
-                for (unsigned int k = st, j = lane_id; i < en && pref; k += 32, j += 32)
+                for (unsigned int k = st, j = lane_id; k < en && pref; k += 32, j += 32)
                 {
                     unsigned int kl = k + lane_id;
                     if (kl < en)
