@@ -110,7 +110,6 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
     if (THID == 0)
     {
         npref = min(WARPS_EACH_BLK - 1, bufTail);
-        printf("%d ", npref);
     }
 
     // if(THID == 0){
@@ -139,6 +138,8 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
         regnpref = npref;
         if (base == bufTail)
             break; // all the threads will evaluate to true at same iteration
+        if(THID==0)
+            printf("%d ", base);
         regTail = bufTail;
         __syncthreads();
         if (warp_id > regnpref)
