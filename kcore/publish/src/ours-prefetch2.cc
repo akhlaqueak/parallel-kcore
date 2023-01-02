@@ -104,7 +104,7 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
 
             for (unsigned int i = st+lane_id, j = lane_id; i < en && pref; i += 32, j += 32)
             {
-                wrBuff[(warp_id-1) * MAX_PREF + j] = d_p.neighbors[il];
+                wrBuff[(warp_id-1) * MAX_PREF + j] = d_p.neighbors[i];
             }
         }
     if (THID == 0)
