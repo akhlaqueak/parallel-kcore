@@ -23,7 +23,7 @@
 template<class T>
 void repSimulation(int (*kern)(T), Graph& g){
     float sum=0;
-    int rep = 1; // number of iterations... 
+    int rep = 10; // number of iterations... 
     for(int i=0;i<rep;i++){
         unsigned int t = (*kern)(g);
         cout<<t<<" ";
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]){
     // cout<<"Efficient scan + VP: ";
     // repSimulation(kcoreEfficientScanPrefetch, g);
 
-    cout<<"Efficient scan + VP: ";
+    cout<<"Efficient scan + VP2: ";
     repSimulation(kcoreEfficientScanPrefetch2, g);
     return 0;
 }
