@@ -234,7 +234,7 @@ int kcorePrefetch2(Graph &data_graph)
     // cout<<"K-core Computation Started";
 
     auto start = chrono::steady_clock::now();
-    while (count < data_graph.V && level < 20)
+    while (count < data_graph.V)
     {
         cudaMemset(bufTails, 0, sizeof(unsigned int) * BLK_NUMS);
 
