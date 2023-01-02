@@ -99,13 +99,17 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                 en = prefen[warp_id] = d_p.neighbors_offset[v + 1];
                 pref = bpref[warp_id] = en - st <= MAX_PREF;
             }
-            v=__shfl_sync(FULL, v, 0);
-            st=__shfl_sync(FULL, st, 0);
-            en=__shfl_sync(FULL, en, 0);
-            pref=__shfl_sync(FULL, pref, 0);
-            // __syncwarp();
+            // v=__shfl_sync(FULL, v, 0);
+            // st=__shfl_sync(FULL, st, 0);
+            // en=__shfl_sync(FULL, en, 0);
+            // pref=__shfl_sync(FULL, pref, 0);
+            // for (unsigned int i = st+lane_id, j = lane_id; i < en && pref; i += 32, j += 32)
+            // {
+            //     wrBuff[(warp_id-1) * MAX_PREF + j] = d_p.neighbors[i];
+            // }
 
-            for (unsigned int i = st+lane_id, j = lane_id; i < en && pref; i += 32, j += 32)
+            __syncwarp();
+            for (unsigned int i = prefst[warp_id]+lane_id, j = lane_id; i < prefen[warp_id] && bpref[warp_id]; i += 32, j += 32)
             {
                 wrBuff[(warp_id-1) * MAX_PREF + j] = d_p.neighbors[i];
             }
