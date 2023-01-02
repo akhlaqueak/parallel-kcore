@@ -38,9 +38,12 @@ __global__ void selectNodesAtLevel32(unsigned int *degrees, unsigned int level, 
 }
 
 __device__ void swapBuffers(unsigned int** X, unsigned int** Y){
+    if(THID==0){
     auto temp = *X;
     *X = *Y;
     *Y = temp;
+
+    }
 }
 
 __global__ void processNodes32(G_pointers d_p, int level, int V,
