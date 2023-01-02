@@ -9,14 +9,17 @@
 #include "./src/ours.cc"
 #include "./src/ours-shared.cc"
 #include "./src/ours-prefetch.cc"
-#include "./src/ours-prefetch2.cc"
 #include "./src/efficient.cc"
 #include "./src/ballot-prefetch.cc"
-#include "./src/ballot-prefetch2.cc"
 #include "./src/ballot.cc"
 #include "./src/efficient-prefetch.cc"
 #include "./src/ballot-shared.cc"
 #include "./src/efficient-shared.cc"
+
+#include "./src/ours-prefetch2.cc"
+#include "./src/ballot-prefetch2.cc"
+#include "./src/efficient-prefetch2.cc"
+
 template<class T>
 void repSimulation(int (*kern)(T), Graph& g){
     float sum=0;
@@ -92,5 +95,7 @@ int main(int argc, char *argv[]){
     // cout<<"Efficient scan + VP: ";
     // repSimulation(kcoreEfficientScanPrefetch, g);
 
+    cout<<"Efficient scan + VP: ";
+    repSimulation(kcoreEfficientScanPrefetch2, g);
     return 0;
 }
