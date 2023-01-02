@@ -166,15 +166,21 @@ __global__ void processNodes32(G_pointers d_p, int level, int V,
                     pref = bpref[i+1] = en - st <= MAX_PREF;
                     // printf("%d ", npref);
                 }
-                v=__shfl_sync(FULL, v, 0);
-                st=__shfl_sync(FULL, st, 0);
-                en=__shfl_sync(FULL, en, 0);
-                pref=__shfl_sync(FULL, pref, 0);
+                // v=__shfl_sync(FULL, v, 0);
+                // st=__shfl_sync(FULL, st, 0);
+                // en=__shfl_sync(FULL, en, 0);
+                // pref=__shfl_sync(FULL, pref, 0);
+                // for (unsigned int k = st+lane_id, j = lane_id; k < en && pref; k += 32, j += 32)
+                // {
+                //     wrBuff[i * MAX_PREF + j] = d_p.neighbors[k];
+                // }
                 
-                for (unsigned int k = st+lane_id, j = lane_id; k < en && pref; k += 32, j += 32)
+                __syncwarp();
+                for (unsigned int k = prefst[i+1]+lane_id, j = lane_id; k < prefen[i+1] && bpref[i+1]; k += 32, j += 32)
                 {
                     wrBuff[i * MAX_PREF + j] = d_p.neighbors[k];
                 }
+                
             }
 
             continue; // warp0 doesn't process nodes.
