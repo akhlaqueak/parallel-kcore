@@ -59,8 +59,8 @@ int main(int argc, char *argv[]){
     cout<<"Prefetch2: ";
     repSimulation(kcorePrefetch2, g);
 
-    // cout<<"Ours: ";
-    // repSimulation(kcore, g);
+    cout<<"Ours: ";
+    repSimulation(kcore, g);
     cout<<"Kmax: "<<g.kmax<<endl;
 
     // cout<<"Ours + SM:  ";
