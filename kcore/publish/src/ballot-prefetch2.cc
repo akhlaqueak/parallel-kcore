@@ -184,7 +184,7 @@ __global__ void processNodes62(G_pointers d_p, int level, int V,
         bool pred = false;
         unsigned int u;
 
-        for (unsigned int j = st, k = lane_id; j < en; j += 32, k += 32)
+        for (unsigned int j = st, k = lane_id; j < en+32 ; j += 32, k += 32)
         {
             if(pred){
                 unsigned int loc = atomicAdd(&bufTail, 1);
