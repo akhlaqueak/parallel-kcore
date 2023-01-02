@@ -186,15 +186,15 @@ __global__ void processNodes62(G_pointers d_p, int level, int V,
 
         for (unsigned int j = st, k = lane_id; j < en; j += 32, k += 32)
         {
-            // if(pred){
-            //     unsigned int loc = atomicAdd(&bufTail, 1);
-            //     writeToBuffer(glBuffer, loc, u);
-            // }
-            // pred = false;
+            if(pred){
+                unsigned int loc = atomicAdd(&bufTail, 1);
+                writeToBuffer(glBuffer, loc, u);
+            }
+            pred = false;
 
             unsigned int jl = j + lane_id;
             if (jl >= en)
-                break;
+                continue;
             u = pref ? rdBuff[(warp_id - 1) * MAX_PREF + k] : d_p.neighbors[jl];
 
             if (d_p.degrees[u] > level)
@@ -202,11 +202,8 @@ __global__ void processNodes62(G_pointers d_p, int level, int V,
 
                 unsigned int a = atomicSub(d_p.degrees + u, 1);
 
-                if (a == level + 1)
-                {
-                    unsigned int loc = atomicAdd(&bufTail, 1);
-                    writeToBuffer(glBuffer, loc, u);
-                }
+                pred =  (a == level + 1);
+                
 
                 if (a <= level)
                 {
