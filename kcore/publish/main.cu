@@ -60,42 +60,35 @@ int main(int argc, char *argv[]){
     // cout<<"******************  "<<ds<<" ****************** ";
     // STDdegrees(g);
 
-    cout<<"Prefetch2: ";
-    repSimulation(kcorePrefetch2, g);
-
     cout<<"Ours: ";
     repSimulation(kcore, g);
     cout<<"Kmax: "<<g.kmax<<endl;
 
-    // cout<<"Ours + SM:  ";
-    // repSimulation(kcoreSharedMem, g);
+    cout<<"SM:  ";
+    repSimulation(kcoreSharedMem, g);
 
     
-    // cout<<"Ours + VP: ";
-    // repSimulation(kcorePrefetch, g);
+    cout<<"VP: ";
+    repSimulation(kcorePrefetch, g);
 
-    // cout<<"Ballot scan: ";
-    // repSimulation(kcoreBallotScan, g);
+    cout<<"BC: ";
+    repSimulation(kcoreBallotScan, g);
 
-    // cout<<"Ballot scan + SM: ";
-    // repSimulation(kcoreSharedMemBallot, g);
+    cout<<"BC + SM: ";
+    repSimulation(kcoreSharedMemBallot, g);
 
-    // cout<<"Ballot scan + VP: ";
-    // repSimulation(kcoreBallotScanPrefetch, g);
+    cout<<"BC + VP: ";
+    repSimulation(kcoreBallotScanPrefetch, g);
 
-    cout<<"Ballot scan + VP2: ";
-    repSimulation(kcoreBallotScanPrefetch2, g);
 
-    // cout<<"Efficient scan: ";
-    // repSimulation(kcoreEfficientScan, g);    
+    cout<<"EC: ";
+    repSimulation(kcoreEfficientScan, g);    
     
-    // cout<<"Efficient scan + SM: ";
-    // repSimulation(kcoreSharedMemEfficient, g);
+    cout<<"EC + SM: ";
+    repSimulation(kcoreSharedMemEfficient, g);
 
-    // cout<<"Efficient scan + VP: ";
-    // repSimulation(kcoreEfficientScanPrefetch, g);
+    cout<<"EC + VP: ";
+    repSimulation(kcoreEfficientScanPrefetch, g);
 
-    cout<<"Efficient scan + VP2: ";
-    repSimulation(kcoreEfficientScanPrefetch2, g);
     return 0;
 }
